@@ -1,0 +1,30 @@
+{
+    "MPN": [
+        false,
+        "AP2120N-3.3TRG1"
+    ],
+    "base": "9892ea18-457d-471d-84be-f8f42c48d99d",
+    "datasheet": [
+        true,
+        "https://www.diodes.com/assets/Datasheets/AP2120.pdf"
+    ],
+    "description": [
+        false,
+        "3.3V, 150mA LDO Regulator"
+    ],
+    "inherit_model": true,
+    "inherit_tags": true,
+    "manufacturer": [
+        true,
+        "Diodes Inc."
+    ],
+    "model": "1ebac498-5423-42dc-90a6-7ad333585f6a",
+    "parametric": {},
+    "tags": [],
+    "type": "part",
+    "uuid": "799cd735-d7e3-4b4c-b7e8-a2a44f08615c",
+    "value": [
+        true,
+        "AP2120"
+    ]
+}

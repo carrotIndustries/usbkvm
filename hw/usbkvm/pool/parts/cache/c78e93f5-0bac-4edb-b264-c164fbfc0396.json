@@ -1,0 +1,53 @@
+{
+    "MPN": [
+        false,
+        "AZ1117IH"
+    ],
+    "datasheet": [
+        false,
+        "https://www.diodes.com/assets/Datasheets/AZ1117I.pdf"
+    ],
+    "description": [
+        false,
+        "1.0 A Low-Dropout Fixed Regulator"
+    ],
+    "entity": "1d0055e8-b654-4bb9-b3e2-5ad87079ecca",
+    "inherit_model": false,
+    "inherit_tags": false,
+    "manufacturer": [
+        false,
+        "Diodes Inc."
+    ],
+    "model": "1c4377f2-2789-4b2c-b94b-c08645583d2e",
+    "package": "ca5d9f54-a411-4cee-abbb-7cc278bc91c8",
+    "pad_map": {
+        "054f29e1-f03d-4150-926a-789da437d5bd": {
+            "gate": "8b4c20d8-37fd-40a5-8239-db8803c0baa0",
+            "pin": "304699c2-7433-4b03-ad2c-c8df631dd06f"
+        },
+        "41454731-8468-4e57-be99-a40cff48376c": {
+            "gate": "8b4c20d8-37fd-40a5-8239-db8803c0baa0",
+            "pin": "559d5e91-2169-486b-9ece-8db9867957dd"
+        },
+        "aab39acd-7b1b-4524-a679-931ff77c0e4b": {
+            "gate": "8b4c20d8-37fd-40a5-8239-db8803c0baa0",
+            "pin": "20f0495c-5e6e-4975-b440-1399ca09d3c3"
+        },
+        "bd48c805-e32c-4720-a532-f40c01052ca6": {
+            "gate": "8b4c20d8-37fd-40a5-8239-db8803c0baa0",
+            "pin": "559d5e91-2169-486b-9ece-8db9867957dd"
+        }
+    },
+    "parametric": {},
+    "tags": [
+        "ic",
+        "ldo",
+        "regulator"
+    ],
+    "type": "part",
+    "uuid": "c78e93f5-0bac-4edb-b264-c164fbfc0396",
+    "value": [
+        false,
+        ""
+    ]
+}

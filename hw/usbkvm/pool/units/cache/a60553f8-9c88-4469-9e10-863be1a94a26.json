@@ -1,0 +1,56 @@
+{
+    "manufacturer": "",
+    "name": "I2C EEPROM with 3 address lines and write protect",
+    "pins": {
+        "2edae41f-8a1a-4ad0-8cc9-e3b8846ebced": {
+            "direction": "input",
+            "names": [],
+            "primary_name": "WP",
+            "swap_group": 0
+        },
+        "48046849-2109-4d41-a774-c8b3eaf70c2b": {
+            "direction": "open_collector",
+            "names": [],
+            "primary_name": "SDA",
+            "swap_group": 0
+        },
+        "57efbc1c-5a3e-453f-aa96-ec9d2b366f3b": {
+            "direction": "input",
+            "names": [],
+            "primary_name": "A1",
+            "swap_group": 0
+        },
+        "5a474086-8213-4a05-802e-6114bc9b682c": {
+            "direction": "input",
+            "names": [],
+            "primary_name": "A2",
+            "swap_group": 0
+        },
+        "6c230be5-987e-4b87-b4e2-4085f809627a": {
+            "direction": "input",
+            "names": [],
+            "primary_name": "A0",
+            "swap_group": 0
+        },
+        "88a59a9c-36d1-425b-a97b-282bfb26d29f": {
+            "direction": "power_input",
+            "names": [],
+            "primary_name": "VSS",
+            "swap_group": 0
+        },
+        "a6f94e2b-1183-49ce-818a-c47eced57c32": {
+            "direction": "open_collector",
+            "names": [],
+            "primary_name": "SCL",
+            "swap_group": 0
+        },
+        "f43f0760-136d-42eb-b29e-a904dff62fea": {
+            "direction": "power_input",
+            "names": [],
+            "primary_name": "VCC",
+            "swap_group": 0
+        }
+    },
+    "type": "unit",
+    "uuid": "a60553f8-9c88-4469-9e10-863be1a94a26"
+}

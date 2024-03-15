@@ -1,0 +1,50 @@
+{
+    "MPN": [
+        false,
+        "APA2107 base part"
+    ],
+    "datasheet": [
+        false,
+        ""
+    ],
+    "description": [
+        false,
+        ""
+    ],
+    "entity": "f061691a-7954-4797-9529-dba6527d8f4f",
+    "flags": {
+        "base_part": "set",
+        "exclude_bom": "clear",
+        "exclude_pnp": "clear"
+    },
+    "inherit_model": false,
+    "inherit_tags": false,
+    "manufacturer": [
+        false,
+        "Kingbright"
+    ],
+    "model": "dd0da3f5-bdbb-48f5-acc9-1c5848bad318",
+    "package": "034a5af8-6c0c-4f3e-9e77-765468c7236e",
+    "pad_map": {
+        "6c078ea0-e396-49a9-8904-af07d2b2d895": {
+            "gate": "c8168f99-a1ca-4d98-bbb7-066f8cad2346",
+            "pin": "f3a0ce45-6d5e-453b-9649-33baf57cc7b7"
+        },
+        "7984f83a-edde-4906-8d80-5d42da744726": {
+            "gate": "c8168f99-a1ca-4d98-bbb7-066f8cad2346",
+            "pin": "3c305ca9-14d3-40b4-a365-8938959c043e"
+        }
+    },
+    "parametric": {},
+    "tags": [
+        "led",
+        "smd"
+    ],
+    "type": "part",
+    "uuid": "6bca0ee6-1516-4f28-9cf4-2aee7a483537",
+    "value": [
+        false,
+        ""
+    ],
+    "version": 1
+}

@@ -1,0 +1,19 @@
+{
+    "gates": {
+        "8283aa24-7d5c-4af1-bee0-f1a9c199c890": {
+            "name": "Main",
+            "suffix": "",
+            "swap_group": 0,
+            "unit": "ce275380-5cb4-489e-91c4-9116d19a0dc9"
+        }
+    },
+    "manufacturer": "",
+    "name": "4ch ESD Protection with NC",
+    "prefix": "D",
+    "tags": [
+        "diode",
+        "esd"
+    ],
+    "type": "entity",
+    "uuid": "72c695aa-3891-4c79-96dd-e2885d463b8f"
+}

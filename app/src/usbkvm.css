@@ -1,0 +1,11 @@
+.tnum {
+  font-feature-settings: "tnum";
+}
+
+.modifier-box > button {
+ border-radius: 0px;
+ border-bottom: 0px;
+ border-top: 0px;
+ min-height:0px;
+ padding: 0px 10px 0px 10px;
+}

@@ -1,0 +1,60 @@
+{
+    "MPN": [
+        false,
+        "TPS560200"
+    ],
+    "datasheet": [
+        false,
+        "https://www.ti.com/lit/gpn/TPS560200"
+    ],
+    "description": [
+        false,
+        "4.5-V to 17-V Input, 500-mA Synchronous Step-Down Converter"
+    ],
+    "entity": "19a945e7-7eff-480b-bd56-85b8a821ab51",
+    "inherit_model": true,
+    "inherit_tags": false,
+    "manufacturer": [
+        false,
+        "Texas Instruments"
+    ],
+    "model": "eb54e7ca-dcad-4e09-bd45-d2e32cddaa2a",
+    "orderable_MPNs": {
+        "6fb44cfe-87a1-4180-b052-3858e8e55f7d": "TPS560200DBVT",
+        "e7d2db80-564a-4558-8a72-609ee3fd52ce": "TPS560200DBVR"
+    },
+    "package": "70c65846-2ee7-4d11-9d38-fe0fa84dc963",
+    "pad_map": {
+        "531c3759-a1b6-40c6-9474-5554dc94bcec": {
+            "gate": "3e0f21a9-6cb1-4cdb-8253-63da994ecea8",
+            "pin": "507ecbe5-855d-4f2d-b1b4-76c3cfeb34b0"
+        },
+        "9fe9b6c3-f887-4523-976a-6aa050235658": {
+            "gate": "3e0f21a9-6cb1-4cdb-8253-63da994ecea8",
+            "pin": "d36a617d-c2ac-4112-b44b-2ff8e3ba19c7"
+        },
+        "bb9bbbd8-9aa2-49aa-98fd-b508ded56028": {
+            "gate": "3e0f21a9-6cb1-4cdb-8253-63da994ecea8",
+            "pin": "ecc52d7c-9ce8-476a-96ef-dfd24b1951f9"
+        },
+        "be802fd1-5220-4258-a11f-c1529e6187e0": {
+            "gate": "3e0f21a9-6cb1-4cdb-8253-63da994ecea8",
+            "pin": "75ccfda7-82c9-48c5-b419-4151a4090408"
+        },
+        "f827f54d-8a25-45ce-a5c6-aa1cdc05418a": {
+            "gate": "3e0f21a9-6cb1-4cdb-8253-63da994ecea8",
+            "pin": "3224ac96-9c80-44c1-b5d3-68cccba86587"
+        }
+    },
+    "parametric": {},
+    "tags": [
+        "dcdc",
+        "regulator"
+    ],
+    "type": "part",
+    "uuid": "6751e1b0-f3f1-4787-b78f-b223af65d3d1",
+    "value": [
+        false,
+        ""
+    ]
+}

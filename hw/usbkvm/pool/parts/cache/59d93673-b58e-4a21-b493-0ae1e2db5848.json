@@ -1,0 +1,35 @@
+{
+    "MPN": [
+        false,
+        "SRN3015-100M"
+    ],
+    "base": "07a3d28f-a9df-43e5-86d8-b4a2ece5e1e8",
+    "datasheet": [
+        true,
+        "https://www.bourns.com/docs/Product-Datasheets/SRN3015.pdf"
+    ],
+    "description": [
+        true,
+        "Semi-shielded Power Inductor"
+    ],
+    "inherit_model": true,
+    "inherit_tags": true,
+    "manufacturer": [
+        true,
+        "Bourns"
+    ],
+    "model": "5778b00a-8c96-47ec-9bce-ce07d3bc4730",
+    "parametric": {
+        "dcr": "0.276",
+        "idc": "0.8",
+        "table": "inductors",
+        "value": "1e-05"
+    },
+    "tags": [],
+    "type": "part",
+    "uuid": "59d93673-b58e-4a21-b493-0ae1e2db5848",
+    "value": [
+        false,
+        "10 µH"
+    ]
+}

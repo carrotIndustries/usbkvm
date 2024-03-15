@@ -1,0 +1,37 @@
+{
+    "MPN": [
+        false,
+        "STM32F042K6U6"
+    ],
+    "base": "815b607f-72b8-402c-bc4d-27485d4aede8",
+    "datasheet": [
+        false,
+        "http://www.st.com/content/ccc/resource/technical/document/datasheet/52/ad/d0/80/e6/be/40/ad/DM00105814.pdf/files/DM00105814.pdf/jcr:content/translations/en.DM00105814.pdf"
+    ],
+    "description": [
+        false,
+        "ARM® -based 32-bit MCU, up to 32 KB Flash, crystal-less USB FS 2.0, CAN, 9 timers, ADC and comm. interfaces, 2.0 - 3.6 V"
+    ],
+    "inherit_model": false,
+    "inherit_tags": false,
+    "manufacturer": [
+        false,
+        "ST"
+    ],
+    "model": "dad1bb6c-6266-4e11-9191-7d9932c34768",
+    "orderable_MPNs": {
+        "3e2dce2e-8932-45aa-87b9-7b00a3bd594c": "STM32F042K6U6TR",
+        "e9c655f1-8dbe-41fd-8d37-1b1dfb9b0281": "STM32F042K6U6"
+    },
+    "parametric": {},
+    "tags": [
+        "mcu",
+        "stm32"
+    ],
+    "type": "part",
+    "uuid": "e33f49c9-d70c-46b3-920e-304916c7d206",
+    "value": [
+        false,
+        "STM32F042KxUx"
+    ]
+}

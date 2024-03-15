@@ -1,0 +1,34 @@
+{
+    "MPN": [
+        false,
+        "base 0402 capacitor"
+    ],
+    "entity": "ca83a84f-6183-4088-84b6-5d79b2a119d4",
+    "inherit_tags": false,
+    "manufacturer": [
+        false,
+        ""
+    ],
+    "package": "45ad1610-b116-4311-a9bc-3acf947db72f",
+    "pad_map": {
+        "3dea6323-9c61-422c-ad53-770cdf22ce12": {
+            "gate": "9bfcf213-2a7e-444e-8312-ce57209fc9ec",
+            "pin": "29995253-b4b1-4c7c-a049-b6db2713ca7c"
+        },
+        "69205d76-735b-4b4e-b3b0-31d90ac2016d": {
+            "gate": "9bfcf213-2a7e-444e-8312-ce57209fc9ec",
+            "pin": "852f1fe6-06dc-4661-8a14-61a9a6ebb26a"
+        }
+    },
+    "parametric": {},
+    "tags": [
+        "capacitor",
+        "passive"
+    ],
+    "type": "part",
+    "uuid": "29043bfd-c944-47cb-ae49-8dc6e1cf7257",
+    "value": [
+        false,
+        ""
+    ]
+}

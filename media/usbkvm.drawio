@@ -1,0 +1,48 @@
+<mxfile host="Electron" modified="2024-03-15T22:50:45.658Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.1.11 Chrome/114.0.5735.289 Electron/25.9.8 Safari/537.36" etag="V-PKaVSsZv64CVuyfqmv" version="22.1.11" type="device">
+  <diagram name="Page-1" id="L28p6pFNXO06Y9sNVYPo">
+    <mxGraphModel dx="263" dy="275" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="JLDiek8qjF0u4GcgxNUL-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" target="JLDiek8qjF0u4GcgxNUL-3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="267" y="224" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="270" y="224" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JLDiek8qjF0u4GcgxNUL-5" value="Video" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="JLDiek8qjF0u4GcgxNUL-4">
+          <mxGeometry x="0.2791" y="-1" relative="1" as="geometry">
+            <mxPoint x="7" y="6" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JLDiek8qjF0u4GcgxNUL-1" value="Broken server" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/computer_and_terminals/Server_Desktop.svg;" vertex="1" parent="1">
+          <mxGeometry x="202" y="165" width="65.08" height="82.5" as="geometry" />
+        </mxCell>
+        <mxCell id="JLDiek8qjF0u4GcgxNUL-2" value="Your laptop" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#00188D;shape=mxgraph.azure.laptop" vertex="1" parent="1">
+          <mxGeometry x="540" y="172.5" width="116.67" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="JLDiek8qjF0u4GcgxNUL-3" value="USBKVM" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="370" y="175" width="100" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="JLDiek8qjF0u4GcgxNUL-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=0.982;entryY=0.313;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="JLDiek8qjF0u4GcgxNUL-3" target="JLDiek8qjF0u4GcgxNUL-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="JLDiek8qjF0u4GcgxNUL-7" value="Keyboard/&lt;br&gt;mouse" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;" vertex="1" connectable="0" parent="JLDiek8qjF0u4GcgxNUL-6">
+          <mxGeometry x="0.0268" y="-1" relative="1" as="geometry">
+            <mxPoint x="-5" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JLDiek8qjF0u4GcgxNUL-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.08;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=classic;startFill=1;" edge="1" parent="1" source="JLDiek8qjF0u4GcgxNUL-3" target="JLDiek8qjF0u4GcgxNUL-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="JLDiek8qjF0u4GcgxNUL-9" value="USB" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="JLDiek8qjF0u4GcgxNUL-8">
+          <mxGeometry x="-0.1695" relative="1" as="geometry">
+            <mxPoint x="9" y="-8" as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

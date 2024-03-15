@@ -1,0 +1,126 @@
+{
+    "holes": {
+        "2e747089-67de-4eb3-8738-df1f2b7dc593": {
+            "diameter": 400000,
+            "length": 900000,
+            "parameter_class": "hole",
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    0,
+                    0
+                ]
+            },
+            "plated": true,
+            "shape": "slot"
+        }
+    },
+    "name": "TH Obround",
+    "padstack_type": "through",
+    "parameter_program": "get-parameter [ pad_width ]\nget-parameter [ pad_height ]\ndupc\nset-shape [ pad obround ]\nget-parameter [ solder_mask_expansion ]\n2 *\n+xy\nset-shape [ mask obround ]\n\n\nget-parameter [ hole_diameter ]\nget-parameter [ hole_length ]\nset-hole [ hole slot ]",
+    "parameter_set": {
+        "hole_diameter": 400000,
+        "hole_length": 900000,
+        "pad_height": 500000,
+        "pad_width": 1000000,
+        "solder_mask_expansion": 100000
+    },
+    "parameters_required": [
+        "pad_width",
+        "pad_height",
+        "hole_diameter",
+        "hole_length"
+    ],
+    "polygons": {},
+    "shapes": {
+        "369ddb1b-a144-4927-81ec-487b8d410317": {
+            "form": "obround",
+            "layer": 10,
+            "parameter_class": "mask",
+            "params": [
+                1200000,
+                700000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    0,
+                    0
+                ]
+            }
+        },
+        "6b90bc28-8755-46a5-932f-b9da6d312672": {
+            "form": "obround",
+            "layer": -100,
+            "parameter_class": "pad",
+            "params": [
+                1000000,
+                500000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    0,
+                    0
+                ]
+            }
+        },
+        "a7132d19-ae9c-46d0-94c3-d7a68f842d71": {
+            "form": "obround",
+            "layer": 0,
+            "parameter_class": "pad",
+            "params": [
+                1000000,
+                500000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    0,
+                    0
+                ]
+            }
+        },
+        "d102ecf5-328c-4e22-be5a-9238a08ed2c9": {
+            "form": "obround",
+            "layer": -110,
+            "parameter_class": "mask",
+            "params": [
+                1200000,
+                700000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    0,
+                    0
+                ]
+            }
+        },
+        "d1be6691-9312-4912-8058-60fcb78b5d2c": {
+            "form": "obround",
+            "layer": -1,
+            "parameter_class": "pad",
+            "params": [
+                1000000,
+                500000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    0,
+                    0
+                ]
+            }
+        }
+    },
+    "type": "padstack",
+    "uuid": "4a0e654a-a96c-4c6b-939f-dd44887c78ab",
+    "well_known_name": "th obround"
+}

@@ -1,0 +1,44 @@
+{
+    "MPN": [
+        false,
+        "base 0603 ferrite bead"
+    ],
+    "datasheet": [
+        false,
+        ""
+    ],
+    "description": [
+        false,
+        ""
+    ],
+    "entity": "ac656848-2504-4c1e-9cee-c2d3a3320cca",
+    "inherit_tags": false,
+    "manufacturer": [
+        false,
+        ""
+    ],
+    "model": "100710cb-d7e8-4d8b-a829-5870fca34cec",
+    "package": "0c6f5ea3-c601-4b00-b985-6db23ce77246",
+    "pad_map": {
+        "5eb3d31f-6cc4-43f5-a1e0-6ff6d5834e89": {
+            "gate": "ab5e5821-17f1-4052-bde8-4791cb782b42",
+            "pin": "a48aebb4-3bc9-4931-aaa5-49c5dc594471"
+        },
+        "dbd0c5ca-3d47-4dc1-9012-bed19d601c53": {
+            "gate": "ab5e5821-17f1-4052-bde8-4791cb782b42",
+            "pin": "b249853f-f1b3-4128-9ff3-be7e5939dfdc"
+        }
+    },
+    "parametric": {},
+    "tags": [
+        "bead",
+        "ferrite",
+        "passive"
+    ],
+    "type": "part",
+    "uuid": "c3e332a4-7d74-41e1-9932-67cbd9d8530c",
+    "value": [
+        false,
+        ""
+    ]
+}

@@ -1,0 +1,76 @@
+{
+    "MPN": [
+        false,
+        "ESD7004MUTAG"
+    ],
+    "datasheet": [
+        false,
+        "https://www.onsemi.com/pdf/datasheet/esd7004-d.pdf"
+    ],
+    "description": [
+        false,
+        "Low Capacitance ESD Protection Diode for High Speed Data Line"
+    ],
+    "entity": "72c695aa-3891-4c79-96dd-e2885d463b8f",
+    "inherit_model": true,
+    "inherit_tags": false,
+    "manufacturer": [
+        false,
+        "ON Semiconductor"
+    ],
+    "model": "00000000-0000-0000-0000-000000000000",
+    "package": "95621370-465d-4613-92cc-6460567845cc",
+    "pad_map": {
+        "140ca0f6-9b10-4565-b3b6-3ba1d9ed8abf": {
+            "gate": "8283aa24-7d5c-4af1-bee0-f1a9c199c890",
+            "pin": "0cd6c49c-55c1-4424-a9d3-79db39d6e039"
+        },
+        "1d213061-3641-4542-8199-1432a1ba5e7e": {
+            "gate": "8283aa24-7d5c-4af1-bee0-f1a9c199c890",
+            "pin": "8977692b-bea4-4577-b539-a5b26926cb6a"
+        },
+        "2626db9a-1b72-43ca-9d43-067c5cfa9d44": {
+            "gate": "8283aa24-7d5c-4af1-bee0-f1a9c199c890",
+            "pin": "8e026fab-7010-4829-b072-4ea3aff2321a"
+        },
+        "33a44457-e3f4-4018-b38a-3092e6cc147f": {
+            "gate": "8283aa24-7d5c-4af1-bee0-f1a9c199c890",
+            "pin": "8e026fab-7010-4829-b072-4ea3aff2321a"
+        },
+        "357c2672-2b86-4dc7-88d2-17cc04cc60d4": {
+            "gate": "8283aa24-7d5c-4af1-bee0-f1a9c199c890",
+            "pin": "7228ef6f-be89-4a5c-82c6-f569f229357b"
+        },
+        "6a24dff2-0f19-4cfe-8e97-195bbbf08161": {
+            "gate": "8283aa24-7d5c-4af1-bee0-f1a9c199c890",
+            "pin": "9e0a3d76-ede8-454e-84ad-4ab8270c3c9c"
+        },
+        "8b16dfae-6df3-4808-aa1f-0ceebb67886f": {
+            "gate": "8283aa24-7d5c-4af1-bee0-f1a9c199c890",
+            "pin": "cfa1dd2c-7e9f-4183-aff0-4e9c512e1e04"
+        },
+        "9572e305-b76e-4f9b-8a50-5efc8da289b0": {
+            "gate": "8283aa24-7d5c-4af1-bee0-f1a9c199c890",
+            "pin": "5161b9d0-6abf-4e0e-b8b0-c3bedaf9afad"
+        },
+        "b7b08a12-befd-4316-8475-1e4c250a60a0": {
+            "gate": "8283aa24-7d5c-4af1-bee0-f1a9c199c890",
+            "pin": "4748831f-5244-4e2f-ae58-4ce84efe32a8"
+        },
+        "f42a3867-6dbb-4881-a74f-87f528def8e7": {
+            "gate": "8283aa24-7d5c-4af1-bee0-f1a9c199c890",
+            "pin": "7bf7543d-3c9b-45ca-882d-320d8485a192"
+        }
+    },
+    "parametric": {},
+    "tags": [
+        "diode",
+        "esd"
+    ],
+    "type": "part",
+    "uuid": "431df3c0-b668-487e-bf42-91e34210f4e4",
+    "value": [
+        false,
+        ""
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "gates": {
+        "1d29bd03-e092-4b71-a993-da3ff8c78042": {
+            "name": "Main",
+            "suffix": "",
+            "swap_group": 0,
+            "unit": "db12d34d-93f5-4fc7-a794-5f5f50a89b26"
+        }
+    },
+    "manufacturer": "ST",
+    "name": "STM32F042KxUx",
+    "prefix": "U",
+    "tags": [
+        "mcu",
+        "stm32"
+    ],
+    "type": "entity",
+    "uuid": "a2f13840-afc2-4c97-bd72-444dde0e8055"
+}

@@ -1,0 +1,20 @@
+{
+    "gates": {
+        "2a1bd72d-6d14-48c7-94d4-91d36e7a56c6": {
+            "name": "Main",
+            "suffix": "",
+            "swap_group": 0,
+            "unit": "6ac799fd-9f71-4cb6-b667-2e7d4039491c"
+        }
+    },
+    "manufacturer": "",
+    "name": "Crystal with shield",
+    "prefix": "Y",
+    "tags": [
+        "crystal",
+        "generic",
+        "passive"
+    ],
+    "type": "entity",
+    "uuid": "03e9b2b2-36ee-4e93-a665-c9327c97cc89"
+}

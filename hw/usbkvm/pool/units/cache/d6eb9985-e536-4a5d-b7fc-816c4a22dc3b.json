@@ -1,0 +1,26 @@
+{
+    "manufacturer": "",
+    "name": "Three-terminal voltage regulator",
+    "pins": {
+        "20f0495c-5e6e-4975-b440-1399ca09d3c3": {
+            "direction": "power_input",
+            "names": [],
+            "primary_name": "GND",
+            "swap_group": 0
+        },
+        "304699c2-7433-4b03-ad2c-c8df631dd06f": {
+            "direction": "power_input",
+            "names": [],
+            "primary_name": "Vin",
+            "swap_group": 0
+        },
+        "559d5e91-2169-486b-9ece-8db9867957dd": {
+            "direction": "power_output",
+            "names": [],
+            "primary_name": "Vout",
+            "swap_group": 0
+        }
+    },
+    "type": "unit",
+    "uuid": "d6eb9985-e536-4a5d-b7fc-816c4a22dc3b"
+}

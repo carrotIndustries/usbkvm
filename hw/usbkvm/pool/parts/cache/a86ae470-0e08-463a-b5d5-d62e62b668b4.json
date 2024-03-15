@@ -1,0 +1,71 @@
+{
+    "MPN": [
+        false,
+        "24Cxx SOIC-8"
+    ],
+    "datasheet": [
+        false,
+        ""
+    ],
+    "description": [
+        false,
+        ""
+    ],
+    "entity": "b2d50f75-2175-45a0-a43e-f464238a9fb7",
+    "flags": {
+        "base_part": "set",
+        "exclude_bom": "clear",
+        "exclude_pnp": "clear"
+    },
+    "inherit_model": true,
+    "inherit_tags": false,
+    "manufacturer": [
+        false,
+        ""
+    ],
+    "model": "b99785a3-c0da-4658-969d-6287cec3be05",
+    "package": "0932e22e-0cf7-46dc-b09c-4cc761a67608",
+    "pad_map": {
+        "17341892-a120-44e2-97ea-6e4f8e3d7da5": {
+            "gate": "8c1ef199-9c59-4c6c-b5da-0e7013bb236c",
+            "pin": "57efbc1c-5a3e-453f-aa96-ec9d2b366f3b"
+        },
+        "29f18ab8-6cea-44fc-9bf5-4fb888f5245b": {
+            "gate": "8c1ef199-9c59-4c6c-b5da-0e7013bb236c",
+            "pin": "88a59a9c-36d1-425b-a97b-282bfb26d29f"
+        },
+        "3d725e25-0d60-46cb-a21f-82462d3ce156": {
+            "gate": "8c1ef199-9c59-4c6c-b5da-0e7013bb236c",
+            "pin": "2edae41f-8a1a-4ad0-8cc9-e3b8846ebced"
+        },
+        "51d7c05f-acae-46d5-9c26-2ea9d17bf7a8": {
+            "gate": "8c1ef199-9c59-4c6c-b5da-0e7013bb236c",
+            "pin": "6c230be5-987e-4b87-b4e2-4085f809627a"
+        },
+        "68b17b6f-ab52-4c2b-9389-c36d3c06eeef": {
+            "gate": "8c1ef199-9c59-4c6c-b5da-0e7013bb236c",
+            "pin": "5a474086-8213-4a05-802e-6114bc9b682c"
+        },
+        "6f82c7c4-9578-4cb0-a92c-8b09534d5dc9": {
+            "gate": "8c1ef199-9c59-4c6c-b5da-0e7013bb236c",
+            "pin": "48046849-2109-4d41-a774-c8b3eaf70c2b"
+        },
+        "82d773fb-4473-4bd9-a879-a6ca2756055c": {
+            "gate": "8c1ef199-9c59-4c6c-b5da-0e7013bb236c",
+            "pin": "a6f94e2b-1183-49ce-818a-c47eced57c32"
+        },
+        "b9ad4acf-f78d-438d-8b7b-e83ee0f9cc19": {
+            "gate": "8c1ef199-9c59-4c6c-b5da-0e7013bb236c",
+            "pin": "f43f0760-136d-42eb-b29e-a904dff62fea"
+        }
+    },
+    "parametric": {},
+    "tags": [],
+    "type": "part",
+    "uuid": "a86ae470-0e08-463a-b5d5-d62e62b668b4",
+    "value": [
+        false,
+        ""
+    ],
+    "version": 1
+}

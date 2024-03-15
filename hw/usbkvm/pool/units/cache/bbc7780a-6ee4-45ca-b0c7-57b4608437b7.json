@@ -1,0 +1,44 @@
+{
+    "manufacturer": "On Semiconductor",
+    "name": "NUP4114UCLW1T2G",
+    "pins": {
+        "5b4af5cd-a00d-4fbe-b200-01929ae8a9fb": {
+            "direction": "power_input",
+            "names": [],
+            "primary_name": "Vcc",
+            "swap_group": 0
+        },
+        "72853c3e-e22e-463f-aa4e-ff58d549543b": {
+            "direction": "power_input",
+            "names": [],
+            "primary_name": "GND",
+            "swap_group": 0
+        },
+        "b0edcd46-b142-4732-9afd-176c006cd3c6": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "IO3",
+            "swap_group": 0
+        },
+        "bafc42ae-7053-4209-8430-24f37f8a9624": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "IO4",
+            "swap_group": 0
+        },
+        "e8a6893e-9622-486c-abc9-a24d748daa69": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "IO2",
+            "swap_group": 0
+        },
+        "ea2497b1-a57f-4a28-8587-382effc2a928": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "IO1",
+            "swap_group": 0
+        }
+    },
+    "type": "unit",
+    "uuid": "bbc7780a-6ee4-45ca-b0c7-57b4608437b7"
+}

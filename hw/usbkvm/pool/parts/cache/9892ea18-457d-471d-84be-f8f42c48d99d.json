@@ -1,0 +1,30 @@
+{
+    "MPN": [
+        false,
+        "AP2120"
+    ],
+    "base": "f3f84207-9a4e-4720-bb3f-b3c03807392e",
+    "datasheet": [
+        false,
+        "https://www.diodes.com/assets/Datasheets/AP2120.pdf"
+    ],
+    "description": [
+        false,
+        "LDO Regulator"
+    ],
+    "inherit_model": true,
+    "inherit_tags": true,
+    "manufacturer": [
+        false,
+        "Diodes Inc."
+    ],
+    "model": "1ebac498-5423-42dc-90a6-7ad333585f6a",
+    "parametric": {},
+    "tags": [],
+    "type": "part",
+    "uuid": "9892ea18-457d-471d-84be-f8f42c48d99d",
+    "value": [
+        true,
+        "Three-terminal SOT-23 voltage regulator"
+    ]
+}

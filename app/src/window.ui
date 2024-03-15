@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.40.0 -->
+<interface>
+  <requires lib="gtk+" version="3.20"/>
+  <object class="GtkPopover" id="popover1">
+    <property name="can-focus">False</property>
+    <child>
+      <!-- n-columns=2 n-rows=2 -->
+      <object class="GtkGrid">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="margin-start">5</property>
+        <property name="margin-end">5</property>
+        <property name="margin-top">5</property>
+        <property name="margin-bottom">5</property>
+        <property name="row-spacing">5</property>
+        <property name="column-spacing">5</property>
+        <child>
+          <object class="GtkBox" id="capture_resolution_box">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <style>
+              <class name="tnum"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left-attach">0</property>
+            <property name="top-attach">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label" translatable="yes">Capture resolution</property>
+            <style>
+              <class name="dim-label"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left-attach">0</property>
+            <property name="top-attach">0</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkApplicationWindow" id="mainWindow">
+    <property name="can-focus">False</property>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkInfoBar" id="mcu_info_bar">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="message-type">warning</property>
+            <property name="revealed">False</property>
+            <child internal-child="action_area">
+              <object class="GtkButtonBox">
+                <property name="can-focus">False</property>
+                <property name="spacing">6</property>
+                <property name="layout-style">end</property>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <object class="GtkButton" id="enter_bootloader_button">
+                    <property name="label" translatable="yes">Enter bootloader</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child internal-child="content_area">
+              <object class="GtkBox">
+                <property name="can-focus">False</property>
+                <property name="spacing">16</property>
+                <child>
+                  <object class="GtkLabel" id="mcu_info_bar_label">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">label</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEventBox" id="evbox">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="events">GDK_POINTER_MOTION_MASK | GDK_STRUCTURE_MASK | GDK_SCROLL_MASK</property>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSeparator">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="status_bar">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="margin-start">6</property>
+            <property name="margin-end">3</property>
+            <property name="spacing">20</property>
+            <child>
+              <object class="GtkLabel" id="input_status_label">
+                <property name="name">input_status_label</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="margin-top">3</property>
+                <property name="margin-bottom">3</property>
+                <property name="label" translatable="yes">No signal</property>
+                <property name="width-chars">10</property>
+                <property name="xalign">0</property>
+                <style>
+                  <class name="tnum"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkBox" id="modifier_box">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <style>
+                  <class name="linked"/>
+                  <class name="modifier-box"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <child type="titlebar">
+      <object class="GtkHeaderBar" id="headerbar">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="title" translatable="yes">USBKVM</property>
+        <property name="has-subtitle">False</property>
+        <property name="show-close-button">True</property>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <object class="GtkMenuButton" id="resolution_button">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="focus-on-click">False</property>
+            <property name="receives-default">True</property>
+            <property name="popover">popover1</property>
+            <child>
+              <placeholder/>
+            </child>
+            <style>
+              <class name="tnum"/>
+            </style>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="dump_button">
+            <property name="label" translatable="yes">dump</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+          </object>
+          <packing>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

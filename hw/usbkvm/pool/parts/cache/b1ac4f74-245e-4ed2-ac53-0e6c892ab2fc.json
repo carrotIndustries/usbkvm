@@ -1,0 +1,51 @@
+{
+    "MPN": [
+        false,
+        "NX3225SA"
+    ],
+    "datasheet": [
+        false,
+        "http://www.ndk.com/images/products/catalog/c_NX3225SA-STD-CRS-2_e.pdf"
+    ],
+    "description": [
+        false,
+        "SMD crystal oscillator"
+    ],
+    "entity": "03e9b2b2-36ee-4e93-a665-c9327c97cc89",
+    "inherit_tags": false,
+    "manufacturer": [
+        false,
+        "NDK"
+    ],
+    "model": "00000000-0000-0000-0000-000000000000",
+    "package": "70f82c9b-4e90-411f-b531-d2b2aa3228de",
+    "pad_map": {
+        "4fa32c7b-2444-4770-a358-0d19c5002188": {
+            "gate": "2a1bd72d-6d14-48c7-94d4-91d36e7a56c6",
+            "pin": "29995253-b4b1-4c7c-a049-b6db2713ca7c"
+        },
+        "61ad2ceb-a085-416f-aebe-c67ef20a60f7": {
+            "gate": "2a1bd72d-6d14-48c7-94d4-91d36e7a56c6",
+            "pin": "d118db9b-0850-4b8a-a5a0-5f50299fd232"
+        },
+        "8dcc1723-e594-4240-8e2a-e406889834b0": {
+            "gate": "2a1bd72d-6d14-48c7-94d4-91d36e7a56c6",
+            "pin": "852f1fe6-06dc-4661-8a14-61a9a6ebb26a"
+        },
+        "d530fecc-6fe0-4f70-9aa4-a208ebc0195a": {
+            "gate": "2a1bd72d-6d14-48c7-94d4-91d36e7a56c6",
+            "pin": "d118db9b-0850-4b8a-a5a0-5f50299fd232"
+        }
+    },
+    "parametric": {},
+    "tags": [
+        "crystal",
+        "smd"
+    ],
+    "type": "part",
+    "uuid": "b1ac4f74-245e-4ed2-ac53-0e6c892ab2fc",
+    "value": [
+        false,
+        ""
+    ]
+}

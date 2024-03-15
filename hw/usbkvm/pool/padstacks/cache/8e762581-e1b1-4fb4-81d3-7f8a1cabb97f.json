@@ -1,0 +1,318 @@
+{
+    "holes": {},
+    "name": "SMD rectangular with rounded corners",
+    "padstack_type": "top",
+    "parameter_program": "get-parameter [ pad_width ]\nget-parameter [ corner_radius ] 2 * -\nget-parameter [ pad_height ]\ndupc dupc\nset-shape [ pad1 rectangle ]\nget-parameter [ solder_mask_expansion ]\n2 *\n+\nset-shape [ mask1 rectangle ]\nget-parameter [ paste_mask_contraction ]\n2 *\n-\nset-shape [ paste1 rectangle ]\n\nget-parameter [ pad_width ]\nget-parameter [ pad_height ]\nget-parameter [ corner_radius ] 2 * -\ndupc dupc\nset-shape [ pad2 rectangle ]\nswap\nget-parameter [ solder_mask_expansion ]\n2 * +\nswap\nset-shape [ mask2 rectangle ]\nswap\nget-parameter [ paste_mask_contraction ]\n2 * -\nswap\nset-shape [ paste2 rectangle ]\n\nget-parameter [ corner_radius ] dup dup 2 *\ndup dup dup\nset-shape [ pad_corner1 circle ]\nset-shape [ pad_corner2 circle ]\nset-shape [ pad_corner3 circle ]\nset-shape [ pad_corner4 circle ]\nget-parameter [ solder_mask_expansion ] + 2 *\ndup dup dup\nset-shape [ mask_corner1 circle ]\nset-shape [ mask_corner2 circle ]\nset-shape [ mask_corner3 circle ]\nset-shape [ mask_corner4 circle ]\nget-parameter [ paste_mask_contraction ] - 2 *\ndup dup dup\nset-shape [ paste_corner1 circle ]\nset-shape [ paste_corner2 circle ]\nset-shape [ paste_corner3 circle ]\nset-shape [ paste_corner4 circle ]\n\nget-parameter [ pad_width ]\nget-parameter [ corner_radius ] 2 * - 2 /\nget-parameter [ pad_height ]\nget-parameter [ corner_radius ] 2 * - 2 /\ndupc dupc dupc\nset-shape [ pad_corner1 position ]\nset-shape [ mask_corner1 position ]\nset-shape [ paste_corner1 position ]\nswap -1 * swap\ndupc dupc dupc\nset-shape [ pad_corner2 position ]\nset-shape [ mask_corner2 position ]\nset-shape [ paste_corner2 position ]\n-1 *\ndupc dupc dupc\nset-shape [ pad_corner3 position ]\nset-shape [ mask_corner3 position ]\nset-shape [ paste_corner3 position ]\nswap -1 * swap\ndupc dupc\nset-shape [ pad_corner4 position ]\nset-shape [ mask_corner4 position ]\nset-shape [ paste_corner4 position ]",
+    "parameter_set": {
+        "corner_radius": 100000,
+        "pad_height": 2000000,
+        "pad_width": 900000,
+        "paste_mask_contraction": 0,
+        "solder_mask_expansion": 100000
+    },
+    "parameters_required": [
+        "pad_width",
+        "pad_height",
+        "corner_radius"
+    ],
+    "polygons": {},
+    "shapes": {
+        "19fd6834-7b1d-47e5-b6fb-6f1c1bb4802b": {
+            "form": "circle",
+            "layer": 0,
+            "parameter_class": "pad_corner4",
+            "params": [
+                200000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    350000,
+                    -900000
+                ]
+            }
+        },
+        "233425db-45b7-4291-9cd3-ce7bf9c5887c": {
+            "form": "circle",
+            "layer": 10,
+            "parameter_class": "mask_corner2",
+            "params": [
+                400000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    -350000,
+                    900000
+                ]
+            }
+        },
+        "2480e5fa-a56b-4f75-a9ff-f9576ddfdf14": {
+            "form": "circle",
+            "layer": 30,
+            "parameter_class": "paste_corner3",
+            "params": [
+                200000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    -350000,
+                    -900000
+                ]
+            }
+        },
+        "2d593908-a7e0-42d3-b447-6f5472e3f168": {
+            "form": "circle",
+            "layer": 10,
+            "parameter_class": "mask_corner4",
+            "params": [
+                400000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    350000,
+                    -900000
+                ]
+            }
+        },
+        "3fb8c7f4-16b4-4a69-9ae0-98d16faf11ed": {
+            "form": "circle",
+            "layer": 30,
+            "parameter_class": "paste_corner2",
+            "params": [
+                200000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    -350000,
+                    900000
+                ]
+            }
+        },
+        "54aa005d-14d6-4daf-916d-8cc4f33d31eb": {
+            "form": "rectangle",
+            "layer": 30,
+            "parameter_class": "paste2",
+            "params": [
+                900000,
+                1800000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    0,
+                    0
+                ]
+            }
+        },
+        "5d8313e0-987f-4f68-a70b-654058f75898": {
+            "form": "circle",
+            "layer": 10,
+            "parameter_class": "mask_corner1",
+            "params": [
+                400000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    350000,
+                    900000
+                ]
+            }
+        },
+        "64b6423d-c765-4997-8f04-5b230ace4abb": {
+            "form": "circle",
+            "layer": 0,
+            "parameter_class": "pad_corner2",
+            "params": [
+                200000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    -350000,
+                    900000
+                ]
+            }
+        },
+        "8402a815-54b3-42d9-b96a-6f0631eb3579": {
+            "form": "circle",
+            "layer": 0,
+            "parameter_class": "pad_corner1",
+            "params": [
+                200000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    350000,
+                    900000
+                ]
+            }
+        },
+        "888ff92f-96e3-4658-a9cb-1e9626aafe07": {
+            "form": "rectangle",
+            "layer": 30,
+            "parameter_class": "paste1",
+            "params": [
+                700000,
+                2000000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    0,
+                    0
+                ]
+            }
+        },
+        "9c5dd306-043a-4190-8b16-6ab3d2dafaa3": {
+            "form": "circle",
+            "layer": 10,
+            "parameter_class": "mask_corner3",
+            "params": [
+                400000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    -350000,
+                    -900000
+                ]
+            }
+        },
+        "a9154914-ba44-4f24-ab76-9132d8f2024f": {
+            "form": "rectangle",
+            "layer": 10,
+            "parameter_class": "mask2",
+            "params": [
+                1100000,
+                1800000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    0,
+                    0
+                ]
+            }
+        },
+        "b85c63cf-3f4d-4b38-9968-22276d4ba5ec": {
+            "form": "circle",
+            "layer": 30,
+            "parameter_class": "paste_corner4",
+            "params": [
+                200000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    350000,
+                    -900000
+                ]
+            }
+        },
+        "b8b84b83-babb-47ef-b2c9-236209e7689e": {
+            "form": "rectangle",
+            "layer": 0,
+            "parameter_class": "pad2",
+            "params": [
+                900000,
+                1800000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    0,
+                    0
+                ]
+            }
+        },
+        "ddcf3d29-661b-41d1-ac1a-5e335f94e736": {
+            "form": "rectangle",
+            "layer": 0,
+            "parameter_class": "pad1",
+            "params": [
+                700000,
+                2000000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    0,
+                    0
+                ]
+            }
+        },
+        "e900b87f-85f6-44a1-bc42-0af10cad7194": {
+            "form": "circle",
+            "layer": 0,
+            "parameter_class": "pad_corner3",
+            "params": [
+                200000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    -350000,
+                    -900000
+                ]
+            }
+        },
+        "e93f30d7-af52-4284-8af0-b2341ade6c5d": {
+            "form": "rectangle",
+            "layer": 10,
+            "parameter_class": "mask1",
+            "params": [
+                700000,
+                2200000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    0,
+                    0
+                ]
+            }
+        },
+        "fa7293d5-02e0-4a5b-868f-87f93d06729e": {
+            "form": "circle",
+            "layer": 30,
+            "parameter_class": "paste_corner1",
+            "params": [
+                200000
+            ],
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    350000,
+                    900000
+                ]
+            }
+        }
+    },
+    "type": "padstack",
+    "uuid": "8e762581-e1b1-4fb4-81d3-7f8a1cabb97f",
+    "well_known_name": "smd rectangular rounded"
+}

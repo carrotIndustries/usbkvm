@@ -1,0 +1,20 @@
+{
+    "gates": {
+        "9bfcf213-2a7e-444e-8312-ce57209fc9ec": {
+            "name": "Main",
+            "suffix": "",
+            "swap_group": 0,
+            "unit": "3363f7ef-c8bf-4c29-9d80-2551b4551806"
+        }
+    },
+    "manufacturer": "",
+    "name": "Capacitor",
+    "prefix": "C",
+    "tags": [
+        "capacitor",
+        "generic",
+        "passive"
+    ],
+    "type": "entity",
+    "uuid": "ca83a84f-6183-4088-84b6-5d79b2a119d4"
+}

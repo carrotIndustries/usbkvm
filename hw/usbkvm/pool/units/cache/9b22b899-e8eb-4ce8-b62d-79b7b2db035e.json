@@ -1,0 +1,19 @@
+{
+	"type" : "unit",
+	"uuid" : "9b22b899-e8eb-4ce8-b62d-79b7b2db035e",
+	"name" : "Two-terminal resistor",
+	"tags" : ["generic", "resistor", "passive"],
+	"pins" : {
+		"6a44037c-65e2-4876-9359-42890048841d" : {
+			"primary_name" : "A",
+			"direction" : "passive",
+			"swap_group" : 1
+		},
+		"dda0ec99-5d70-4fbe-a8db-897542e7554e" : {
+			"primary_name" : "B",
+			"direction" : "passive",
+			"swap_group" : 1
+		}
+		
+	}
+}

@@ -1,0 +1,128 @@
+{
+    "manufacturer": "",
+    "name": "HDMI connector",
+    "pins": {
+        "0dec00a5-8c7d-4f90-9f17-dabd94419aa4": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "D1-",
+            "swap_group": 0
+        },
+        "1479a4bb-aeac-4869-9e6e-254227ee5b82": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "UTILITY",
+            "swap_group": 0
+        },
+        "1d0b1cd3-bfd2-4aee-8206-6c9312f1a344": {
+            "direction": "power_input",
+            "names": [],
+            "primary_name": "+5V",
+            "swap_group": 0
+        },
+        "2a2016fa-d64c-47d6-a58a-14a747101962": {
+            "direction": "power_input",
+            "names": [],
+            "primary_name": "GND",
+            "swap_group": 0
+        },
+        "31806abd-c87e-46ad-8fa0-c85d4c228b6e": {
+            "direction": "bidirectional",
+            "names": [],
+            "primary_name": "SDA",
+            "swap_group": 0
+        },
+        "3c51be94-258c-4b08-a2e3-68ea9158c0cb": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "SH",
+            "swap_group": 0
+        },
+        "3e2dbdd1-0b99-489b-9ef6-dcd9f9632586": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "HPD",
+            "swap_group": 0
+        },
+        "46467ef5-3d61-448e-8f01-7685d36cf777": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "CK+",
+            "swap_group": 0
+        },
+        "51586c8a-f33a-4dff-be6a-fcf4f0e3e692": {
+            "direction": "power_input",
+            "names": [],
+            "primary_name": "D0S",
+            "swap_group": 0
+        },
+        "6eaed087-2835-4e02-b4a3-9738e9d21483": {
+            "direction": "power_input",
+            "names": [],
+            "primary_name": "CKS",
+            "swap_group": 0
+        },
+        "7e25510f-2d6f-4f44-ab22-d9ecde2bf797": {
+            "direction": "bidirectional",
+            "names": [],
+            "primary_name": "CEC",
+            "swap_group": 0
+        },
+        "8b746225-0147-44aa-9f5b-9f9cd84c9058": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "D0-",
+            "swap_group": 0
+        },
+        "8cf60c9f-453e-4b37-a488-59823d455adf": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "D0+",
+            "swap_group": 0
+        },
+        "acdd7eba-e96b-4900-a2b3-8a73e149595d": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "SCL",
+            "swap_group": 0
+        },
+        "be6862e0-b805-4975-a7ca-7a80258ebf93": {
+            "direction": "power_input",
+            "names": [],
+            "primary_name": "D1S",
+            "swap_group": 0
+        },
+        "bfe8e7a7-86ee-48d6-86ec-27ab65f4b94a": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "D2-",
+            "swap_group": 0
+        },
+        "f32d9927-6b5b-4789-89c4-c7169b796ee5": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "D2+",
+            "swap_group": 0
+        },
+        "fa873351-504b-4be4-a36c-36ab5756a6e8": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "CK-",
+            "swap_group": 0
+        },
+        "fe5ecec1-0f8a-4e42-a6e8-1b4e5849fd0d": {
+            "direction": "power_input",
+            "names": [],
+            "primary_name": "D2S",
+            "swap_group": 0
+        },
+        "fe95a69b-182d-4d75-90af-a1c8b800d042": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "D1+",
+            "swap_group": 0
+        }
+    },
+    "type": "unit",
+    "uuid": "bff29d97-da56-4d9d-b5a4-cc1e43c402b3"
+}

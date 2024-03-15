@@ -1,0 +1,20 @@
+{
+    "gates": {
+        "48af78e5-730e-44eb-977a-cf188e4fcb39": {
+            "name": "Main",
+            "suffix": "",
+            "swap_group": 0,
+            "unit": "d73adcb6-a080-477f-a67e-f4c7a5c42956"
+        }
+    },
+    "manufacturer": "",
+    "name": "Two-terminal inductor",
+    "prefix": "L",
+    "tags": [
+        "generic",
+        "inductor",
+        "passive"
+    ],
+    "type": "entity",
+    "uuid": "1d534e1d-704a-4d44-a6e6-c6106a2827ab"
+}

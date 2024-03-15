@@ -1,0 +1,62 @@
+{
+    "manufacturer": "",
+    "name": "4ch ESD Protection with NC",
+    "pins": {
+        "0cd6c49c-55c1-4424-a9d3-79db39d6e039": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "NC4",
+            "swap_group": 0
+        },
+        "4748831f-5244-4e2f-ae58-4ce84efe32a8": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "NC2",
+            "swap_group": 0
+        },
+        "5161b9d0-6abf-4e0e-b8b0-c3bedaf9afad": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "I/O3",
+            "swap_group": 0
+        },
+        "7228ef6f-be89-4a5c-82c6-f569f229357b": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "I/O1",
+            "swap_group": 0
+        },
+        "7bf7543d-3c9b-45ca-882d-320d8485a192": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "I/O2",
+            "swap_group": 0
+        },
+        "8977692b-bea4-4577-b539-a5b26926cb6a": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "NC1",
+            "swap_group": 0
+        },
+        "8e026fab-7010-4829-b072-4ea3aff2321a": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "GND",
+            "swap_group": 0
+        },
+        "9e0a3d76-ede8-454e-84ad-4ab8270c3c9c": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "I/O4",
+            "swap_group": 0
+        },
+        "cfa1dd2c-7e9f-4183-aff0-4e9c512e1e04": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "NC3",
+            "swap_group": 0
+        }
+    },
+    "type": "unit",
+    "uuid": "ce275380-5cb4-489e-91c4-9116d19a0dc9"
+}

@@ -1,0 +1,60 @@
+{
+    "MPN": [
+        false,
+        "NUP4114UCLW1T2G"
+    ],
+    "datasheet": [
+        false,
+        "https://www.onsemi.com/pdf/datasheet/nup4114-d.pdf"
+    ],
+    "description": [
+        false,
+        "ESD Protection Diode"
+    ],
+    "entity": "67d0f32a-8647-49a8-bf6c-717550cd8bd7",
+    "inherit_model": true,
+    "inherit_tags": false,
+    "manufacturer": [
+        false,
+        "On Semiconductor"
+    ],
+    "model": "00000000-0000-0000-0000-000000000000",
+    "package": "1e7c3ae3-1526-4b8c-8cb8-726207c3667d",
+    "pad_map": {
+        "15f6028d-b6d0-46e4-b9b9-716367c20e52": {
+            "gate": "7a754086-cfbf-4f43-8db4-4ec8010f0569",
+            "pin": "bafc42ae-7053-4209-8430-24f37f8a9624"
+        },
+        "5afe2207-9077-4f3a-99be-9513e98634c1": {
+            "gate": "7a754086-cfbf-4f43-8db4-4ec8010f0569",
+            "pin": "b0edcd46-b142-4732-9afd-176c006cd3c6"
+        },
+        "7314dc08-4ab0-4308-b8fe-ac9664caafd3": {
+            "gate": "7a754086-cfbf-4f43-8db4-4ec8010f0569",
+            "pin": "5b4af5cd-a00d-4fbe-b200-01929ae8a9fb"
+        },
+        "a1db159f-a415-41e4-a920-6855ab964aac": {
+            "gate": "7a754086-cfbf-4f43-8db4-4ec8010f0569",
+            "pin": "ea2497b1-a57f-4a28-8587-382effc2a928"
+        },
+        "c28851fa-1824-44f1-849e-1c7571be475a": {
+            "gate": "7a754086-cfbf-4f43-8db4-4ec8010f0569",
+            "pin": "e8a6893e-9622-486c-abc9-a24d748daa69"
+        },
+        "ebfdb9dd-81b5-4d3d-9e9b-05c93f156cb3": {
+            "gate": "7a754086-cfbf-4f43-8db4-4ec8010f0569",
+            "pin": "72853c3e-e22e-463f-aa4e-ff58d549543b"
+        }
+    },
+    "parametric": {},
+    "tags": [
+        "diode",
+        "esd"
+    ],
+    "type": "part",
+    "uuid": "e8b9b85a-c806-4c4f-89e0-5b45f0962f63",
+    "value": [
+        false,
+        ""
+    ]
+}

@@ -1,0 +1,45 @@
+{
+    "MPN": [
+        false,
+        "SRN3015"
+    ],
+    "datasheet": [
+        false,
+        "https://www.bourns.com/docs/Product-Datasheets/SRN3015.pdf"
+    ],
+    "description": [
+        false,
+        "Semi-shielded Power Inductor"
+    ],
+    "entity": "1d534e1d-704a-4d44-a6e6-c6106a2827ab",
+    "inherit_model": false,
+    "inherit_tags": false,
+    "manufacturer": [
+        false,
+        "Bourns"
+    ],
+    "model": "5778b00a-8c96-47ec-9bce-ce07d3bc4730",
+    "package": "abaf2870-c8a1-4cba-aca0-18d58dfdeb47",
+    "pad_map": {
+        "47791a78-770d-4ae5-914d-05d52af011d9": {
+            "gate": "48af78e5-730e-44eb-977a-cf188e4fcb39",
+            "pin": "6a44037c-65e2-4876-9359-42890048841d"
+        },
+        "c186a995-7152-4330-8c12-4520457f98a8": {
+            "gate": "48af78e5-730e-44eb-977a-cf188e4fcb39",
+            "pin": "dda0ec99-5d70-4fbe-a8db-897542e7554e"
+        }
+    },
+    "parametric": {},
+    "tags": [
+        "inductor",
+        "passive",
+        "smd"
+    ],
+    "type": "part",
+    "uuid": "07a3d28f-a9df-43e5-86d8-b4a2ece5e1e8",
+    "value": [
+        false,
+        ""
+    ]
+}

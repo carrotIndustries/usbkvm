@@ -1,0 +1,9 @@
+[submodule "fw/usbkvm/tinyusb"]
+	path = fw/usbkvm/tinyusb
+	url = https://github.com/hathach/tinyusb
+[submodule "app/ms-tools"]
+	path = app/ms-tools
+	url = https://github.com/carrotIndustries/ms-tools
+[submodule "app/keycodemapdb"]
+	path = app/keycodemapdb
+	url = https://gitlab.com/keycodemap/keycodemapdb/

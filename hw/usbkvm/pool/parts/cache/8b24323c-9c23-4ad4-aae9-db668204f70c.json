@@ -1,0 +1,67 @@
+{
+    "MPN": [
+        false,
+        "TC2030-IDC-FP"
+    ],
+    "datasheet": [
+        false,
+        "https://www.tag-connect.com/wp-content/uploads/bsk-pdf-manager/2019/12/TC2030-IDC-Datasheet-Rev-B.pdf"
+    ],
+    "description": [
+        false,
+        "Connector for plug-of-nails programming cable"
+    ],
+    "entity": "c92588a0-86ac-4b1c-aa07-b591777d2617",
+    "flags": {
+        "base_part": "clear",
+        "exclude_bom": "set",
+        "exclude_pnp": "set"
+    },
+    "inherit_model": false,
+    "inherit_tags": false,
+    "manufacturer": [
+        false,
+        "Tag Connect"
+    ],
+    "model": "00000000-0000-0000-0000-000000000000",
+    "package": "9950b24c-1c44-4e53-acf6-d2bab76b7675",
+    "pad_map": {
+        "21458f22-a211-4eeb-86a7-934aefe126b1": {
+            "gate": "d5f74729-19b9-4eba-87f9-f789bd6babf8",
+            "pin": "c3b4ba45-ad58-43eb-9709-a71e815d9012"
+        },
+        "359d2fc7-1072-41fe-9fa9-b1bc1877ca14": {
+            "gate": "d5f74729-19b9-4eba-87f9-f789bd6babf8",
+            "pin": "b8924622-e129-4d44-a4ec-46cccc6fbcaf"
+        },
+        "7fade2d5-e8a0-4943-b61c-249412660518": {
+            "gate": "d5f74729-19b9-4eba-87f9-f789bd6babf8",
+            "pin": "4b24441b-cbeb-49bc-9a30-277a9a11c2b6"
+        },
+        "95ac4159-28a1-4118-947b-1b21f5261117": {
+            "gate": "d5f74729-19b9-4eba-87f9-f789bd6babf8",
+            "pin": "203bb8a2-729f-4d85-9078-2023b941401f"
+        },
+        "b4554c51-dec3-4634-b793-850451739439": {
+            "gate": "d5f74729-19b9-4eba-87f9-f789bd6babf8",
+            "pin": "d5465e9d-439d-4a9c-b2a6-9ff92edf1f63"
+        },
+        "b770a5c6-732c-479d-b1ed-c77b7052792a": {
+            "gate": "d5f74729-19b9-4eba-87f9-f789bd6babf8",
+            "pin": "dd9ef2c9-0256-4f19-b1a9-2a4dffd82261"
+        }
+    },
+    "parametric": {},
+    "tags": [
+        "connector",
+        "debug",
+        "isp"
+    ],
+    "type": "part",
+    "uuid": "8b24323c-9c23-4ad4-aae9-db668204f70c",
+    "value": [
+        false,
+        ""
+    ],
+    "version": 1
+}

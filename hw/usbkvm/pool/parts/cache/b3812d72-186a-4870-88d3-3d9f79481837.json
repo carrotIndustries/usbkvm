@@ -1,0 +1,27 @@
+{
+    "MPN": [
+        false,
+        "CPL-CAP-C0G-0603-10PF-50V"
+    ],
+    "base": "436da8ee-a0a4-4ab4-ae41-10323bb580e5",
+    "inherit_tags": true,
+    "manufacturer": [
+        false,
+        "CPL"
+    ],
+    "parametric": {
+        "table": "capacitors",
+        "value": "1.000000e-11",
+        "wvdc": "50.0",
+        "type": "C0G/NP0"
+    },
+    "tags": [
+        "cpl"
+    ],
+    "type": "part",
+    "uuid": "b3812d72-186a-4870-88d3-3d9f79481837",
+    "value": [
+        false,
+        "10 pF"
+    ]
+}

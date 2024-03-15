@@ -1,0 +1,19 @@
+{
+    "gates": {
+        "c8168f99-a1ca-4d98-bbb7-066f8cad2346": {
+            "name": "Main",
+            "suffix": "",
+            "swap_group": 0,
+            "unit": "40746e42-5a30-481e-b342-ae7547413c03"
+        }
+    },
+    "manufacturer": "",
+    "name": "Two-terminal LED",
+    "prefix": "D",
+    "tags": [
+        "led",
+        "opto"
+    ],
+    "type": "entity",
+    "uuid": "f061691a-7954-4797-9529-dba6527d8f4f"
+}

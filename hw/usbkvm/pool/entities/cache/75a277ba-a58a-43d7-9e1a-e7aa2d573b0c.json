@@ -1,0 +1,16 @@
+{
+    "gates": {
+        "9c182d05-6345-4906-be8f-a0c297ffb3f2": {
+            "name": "Main",
+            "suffix": "",
+            "swap_group": 0,
+            "unit": "0f2092b5-607d-403c-ad1c-6416524be3e9"
+        }
+    },
+    "manufacturer": "MacroSilicion",
+    "name": "MS2109",
+    "prefix": "U",
+    "tags": [],
+    "type": "entity",
+    "uuid": "75a277ba-a58a-43d7-9e1a-e7aa2d573b0c"
+}
