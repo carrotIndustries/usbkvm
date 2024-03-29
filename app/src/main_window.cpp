@@ -6,6 +6,7 @@
 #include "usbkvm_mcu.hpp"
 #include "usbkvm_device.hpp"
 #include "mshal.hpp"
+#include "type_window.hpp"
 
 static void end_stream_cb(GstBus *bus, GstMessage *message, GstElement *pipeline)
 {
@@ -507,11 +508,21 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
         add_action("enter_bootloader", sigc::mem_fun(*this, &MainWindow::enter_bootloader));
     }
 
+    m_type_window = TypeWindow::create(*this);
+    m_type_window->set_transient_for(*this);
+    {
+        Gtk::Button *keyboard_button;
+        x->get_widget("keyboard_button", keyboard_button);
+        keyboard_button->signal_clicked().connect([this] { m_type_window->present(); });
+    }
+
+
     Glib::signal_timeout().connect_seconds(
             [this] {
                 if (!m_device)
                     return false;
-                update_input_status();
+                if (!m_type_window->is_busy())
+                    update_input_status();
                 return true;
             },
             1);
@@ -558,4 +569,11 @@ MainWindow *MainWindow::create()
     x->add_from_resource("/net/carrotIndustries/usbkvm/window.ui");
     x->get_widget_derived("mainWindow", w);
     return w;
+}
+
+UsbKvmMcu *MainWindow::get_mcu()
+{
+    if (m_device && m_device->mcu())
+        return m_device->mcu();
+    return nullptr;
 }

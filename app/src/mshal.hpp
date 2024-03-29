@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <string>
 #include <span>
+#include <mutex>
 #include "ii2c.hpp"
 
 class MsHal : public II2C {
@@ -22,4 +23,6 @@ private:
     enum class AccessMode : bool { WRITE = true, READ = false };
     void mem_access(AccessMode mode, unsigned int addr, std::span<uint8_t> data);
     uintptr_t m_handle;
+
+    std::mutex m_mutex;
 };

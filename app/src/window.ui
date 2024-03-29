@@ -2,6 +2,11 @@
 <!-- Generated with glade 3.40.0 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
+  <object class="GtkImage" id="image1">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="icon-name">input-keyboard-symbolic</property>
+  </object>
   <object class="GtkPopover" id="popover1">
     <property name="can-focus">False</property>
     <child>
@@ -241,9 +246,6 @@
         <property name="has-subtitle">False</property>
         <property name="show-close-button">True</property>
         <child>
-          <placeholder/>
-        </child>
-        <child>
           <object class="GtkMenuButton" id="resolution_button">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
@@ -257,9 +259,6 @@
               <class name="tnum"/>
             </style>
           </object>
-          <packing>
-            <property name="position">1</property>
-          </packing>
         </child>
         <child>
           <object class="GtkButton" id="dump_button">
@@ -267,6 +266,17 @@
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="keyboard_button">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="image">image1</property>
           </object>
           <packing>
             <property name="position">2</property>

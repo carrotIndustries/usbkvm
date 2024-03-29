@@ -1,10 +1,11 @@
 #pragma once
 #include <gtkmm.h>
 #include <gst/gst.h>
+#include "imcu_provider.hpp"
 
 class UsbKvmDevice;
 
-class MainWindow : public Gtk::ApplicationWindow {
+class MainWindow : public Gtk::ApplicationWindow, private IMcuProvider {
 public:
     MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &x);
     static MainWindow *create();
@@ -25,7 +26,7 @@ private:
     Gtk::Label *m_mcu_info_bar_label;
     Gtk::Button *m_enter_bootloader_button;
     Gtk::Box *m_modifier_box;
-    std::map<GdkModifierType, Gtk::ToggleButton*> m_modifier_buttons;
+    std::map<GdkModifierType, Gtk::ToggleButton *> m_modifier_buttons;
     void update_modifier_buttons();
 
     Gtk::Label *m_input_status_label;
@@ -64,5 +65,7 @@ private:
 
     static gboolean handle_cap(GstCapsFeatures *features, GstStructure *structure, gpointer user_data);
     gboolean handle_cap(GstCapsFeatures *features, GstStructure *structure);
-};
 
+    class TypeWindow *m_type_window = nullptr;
+    UsbKvmMcu *get_mcu() override;
+};

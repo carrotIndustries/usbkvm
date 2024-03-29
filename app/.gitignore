@@ -1,2 +1,3 @@
 .cache/
-src/window.ui~
+src/*.ui~
+.gdb_history

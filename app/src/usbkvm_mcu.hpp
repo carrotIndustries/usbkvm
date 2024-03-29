@@ -2,6 +2,7 @@
 #include "bitmask_operators.hpp"
 #include <stdint.h>
 #include <array>
+#include <mutex>
 
 class II2COneDevice;
 
@@ -40,7 +41,7 @@ public:
     };
 
     void send_report(const KeyboardReport &report);
-    
+
     unsigned int get_version();
     static unsigned int get_expected_version();
     void enter_bootloader();
@@ -50,6 +51,7 @@ public:
 private:
     II2COneDevice &m_i2c;
     uint8_t m_seq = 0;
+    std::mutex m_mutex;
 };
 
 template <> struct enable_bitmask_operators<UsbKvmMcu::MouseReport::Button> {
@@ -59,4 +61,3 @@ template <> struct enable_bitmask_operators<UsbKvmMcu::MouseReport::Button> {
 template <> struct enable_bitmask_operators<UsbKvmMcu::KeyboardReport::Modifier> {
     static constexpr bool enable = true;
 };
-

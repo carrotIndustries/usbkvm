@@ -26,7 +26,8 @@ src = files(
   'src/i2c_util.cpp',
   'src/usbkvm_mcu.cpp',
   'src/usbkvm_device.cpp',
-  'src/main_window.cpp'
+  'src/main_window.cpp',
+  'src/type_window.cpp'
 )
 
 gnome = import('gnome')

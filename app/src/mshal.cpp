@@ -16,6 +16,8 @@ MsHal::MsHal(const std::string &name)
 
 void MsHal::i2c_transfer(uint8_t device_addr, std::span<const uint8_t> data_wr, std::span<uint8_t> data_rd)
 {
+    std::lock_guard<std::mutex> guard(m_mutex);
+
     std::vector<uint8_t> data_wr_mut(data_wr.begin(), data_wr.end());
     /*
     std::cout << "i2c xfer ";
@@ -38,6 +40,8 @@ void MsHal::i2c_transfer(uint8_t device_addr, std::span<const uint8_t> data_wr, 
 
 void MsHal::mem_access(AccessMode mode, unsigned int addr, std::span<uint8_t> data)
 {
+    std::lock_guard<std::mutex> guard(m_mutex);
+
     int retval = MsHalMemAccess(m_handle, (int)mode, addr, data.data(), data.size_bytes());
     if (retval)
         throw std::runtime_error("MsHalMemAccess failed");
@@ -81,5 +85,7 @@ bool MsHal::get_has_signal()
 
 MsHal::~MsHal()
 {
+    std::lock_guard<std::mutex> guard(m_mutex);
+
     MsHalClose(m_handle);
 }

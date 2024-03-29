@@ -54,7 +54,7 @@ template <typename T> void i2c_recv(II2COneDevice &i2c, uint8_t seq, T &resp)
     }
 }
 
-template<typename Ts, typename Tr> void i2c_send_recv(II2COneDevice &i2c, const Ts &req, Tr &resp)
+template <typename Ts, typename Tr> void i2c_send_recv(II2COneDevice &i2c, const Ts &req, Tr &resp)
 {
     i2c_send(i2c, req);
     i2c_recv(i2c, req.seq, resp);
@@ -62,6 +62,8 @@ template<typename Ts, typename Tr> void i2c_send_recv(II2COneDevice &i2c, const 
 
 void UsbKvmMcu::send_report(const MouseReport &report)
 {
+    std::lock_guard<std::mutex> guard(m_mutex);
+
     i2c_req_mouse_report_t msg = {
             .type = I2C_REQ_MOUSE_REPORT,
             .seq = m_seq++,
@@ -89,6 +91,8 @@ void UsbKvmMcu::send_report(const MouseReport &report)
 
 void UsbKvmMcu::send_report(const KeyboardReport &report)
 {
+    std::lock_guard<std::mutex> guard(m_mutex);
+
     i2c_req_keyboard_report_t msg = {
             .type = I2C_REQ_KEYBOARD_REPORT,
             .seq = m_seq++,
@@ -114,6 +118,8 @@ void UsbKvmMcu::send_report(const KeyboardReport &report)
 
 unsigned int UsbKvmMcu::get_version()
 {
+    std::lock_guard<std::mutex> guard(m_mutex);
+
     i2c_req_unknown_t msg = {.type = I2C_REQ_GET_VERSION, .seq = m_seq++};
     i2c_resp_version_t resp;
     i2c_send_recv(m_i2c, msg, resp);
@@ -122,6 +128,8 @@ unsigned int UsbKvmMcu::get_version()
 
 void UsbKvmMcu::enter_bootloader()
 {
+    std::lock_guard<std::mutex> guard(m_mutex);
+
     i2c_req_unknown_t msg = {.type = I2C_REQ_ENTER_BOOTLOADER, .seq = m_seq++};
     i2c_send(m_i2c, msg);
 }

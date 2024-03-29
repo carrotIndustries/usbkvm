@@ -3,5 +3,6 @@
   <gresource prefix="/net/carrotIndustries/usbkvm">
     <file>window.ui</file>
     <file>usbkvm.css</file>
+    <file>type_window.ui</file>
   </gresource>
 </gresources>
