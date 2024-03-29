@@ -431,6 +431,7 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
     m_evbox->signal_realize().connect(
             [this] { m_blank_cursor = Gdk::Cursor::create(m_evbox->get_window()->get_display(), Gdk::BLANK_CURSOR); });
 
+    Gtk::Settings::get_default()->property_gtk_menu_bar_accel() = "";
     m_evbox->signal_motion_notify_event().connect_notify(sigc::mem_fun(*this, &MainWindow::handle_motion));
     m_evbox->signal_button_press_event().connect_notify(sigc::mem_fun(*this, &MainWindow::handle_button));
     m_evbox->signal_button_release_event().connect_notify(sigc::mem_fun(*this, &MainWindow::handle_button));
