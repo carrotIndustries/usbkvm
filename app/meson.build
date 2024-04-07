@@ -10,9 +10,6 @@ is_windows = target_machine.system() == 'windows'
 cxx = meson.get_compiler('cpp')
 gtk3 = dependency('gtk+-3.0', version: '>=3.22')
 gtkmm = dependency('gtkmm-3.0', version: '>=3.0.0')
-epoxy = dependency('epoxy')
-eigen = dependency('eigen3')
-glm = dependency('glm')
 gst = dependency('gstreamer-1.0')
 if is_windows
 	hidapi = dependency('hidapi')
