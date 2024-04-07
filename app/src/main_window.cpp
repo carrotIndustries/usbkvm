@@ -76,10 +76,15 @@ void MainWindow::send_mouse_report(int scroll_delta)
     mcu.send_report(report);
 }
 
+
 static int gdk_key_to_hid(int keyval)
 {
-    if (keyval < code_map_x11_to_usb_len)
-        return code_map_x11_to_usb[keyval];
+    if (keyval < code_map_x11_to_usb_len) {
+        auto h = code_map_x11_to_usb[keyval];
+        if (h == 135)  // the wrong underscore
+            return 45; // the right underscore
+        return h;
+    }
     return 0;
 }
 
