@@ -97,6 +97,8 @@ emit relative movements, USBKVM emulates an absolute pointing device. While this
 on Windows and Linux, it's completely broken in less sophisticated 
 environments such as UEFI setup utilities or option ROMs.
 
+See the app's [README](app/README.md) for how to build it.
+
 # Firmware
 
 The firmware uses the excellent USB stack 
