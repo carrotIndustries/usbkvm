@@ -309,9 +309,13 @@ gboolean MainWindow::monitor_bus_func(GstBus *bus, GstMessage *message)
             {
                 auto props = gst_device_get_properties(device);
                 auto path = gst_structure_get_string(props, "api.v4l2.path");
-                if (path) {
+
+                if (!path)
+                    path = gst_structure_get_string(props, "device.path");
+
+                if (path)
                     g_object_set(m_videosrc, "device", path, NULL);
-                }
+
 
                 gst_structure_free(props);
             }
