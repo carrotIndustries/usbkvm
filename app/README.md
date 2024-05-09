@@ -14,6 +14,7 @@ You need these dependencies:
  - gst-plugin-gtk
  - gst-plugins-good
  - hidapi
+ - go
  
 # Building
 
