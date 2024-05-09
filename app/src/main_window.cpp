@@ -296,7 +296,7 @@ gboolean MainWindow::monitor_bus_func(GstBus *bus, GstMessage *message)
         g_print("Device added: %s\n", name);
         std::string name_str = name;
         g_free(name);
-        if (name_str == s_device_name) {
+        if (name_str.starts_with(s_device_name)) {
             std::cout << "found usbkvm" << std::endl;
             {
                 auto caps = gst_device_get_caps(device);
