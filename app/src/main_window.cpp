@@ -278,11 +278,9 @@ void MainWindow::set_capture_resolution(int w, int h)
     update_resolution_button();
 }
 
-#ifdef G_OS_WIN32
-static const std::string s_device_name = "USB Video";
-#else
+static const std::string s_device_name_win32 = "USB Video";
 static const std::string s_device_name = "USBKVM";
-#endif
+
 
 gboolean MainWindow::monitor_bus_func(GstBus *bus, GstMessage *message)
 {
@@ -296,7 +294,11 @@ gboolean MainWindow::monitor_bus_func(GstBus *bus, GstMessage *message)
         g_print("Device added: %s\n", name);
         std::string name_str = name;
         g_free(name);
-        if (name_str.starts_with(s_device_name)) {
+        if (name_str.starts_with(s_device_name)
+#ifdef G_OS_WIN32
+            || name_str.starts_with(s_device_name_win32)
+#endif
+        ) {
             std::cout << "found usbkvm" << std::endl;
             {
                 auto caps = gst_device_get_caps(device);
