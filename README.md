@@ -18,7 +18,7 @@ right side.](media/usbkvm.jpg)
 ![Diagram showing a server connected to a laptop using 
 USBKVM](media/usbkvm.png)
 
-# Hardware
+# Hardware (USBKVM)
 
 ![3D rendering of a green PCA with an HDMI and a USB Type-C connector 
 on the left edge. On the board itself, there are two QFN ICs as well
@@ -55,6 +55,67 @@ EDA](https://horizon-eda.org/). [Schematics](hw/usbkvm/output/schematic.pdf)
 
 The modwire is there because I forgot to order the voltage regulator 
 for the 3.3V USB supply.
+
+# Hardware (USBKVM Pro)
+
+![3D rendering of a green PCA with a VGA, HDMI and a USB Type-C connector 
+on the left edge. On the board itself, there are thre QFN ICs as well
+as a variety of other components. On the right edge, there's another 
+USB Type-C connector and four light pipes. USBKVM Pro is silkscreend in the top 
+corner.](media/pcb-pro-render.png)
+
+USBKVM Pro adds a VGA input since many servers still only provide VGA
+video output. To accomplish this, the board includes the MS9288C VGA to 
+HDMI converter and an HDMI mux to switch between HDMI and VGA input. 
+Same as the MS2109, the MS9288C is available from 
+[klayers.net](https://www.klayers.net/product/ms9288c/). The board has 
+provision for connecting an I²C EEPROM to it, but so far I haven't 
+found any documentation on how to make use of it. Anyhow, the chip 
+works just fine without the EEPROM.
+
+![The same PCB as above, just as a photo.](media/pcb-pro.jpg)
+
+
+For automatically switching between HDMI and VGA input, the MCU senses 
+the +5V applied to the VGA connector with an N-channel MOSFET. It's not 
+directly connected to the MCU since it could reverse-power the MCU if 
+host power isn't connected. For the same reason the I²C lines for the 
+EDID EEPROM aren't connected to the MCU either.
+
+USBKVM Pro uses warm white status LEDs since that's an indicator LED 
+color I'd like to see more often among the sea of cold white and 
+colored LEDs. Unfortunately though there are no decent warm white 
+indicator LEDs, much less side view variants. So I went with LEDs 
+intended for lighting applications running at much lower current and 
+light pipes.
+
+![Warm white status LEDs reflecting on a wooden surface](media/leds.jpg)
+
+# Programming
+
+To be recognized by the client app and show color bars rather than a 
+black screen for no input signal, the EEPROM attached to the MS2109 
+needs to be programmed. This is done with the `cli` included in 
+`ms-tools`: `./cli write-file EEPROM 0 progdata/ms2109.bin`. The EEPROM 
+content is based on the one of a capture stick, modified with 
+the "MS21XX&91XXDownloadTool_1.7.0" to set the device string to "USBKVM". 
+
+For the Pro variant, there's also the VGA EDID EEPROM that requires 
+programming. I cobbled together its contents by combining the EDID 
+data from an LCD monitor with the one from the MS2109 using the [AW 
+EDID 
+Editor](https://www.analogway.com/emea/products/software-tools/aw-edid-editor/).
+It's intended to be programmed using the VGA connector. To do so, load 
+the `i2c-dev` kernel module and use the [converter 
+script](progdata/convert-edid.py) to convert the EDID EEPROM 
+[contents](progdata/edid.bin)
+to a set of `i2ctransfer` commands. You probably need to adjust the I²C 
+bus number to the right one for your system.
+
+Apart from the firmware, the MCU needs the BOOT_SEL option bit cleared 
+so that it can jump to the ROM bootloader. Unfortunately, openocd 
+doesn't support this bit(?), so it has to be modified using the 
+STM32Cube Programmer.
 
 # Software
 
@@ -117,6 +178,10 @@ before the address is received since the time between the SCL edge that
 latches the last address bit and the first edge that clocks out the 
 first data bye isn't long enough to prepare the data to be sent.
 
+USBKVM and USBKVM Pro hardware variants are supported by one single 
+firmware image. To tell them apart, pin PB8 is grounded on USBKVM Pro 
+and floating on USBKVM.
+
 ## Firmware updates
 
 For updating itself without special programming adapters, the firmware 
@@ -171,12 +236,6 @@ connecting an HDMI to parallel RGB
 converter to its camera interface. While this could also have 
 eliminated the MCU used for HID emulation, it's much more complex and 
 expensive than the single QFN-48 IC that is the MS2109.
-
-## How about VGA input?
-
-A variant that'll also have a VGA input is currently work in progress. 
-It'll use a VGA to HDMI converter IC and a HDMI multiplexer for 
-switching between the two inputs.
 
 ## How can I get one?
 
