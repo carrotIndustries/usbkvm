@@ -25,4 +25,11 @@ void UsbKvmDevice::delete_mcu()
     m_mcu.reset();
 }
 
+void UsbKvmDevice::set_model(Model model)
+{
+    if (m_model.has_value())
+        throw std::runtime_error("Model already set");
+    m_model = model;
+}
+
 UsbKvmDevice::~UsbKvmDevice() = default;

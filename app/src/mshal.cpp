@@ -64,6 +64,7 @@ uint8_t MsHal::mem_read8(unsigned int addr)
 // https://github.com/BertoldVdb/ms-tools/issues/7#issuecomment-1431494947
 uint16_t MsHal::get_input_width()
 {
+    // std::cout << (int)mem_read8(0xc568) << std::endl;
     return mem_read16be(0xc572);
 }
 
@@ -80,6 +81,7 @@ double MsHal::get_input_fps()
 // doesn't work reliably
 bool MsHal::get_has_signal()
 {
+    std::cout << mem_read8(0xc568) << std::endl;
     return mem_read8(0xc568) & 1;
 }
 

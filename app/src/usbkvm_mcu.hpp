@@ -1,5 +1,6 @@
 #pragma once
 #include "bitmask_operators.hpp"
+#include "model.hpp"
 #include <stdint.h>
 #include <array>
 #include <mutex>
@@ -42,7 +43,17 @@ public:
 
     void send_report(const KeyboardReport &report);
 
-    unsigned int get_version();
+    struct Status {
+        bool vga_connected = false;
+    };
+    Status get_status();
+
+    struct Info {
+        unsigned int version;
+        Model model;
+    };
+
+    Info get_info();
     static unsigned int get_expected_version();
     void enter_bootloader();
 

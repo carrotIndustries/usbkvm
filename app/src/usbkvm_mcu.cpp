@@ -47,7 +47,6 @@ template <typename T> void i2c_recv(II2COneDevice &i2c, uint8_t seq, T &resp)
     static uint8_t nop = 0;
     while (true) {
         i2c.i2c_transfer({&nop, 1}, {reinterpret_cast<uint8_t *>(&resp), sizeof(T)});
-        std::cout << (int)seq << " " << (int)resp.seq << std::endl;
         if (resp.seq == seq) {
             return;
         }
@@ -116,14 +115,25 @@ void UsbKvmMcu::send_report(const KeyboardReport &report)
     i2c_send(m_i2c, msg);
 }
 
-unsigned int UsbKvmMcu::get_version()
+UsbKvmMcu::Info UsbKvmMcu::get_info()
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    i2c_req_unknown_t msg = {.type = I2C_REQ_GET_VERSION, .seq = m_seq++};
-    i2c_resp_version_t resp;
+    i2c_req_unknown_t msg = {.type = I2C_REQ_GET_INFO, .seq = m_seq++};
+    i2c_resp_info_t resp;
     i2c_send_recv(m_i2c, msg, resp);
-    return resp.version;
+
+    Model model = Model::UNKNOWN;
+    switch (resp.model) {
+    case I2C_MODEL_USBKVM:
+        model = Model::USBKVM;
+        break;
+    case I2C_MODEL_USBKVM_PRO:
+        model = Model::USBKVM_PRO;
+        break;
+    }
+
+    return {.version = resp.version, .model = model};
 }
 
 void UsbKvmMcu::enter_bootloader()
@@ -132,6 +142,19 @@ void UsbKvmMcu::enter_bootloader()
 
     i2c_req_unknown_t msg = {.type = I2C_REQ_ENTER_BOOTLOADER, .seq = m_seq++};
     i2c_send(m_i2c, msg);
+}
+
+UsbKvmMcu::Status UsbKvmMcu::get_status()
+{
+    std::lock_guard<std::mutex> guard(m_mutex);
+
+    i2c_req_unknown_t msg = {.type = I2C_REQ_GET_STATUS, .seq = m_seq++};
+    i2c_resp_status_t resp;
+    i2c_send_recv(m_i2c, msg, resp);
+
+    UsbKvmMcu::Status ret;
+    ret.vga_connected = resp.status & I2C_STATUS_VGA_CONNECTED;
+    return ret;
 }
 
 unsigned int UsbKvmMcu::get_expected_version()

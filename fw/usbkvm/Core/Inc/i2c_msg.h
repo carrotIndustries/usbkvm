@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 
-#define I2C_VERSION 1
+#define I2C_VERSION 3
 
 #define I2C_REQ_COMMON \
     uint8_t type;\
@@ -10,8 +10,9 @@
 #define I2C_REQ_NOP (0)
 #define I2C_REQ_KEYBOARD_REPORT (1)
 #define I2C_REQ_MOUSE_REPORT (2)
-#define I2C_REQ_GET_VERSION (3)
+#define I2C_REQ_GET_INFO (3)
 #define I2C_REQ_ENTER_BOOTLOADER (4)
+#define I2C_REQ_GET_STATUS (5)
     
 typedef struct {
     I2C_REQ_COMMON
@@ -47,12 +48,24 @@ typedef struct {
     I2C_RESP_COMMON
 } i2c_resp_unknown_t;
 
+#define I2C_MODEL_USBKVM (0)
+#define I2C_MODEL_USBKVM_PRO (1)
+
 typedef struct {
     I2C_RESP_COMMON
     uint8_t version;
-} i2c_resp_version_t;
+    uint8_t model;
+} i2c_resp_info_t;
+
+#define I2C_STATUS_VGA_CONNECTED (1<<0)
+
+typedef struct {
+    I2C_RESP_COMMON
+    uint8_t status;
+} i2c_resp_status_t;
 
 typedef union {
     i2c_resp_unknown_t unk;
-    i2c_resp_version_t version;
+    i2c_resp_info_t info;
+    i2c_resp_status_t status;
 } i2c_resp_all_t;

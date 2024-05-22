@@ -347,7 +347,9 @@ void MainWindow::create_device(const std::string &name)
 {
     try {
         m_device = std::make_unique<UsbKvmDevice>(name);
-        const int current_version = m_device->mcu()->get_version();
+        auto info = m_device->mcu()->get_info();
+        const int current_version = info.version;
+        m_device->set_model(info.model);
         const int expected_version = UsbKvmMcu::get_expected_version();
         if (current_version != expected_version) {
             m_mcu_info_bar_label->set_label(
@@ -358,12 +360,35 @@ void MainWindow::create_device(const std::string &name)
             gtk_info_bar_set_revealed(m_mcu_info_bar->gobj(), true);
             m_device->delete_mcu();
         }
-        update_input_status();
     }
     catch (const std::exception &ex) {
-        m_device->delete_mcu();
+        if (m_device)
+            m_device->delete_mcu();
         m_mcu_info_bar_label->set_label("MCU not responding, may be in bootloader. Video only, no mouse or keyboard.");
         gtk_info_bar_set_revealed(m_mcu_info_bar->gobj(), true);
+    }
+
+    if (m_device) {
+        update_input_status();
+        switch (m_device->get_model()) {
+        case Model::USBKVM:
+            set_title("USBKVM");
+            break;
+        case Model::USBKVM_PRO:
+            set_title("USBKVM Pro");
+            break;
+        default:;
+        }
+
+        Glib::signal_timeout().connect_seconds(
+                [this] {
+                    if (!m_device)
+                        return false;
+                    if (!m_type_window->is_busy())
+                        update_input_status();
+                    return true;
+                },
+                1);
     }
 }
 
@@ -441,7 +466,6 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
     m_evbox->signal_realize().connect(
             [this] { m_blank_cursor = Gdk::Cursor::create(m_evbox->get_window()->get_display(), Gdk::BLANK_CURSOR); });
 
-    Gtk::Settings::get_default()->property_gtk_menu_bar_accel() = "";
     m_evbox->signal_motion_notify_event().connect_notify(sigc::mem_fun(*this, &MainWindow::handle_motion));
     m_evbox->signal_button_press_event().connect_notify(sigc::mem_fun(*this, &MainWindow::handle_button));
     m_evbox->signal_button_release_event().connect_notify(sigc::mem_fun(*this, &MainWindow::handle_button));
@@ -492,7 +516,6 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
     Gtk::Button *dump_button;
     x->get_widget("dump_button", dump_button);
     dump_button->signal_clicked().connect([this] {
-        std::cout << m_device->mcu()->get_version() << std::endl;
         std::cout << m_device->hal().get_input_width() << "x" << m_device->hal().get_input_height() << " "
                   << m_device->hal().get_input_fps() << std::endl;
     });
@@ -524,17 +547,6 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
         x->get_widget("keyboard_button", keyboard_button);
         keyboard_button->signal_clicked().connect([this] { m_type_window->present(); });
     }
-
-
-    Glib::signal_timeout().connect_seconds(
-            [this] {
-                if (!m_device)
-                    return false;
-                if (!m_type_window->is_busy())
-                    update_input_status();
-                return true;
-            },
-            1);
 }
 
 void MainWindow::update_input_status()
@@ -547,8 +559,19 @@ void MainWindow::update_input_status()
     auto w = hal.get_input_width();
     auto h = hal.get_input_height();
     auto fps = hal.get_input_fps();
-    label = format_resolution(w, h) + std::format(" {:.02f}Hz", fps);
+    label += format_resolution(w, h) + std::format(" {:.02f}Hz", fps);
     update_auto_capture_resolution(w, h);
+
+    if (m_device->get_model() == Model::USBKVM_PRO) {
+        if (auto mcu = m_device->mcu()) {
+            auto status = mcu->get_status();
+            if (status.vga_connected)
+                label += " VGA";
+            else
+                label += " HDMI";
+        }
+    }
+
 
     m_input_status_label->set_label(label);
 }

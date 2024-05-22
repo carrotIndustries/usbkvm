@@ -62,14 +62,28 @@ void update_leds();
 #define LED_USB_GPIO_Port GPIOA
 #define LED_HID_Pin GPIO_PIN_2
 #define LED_HID_GPIO_Port GPIOA
+#define P5V_VGA_DETECT_Pin GPIO_PIN_2
+#define P5V_VGA_DETECT_GPIO_Port GPIOB
+#define INPUT_SEL2_Pin GPIO_PIN_8
+#define INPUT_SEL2_GPIO_Port GPIOA
+#define LED_VGA_Pin GPIO_PIN_9
+#define LED_VGA_GPIO_Port GPIOA
 #define LED_HDMI_Pin GPIO_PIN_10
 #define LED_HDMI_GPIO_Port GPIOA
+#define INPUT_SEL1_Pin GPIO_PIN_15
+#define INPUT_SEL1_GPIO_Port GPIOA
+#define VGA_SDA_Pin GPIO_PIN_3
+#define VGA_SDA_GPIO_Port GPIOB
+#define VGA_SCL_Pin GPIO_PIN_4
+#define VGA_SCL_GPIO_Port GPIOB
 #define HDMI_GPIO0_Pin GPIO_PIN_5
 #define HDMI_GPIO0_GPIO_Port GPIOB
 #define HDMI_GPIO1_Pin GPIO_PIN_6
 #define HDMI_GPIO1_GPIO_Port GPIOB
 #define EE_WP_Pin GPIO_PIN_7
 #define EE_WP_GPIO_Port GPIOB
+#define HW_DETECT_Pin GPIO_PIN_8
+#define HW_DETECT_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

@@ -64,6 +64,13 @@ static void MX_USB_PCD_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+static uint8_t hw_model = I2C_MODEL_USBKVM;
+
+static uint8_t read_vga_connected()
+{
+  return !HAL_GPIO_ReadPin(P5V_VGA_DETECT_GPIO_Port, P5V_VGA_DETECT_Pin);
+}
+
 // Invoked when received GET_REPORT control request
 // Application must fill buffer report's content and return its length.
 // Return zero will cause the stack to STALL request
@@ -188,10 +195,20 @@ void i2c_req_handle_mouse_report(i2c_req_mouse_report_t *req)
   tud_hid_n_report(ITF_NUM_MOUSE, 0, &report, sizeof(report));
 }
 
-void i2c_req_handle_get_version(const i2c_req_unknown_t *unk)
+void i2c_req_handle_get_info(const i2c_req_unknown_t *unk)
 {
-  i2c_resp_buf.version.version = I2C_VERSION;
-  i2c_resp_buf.version.seq = unk->seq;
+  i2c_resp_buf.info.version = I2C_VERSION;
+  i2c_resp_buf.info.model = hw_model;
+  i2c_resp_buf.info.seq = unk->seq;
+}
+
+void i2c_req_handle_get_status(const i2c_req_unknown_t *unk)
+{
+  uint8_t status = 0;
+  if(read_vga_connected())
+    status |= I2C_STATUS_VGA_CONNECTED;
+  i2c_resp_buf.status.status = status;
+  i2c_resp_buf.status.seq = unk->seq;
 }
 
 
@@ -216,8 +233,11 @@ void i2c_req_dispatch(i2c_req_all_t *req)
       led_usb_counter = 50;
       i2c_req_handle_mouse_report(&req->mouse);
       break;
-    case I2C_REQ_GET_VERSION:
-      i2c_req_handle_get_version(&req->unk);
+    case I2C_REQ_GET_INFO:
+      i2c_req_handle_get_info(&req->unk);
+      break;
+    case I2C_REQ_GET_STATUS:
+      i2c_req_handle_get_status(&req->unk);
       break;
     case I2C_REQ_ENTER_BOOTLOADER:
       enter_bootloader();
@@ -228,18 +248,18 @@ void i2c_req_dispatch(i2c_req_all_t *req)
 /* USER CODE END 0 */
 
 /**
- * @brief  The application entry point.
- * @retval int
- */
-int main(void) {
+  * @brief  The application entry point.
+  * @retval int
+  */
+int main(void)
+{
   /* USER CODE BEGIN 1 */
   jump_to_bootloader();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick.
-   */
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
   /* USER CODE BEGIN Init */
@@ -258,6 +278,14 @@ int main(void) {
   MX_I2C1_Init();
   MX_USB_PCD_Init();
   /* USER CODE BEGIN 2 */
+  
+  if(HAL_GPIO_ReadPin(HW_DETECT_GPIO_Port, HW_DETECT_Pin) == GPIO_PIN_RESET)
+    hw_model = I2C_MODEL_USBKVM_PRO;
+  
+  if(hw_model == I2C_MODEL_USBKVM_PRO) {
+    HAL_GPIO_WritePin(INPUT_SEL1_GPIO_Port, INPUT_SEL1_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(INPUT_SEL2_GPIO_Port, INPUT_SEL2_Pin, GPIO_PIN_RESET);
+  }
 
   tusb_init();
   hi2c1.Instance->TXDR = 0x83;
@@ -272,66 +300,76 @@ int main(void) {
   while (1) {
     tud_task();
     HAL_GPIO_WritePin(LED_HID_GPIO_Port, LED_HID_Pin, tud_hid_n_ready(ITF_NUM_KEYBOARD));
+    
+    if(hw_model == I2C_MODEL_USBKVM_PRO) {
+      uint8_t has_vga = read_vga_connected();
+      HAL_GPIO_WritePin(LED_VGA_GPIO_Port, LED_VGA_Pin, has_vga);
+      HAL_GPIO_WritePin(INPUT_SEL2_GPIO_Port, INPUT_SEL2_Pin, !has_vga);
+    }
+    
     i2c_req_all_t req;
     if(tu_fifo_read(&i2c_req_fifo, &req)) {
       i2c_req_dispatch(&req);
     }
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }
 
 /**
- * @brief System Clock Configuration
- * @retval None
- */
-void SystemClock_Config(void) {
+  * @brief System Clock Configuration
+  * @retval None
+  */
+void SystemClock_Config(void)
+{
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
   RCC_CRSInitTypeDef RCC_CRSInitStruct = {0};
 
   /** Initializes the RCC Oscillators according to the specified parameters
-   * in the RCC_OscInitTypeDef structure.
-   */
-  RCC_OscInitStruct.OscillatorType =
-      RCC_OSCILLATORTYPE_HSI | RCC_OSCILLATORTYPE_HSI48;
+  * in the RCC_OscInitTypeDef structure.
+  */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_HSI48;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
-  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
     Error_Handler();
   }
   /** Initializes the CPU, AHB and APB buses clocks
-   */
-  RCC_ClkInitStruct.ClockType =
-      RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1;
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI48;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK) {
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
+  {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USB | RCC_PERIPHCLK_I2C1;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USB|RCC_PERIPHCLK_I2C1;
   PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_HSI;
   PeriphClkInit.UsbClockSelection = RCC_USBCLKSOURCE_HSI48;
 
-  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK) {
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
+  {
     Error_Handler();
   }
   /** Enable the SYSCFG APB clock
-   */
+  */
   __HAL_RCC_CRS_CLK_ENABLE();
   /** Configures CRS
-   */
+  */
   RCC_CRSInitStruct.Prescaler = RCC_CRS_SYNC_DIV1;
   RCC_CRSInitStruct.Source = RCC_CRS_SYNC_SOURCE_USB;
   RCC_CRSInitStruct.Polarity = RCC_CRS_SYNC_POLARITY_RISING;
-  RCC_CRSInitStruct.ReloadValue =
-      __HAL_RCC_CRS_RELOADVALUE_CALCULATE(48000000, 1000);
+  RCC_CRSInitStruct.ReloadValue = __HAL_RCC_CRS_RELOADVALUE_CALCULATE(48000000,1000);
   RCC_CRSInitStruct.ErrorLimitValue = 34;
   RCC_CRSInitStruct.HSI48CalibrationValue = 32;
 
@@ -339,11 +377,12 @@ void SystemClock_Config(void) {
 }
 
 /**
- * @brief I2C1 Initialization Function
- * @param None
- * @retval None
- */
-static void MX_I2C1_Init(void) {
+  * @brief I2C1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C1_Init(void)
+{
 
   /* USER CODE BEGIN I2C1_Init 0 */
 
@@ -361,30 +400,35 @@ static void MX_I2C1_Init(void) {
   hi2c1.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
   hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
   hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_ENABLE;
-  if (HAL_I2C_Init(&hi2c1) != HAL_OK) {
+  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+  {
     Error_Handler();
   }
   /** Configure Analogue filter
-   */
-  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK) {
+  */
+  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+  {
     Error_Handler();
   }
   /** Configure Digital filter
-   */
-  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK) {
+  */
+  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK)
+  {
     Error_Handler();
   }
   /* USER CODE BEGIN I2C1_Init 2 */
 
   /* USER CODE END I2C1_Init 2 */
+
 }
 
 /**
- * @brief USB Initialization Function
- * @param None
- * @retval None
- */
-static void MX_USB_PCD_Init(void) {
+  * @brief USB Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USB_PCD_Init(void)
+{
 
   /* USER CODE BEGIN USB_Init 0 */
 
@@ -400,20 +444,23 @@ static void MX_USB_PCD_Init(void) {
   hpcd_USB_FS.Init.low_power_enable = DISABLE;
   hpcd_USB_FS.Init.lpm_enable = DISABLE;
   hpcd_USB_FS.Init.battery_charging_enable = DISABLE;
-  if (HAL_PCD_Init(&hpcd_USB_FS) != HAL_OK) {
+  if (HAL_PCD_Init(&hpcd_USB_FS) != HAL_OK)
+  {
     Error_Handler();
   }
   /* USER CODE BEGIN USB_Init 2 */
 
   /* USER CODE END USB_Init 2 */
+
 }
 
 /**
- * @brief GPIO Initialization Function
- * @param None
- * @retval None
- */
-static void MX_GPIO_Init(void) {
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_GPIO_Init(void)
+{
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
@@ -422,21 +469,32 @@ static void MX_GPIO_Init(void) {
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, LED_USB_Pin | LED_HID_Pin | LED_HDMI_Pin,
-                    GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, LED_USB_Pin|LED_HID_Pin|INPUT_SEL2_Pin|LED_VGA_Pin
+                          |LED_HDMI_Pin|INPUT_SEL1_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : LED_USB_Pin LED_HID_Pin LED_HDMI_Pin */
-  GPIO_InitStruct.Pin = LED_USB_Pin | LED_HID_Pin | LED_HDMI_Pin;
+  /*Configure GPIO pins : LED_USB_Pin LED_HID_Pin INPUT_SEL2_Pin LED_VGA_Pin
+                           LED_HDMI_Pin INPUT_SEL1_Pin */
+  GPIO_InitStruct.Pin = LED_USB_Pin|LED_HID_Pin|INPUT_SEL2_Pin|LED_VGA_Pin
+                          |LED_HDMI_Pin|INPUT_SEL1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : HDMI_GPIO0_Pin HDMI_GPIO1_Pin EE_WP_Pin */
-  GPIO_InitStruct.Pin = HDMI_GPIO0_Pin | HDMI_GPIO1_Pin | EE_WP_Pin;
+  /*Configure GPIO pins : P5V_VGA_DETECT_Pin HW_DETECT_Pin */
+  GPIO_InitStruct.Pin = P5V_VGA_DETECT_Pin|HW_DETECT_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : VGA_SDA_Pin VGA_SCL_Pin HDMI_GPIO0_Pin HDMI_GPIO1_Pin
+                           EE_WP_Pin */
+  GPIO_InitStruct.Pin = VGA_SDA_Pin|VGA_SCL_Pin|HDMI_GPIO0_Pin|HDMI_GPIO1_Pin
+                          |EE_WP_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
 }
 
 /* USER CODE BEGIN 4 */
@@ -444,10 +502,11 @@ static void MX_GPIO_Init(void) {
 /* USER CODE END 4 */
 
 /**
- * @brief  This function is executed in case of error occurrence.
- * @retval None
- */
-void Error_Handler(void) {
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
+void Error_Handler(void)
+{
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
@@ -456,15 +515,16 @@ void Error_Handler(void) {
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef USE_FULL_ASSERT
+#ifdef  USE_FULL_ASSERT
 /**
- * @brief  Reports the name of the source file and the source line number
- *         where the assert_param error has occurred.
- * @param  file: pointer to the source file name
- * @param  line: assert_param error line source number
- * @retval None
- */
-void assert_failed(uint8_t *file, uint32_t line) {
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
+void assert_failed(uint8_t *file, uint32_t line)
+{
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line
      number, ex: printf("Wrong parameters value: file %s on line %d\r\n", file,
