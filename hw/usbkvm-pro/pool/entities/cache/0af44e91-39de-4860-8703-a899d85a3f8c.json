@@ -1,0 +1,16 @@
+{
+    "gates": {
+        "868a31a9-25e1-4b06-aaf9-32a425877d01": {
+            "name": "Main",
+            "suffix": "",
+            "swap_group": 0,
+            "unit": "029dc9d9-0c2a-47f9-859e-e1eec7caf07f"
+        }
+    },
+    "manufacturer": "",
+    "name": "TS3DV642A0RUAR",
+    "prefix": "U",
+    "tags": [],
+    "type": "entity",
+    "uuid": "0af44e91-39de-4860-8703-a899d85a3f8c"
+}

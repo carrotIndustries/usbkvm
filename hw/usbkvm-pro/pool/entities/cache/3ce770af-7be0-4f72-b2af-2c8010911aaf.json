@@ -1,0 +1,15 @@
+{
+    "gates": {
+        "48af78e5-730e-44eb-977a-cf188e4fcb39": {
+            "name": "Main",
+            "suffix": "",
+            "swap_group": 0,
+            "unit": "9b22b899-e8eb-4ce8-b62d-79b7b2db035e"
+        }
+    },
+    "tags": ["passive", "resistor", "generic"],
+    "name": "Two-terminal resistor",
+    "prefix": "R",
+    "type": "entity",
+    "uuid": "3ce770af-7be0-4f72-b2af-2c8010911aaf"
+}

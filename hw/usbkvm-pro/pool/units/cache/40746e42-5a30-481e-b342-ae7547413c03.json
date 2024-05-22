@@ -1,0 +1,19 @@
+{
+    "name": "Two-terminal LED",
+    "pins": {
+        "3c305ca9-14d3-40b4-a365-8938959c043e": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "K",
+            "swap_group": 0
+        },
+        "f3a0ce45-6d5e-453b-9649-33baf57cc7b7": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "A",
+            "swap_group": 0
+        }
+    },
+    "type": "unit",
+    "uuid": "40746e42-5a30-481e-b342-ae7547413c03"
+}

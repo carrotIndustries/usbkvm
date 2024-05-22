@@ -1,0 +1,30 @@
+{
+    "MPN": [
+        false,
+        "BLM18AG601SN1D"
+    ],
+    "base": "c3e332a4-7d74-41e1-9932-67cbd9d8530c",
+    "datasheet": [
+        false,
+        "https://www.murata.com/en-us/products/productdata/8796738650142/ENFA0003.pdf"
+    ],
+    "description": [
+        false,
+        "Ferrite bead, 600 Ohm @ 100 MHz, 500 mA"
+    ],
+    "inherit_model": true,
+    "inherit_tags": true,
+    "manufacturer": [
+        false,
+        "Murata"
+    ],
+    "model": "96c366ee-a963-41a0-9cc8-54c646979695",
+    "parametric": {},
+    "tags": [],
+    "type": "part",
+    "uuid": "093cfc31-5e15-4c85-adaf-620154945a2a",
+    "value": [
+        true,
+        "base 0603 ferrite bead"
+    ]
+}

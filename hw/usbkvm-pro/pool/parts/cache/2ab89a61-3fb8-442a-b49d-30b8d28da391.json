@@ -1,0 +1,30 @@
+{
+    "MPN": [
+        false,
+        "C 0805 Capacitor Base Part"
+    ],
+    "base": "2f50150e-b407-4eda-899c-4a8339af9433",
+    "datasheet": [
+        false,
+        ""
+    ],
+    "description": [
+        true,
+        ""
+    ],
+    "inherit_model": true,
+    "inherit_tags": true,
+    "manufacturer": [
+        false,
+        "TDK"
+    ],
+    "model": "96c366ee-a963-41a0-9cc8-54c646979695",
+    "parametric": {},
+    "tags": [],
+    "type": "part",
+    "uuid": "2ab89a61-3fb8-442a-b49d-30b8d28da391",
+    "value": [
+        true,
+        "base 0402 capacitor"
+    ]
+}

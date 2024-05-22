@@ -1,0 +1,38 @@
+{
+    "MPN": [
+        false,
+        "ERJ-3EKF3302"
+    ],
+    "base": "25f985ce-3357-4a0f-b19d-4866ef892436",
+    "datasheet": [
+        false,
+        "https://industrial.panasonic.com/cdbs/www-data/pdf/RDA0000/AOA0000C304.pdf"
+    ],
+    "description": [
+        false,
+        "Chip Resistor 33 k\u2126 1% 0.1W"
+    ],
+    "inherit_model": true,
+    "inherit_tags": true,
+    "manufacturer": [
+        true,
+        ""
+    ],
+    "model": "96c366ee-a963-41a0-9cc8-54c646979695",
+    "orderable_MPNs": {
+        "daee282e-6203-4c6f-a5da-496a487bd975": "ERJ-3EKF3302V"
+    },
+    "parametric": {
+        "pmax": "0.1",
+        "table": "resistors",
+        "tolerance": "1.0",
+        "value": "33000.0"
+    },
+    "tags": [],
+    "type": "part",
+    "uuid": "b7b8c397-4217-4c22-a1a8-98ce614471d5",
+    "value": [
+        false,
+        "33 k\u2126"
+    ]
+}

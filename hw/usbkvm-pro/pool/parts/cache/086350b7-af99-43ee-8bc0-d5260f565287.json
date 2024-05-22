@@ -1,0 +1,27 @@
+{
+    "MPN": [
+        false,
+        "CPL-RES-0603-4.7K-0.1W"
+    ],
+    "base": "cbeda48c-7fb0-4cfb-a4de-d9672e8cc190",
+    "inherit_tags": true,
+    "manufacturer": [
+        false,
+        "CPL"
+    ],
+    "parametric": {
+        "pmax": "0.1",
+        "table": "resistors",
+        "value": "4700.0",
+        "tolerance": "1.0"
+    },
+    "tags": [
+        "cpl"
+    ],
+    "type": "part",
+    "uuid": "086350b7-af99-43ee-8bc0-d5260f565287",
+    "value": [
+        false,
+        "4.7 k\u03a9"
+    ]
+}

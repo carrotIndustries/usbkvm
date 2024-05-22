@@ -1,0 +1,34 @@
+{
+    "MPN": [
+        false,
+        "SLP3-150-100-F"
+    ],
+    "datasheet": [
+        false,
+        "https://www.bivar.com/parts_content/Datasheets/SLP3-150-XXX-X.pdf"
+    ],
+    "description": [
+        false,
+        "Light pipe"
+    ],
+    "entity": "e738fcf2-bf36-46b2-8288-82f43aabca8a",
+    "inherit_model": true,
+    "inherit_tags": false,
+    "manufacturer": [
+        false,
+        "Bivar"
+    ],
+    "model": "6c1f2f9e-026b-4ef5-8c73-80e3b0085824",
+    "package": "bc0f107a-b813-45aa-885f-52e377bc2f7a",
+    "pad_map": {},
+    "parametric": {},
+    "tags": [
+        "light-pipe"
+    ],
+    "type": "part",
+    "uuid": "3c4eeb64-3675-451c-a659-3f592c36738e",
+    "value": [
+        false,
+        ""
+    ]
+}

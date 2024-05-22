@@ -1,0 +1,27 @@
+{
+    "MPN": [
+        false,
+        "CPL-RES-0603-12K-0.1W"
+    ],
+    "base": "cbeda48c-7fb0-4cfb-a4de-d9672e8cc190",
+    "inherit_tags": true,
+    "manufacturer": [
+        false,
+        "CPL"
+    ],
+    "parametric": {
+        "pmax": "0.1",
+        "table": "resistors",
+        "value": "12000.0",
+        "tolerance": "1.0"
+    },
+    "tags": [
+        "cpl"
+    ],
+    "type": "part",
+    "uuid": "215c0b91-dd75-4ccf-9e4d-8b70d8f4ebae",
+    "value": [
+        false,
+        "12 k\u03a9"
+    ]
+}

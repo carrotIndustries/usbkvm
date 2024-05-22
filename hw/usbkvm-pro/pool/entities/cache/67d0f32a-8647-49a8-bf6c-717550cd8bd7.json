@@ -1,0 +1,16 @@
+{
+    "gates": {
+        "7a754086-cfbf-4f43-8db4-4ec8010f0569": {
+            "name": "Main",
+            "suffix": "",
+            "swap_group": 0,
+            "unit": "bbc7780a-6ee4-45ca-b0c7-57b4608437b7"
+        }
+    },
+    "manufacturer": "On Semiconductor",
+    "name": "NUP4114UCLW1T2G",
+    "prefix": "U",
+    "tags": [],
+    "type": "entity",
+    "uuid": "67d0f32a-8647-49a8-bf6c-717550cd8bd7"
+}

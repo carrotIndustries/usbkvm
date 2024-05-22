@@ -1,0 +1,19 @@
+{
+    "name": "Two-terminal non-polarized capacitor",
+    "pins": {
+        "29995253-b4b1-4c7c-a049-b6db2713ca7c": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "B",
+            "swap_group": 1
+        },
+        "852f1fe6-06dc-4661-8a14-61a9a6ebb26a": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "A",
+            "swap_group": 1
+        }
+    },
+    "type": "unit",
+    "uuid": "3363f7ef-c8bf-4c29-9d80-2551b4551806"
+}

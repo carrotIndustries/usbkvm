@@ -1,0 +1,128 @@
+{
+    "MPN": [
+        false,
+        "2086581051"
+    ],
+    "datasheet": [
+        false,
+        "https://www.molex.com/pdm_docs/sd/2086581051_sd.pdf"
+    ],
+    "description": [
+        false,
+        "HDMI connector"
+    ],
+    "entity": "c42e0607-c950-4014-9cee-4d5f98b66980",
+    "inherit_model": true,
+    "inherit_tags": false,
+    "manufacturer": [
+        false,
+        "Molex"
+    ],
+    "model": "6b11d05c-b6a0-44ed-9b38-2a758d21aa0d",
+    "package": "c0c9f2cf-4543-491f-b332-4f7c3b3eb04e",
+    "pad_map": {
+        "03052f1c-9c0e-4ef0-a0a2-2798fb2704b0": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "8cf60c9f-453e-4b37-a488-59823d455adf"
+        },
+        "0a11a67e-ee60-4c23-973b-57d66a81bae7": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "1d0b1cd3-bfd2-4aee-8206-6c9312f1a344"
+        },
+        "0a68a5b3-4bf0-4fe3-bd9d-6882d41ee693": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "f32d9927-6b5b-4789-89c4-c7169b796ee5"
+        },
+        "11f60490-d4ff-44a9-b6bb-1ab24313fdb1": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "fe5ecec1-0f8a-4e42-a6e8-1b4e5849fd0d"
+        },
+        "295d24a2-0e9f-49c9-9d4b-934452d3a749": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "3c51be94-258c-4b08-a2e3-68ea9158c0cb"
+        },
+        "2d0d8321-d003-4f9e-8e66-bbdd4dadad5f": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "bfe8e7a7-86ee-48d6-86ec-27ab65f4b94a"
+        },
+        "2d6dfbfa-30f8-4610-9ef1-e4796c2f3e51": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "7e25510f-2d6f-4f44-ab22-d9ecde2bf797"
+        },
+        "2eafa618-2015-4f3c-abb8-79d15f93cbf6": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "fa873351-504b-4be4-a36c-36ab5756a6e8"
+        },
+        "41a19c2a-4fc3-4b22-ada2-c3fac032eb68": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "31806abd-c87e-46ad-8fa0-c85d4c228b6e"
+        },
+        "4da3c61a-ae98-4e82-b0dd-c5a3851ae492": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "3c51be94-258c-4b08-a2e3-68ea9158c0cb"
+        },
+        "4e77598e-f638-4cc8-a189-9c038338835b": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "8b746225-0147-44aa-9f5b-9f9cd84c9058"
+        },
+        "58eb25f5-dfbb-4a8a-8e39-38a9789ece5a": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "0dec00a5-8c7d-4f90-9f17-dabd94419aa4"
+        },
+        "6b491083-0b6e-4293-bc78-21eaad818043": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "3c51be94-258c-4b08-a2e3-68ea9158c0cb"
+        },
+        "7acdf1e3-1a80-4701-91ea-e85568b0b63d": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "fe95a69b-182d-4d75-90af-a1c8b800d042"
+        },
+        "821d558a-2d13-4fcc-a794-e1136413cdd8": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "6eaed087-2835-4e02-b4a3-9738e9d21483"
+        },
+        "97e25bd8-b6d9-45d1-b27a-2c8fe632d2c5": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "1479a4bb-aeac-4869-9e6e-254227ee5b82"
+        },
+        "a4267b2a-5252-4829-897d-2c1a7192ac38": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "3e2dbdd1-0b99-489b-9ef6-dcd9f9632586"
+        },
+        "b9f6df6e-2b4c-4f0b-8851-62cde7b24db3": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "51586c8a-f33a-4dff-be6a-fcf4f0e3e692"
+        },
+        "cd20a7b5-599d-4cae-be24-0bf125694d3f": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "3c51be94-258c-4b08-a2e3-68ea9158c0cb"
+        },
+        "e017fccc-6743-4c44-99c5-a374fa31034c": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "46467ef5-3d61-448e-8f01-7685d36cf777"
+        },
+        "e419ca89-9195-4b91-86da-9b85816896f9": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "be6862e0-b805-4975-a7ca-7a80258ebf93"
+        },
+        "eac8910b-fad7-42ab-b1f6-1e6190577c58": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "2a2016fa-d64c-47d6-a58a-14a747101962"
+        },
+        "f41a52a4-704c-43ef-8a4f-15a77f9004c5": {
+            "gate": "efb1a118-b02e-4fc2-b5ee-03b9383ceb24",
+            "pin": "acdd7eba-e96b-4900-a2b3-8a73e149595d"
+        }
+    },
+    "parametric": {},
+    "tags": [
+        "connector",
+        "hdmi"
+    ],
+    "type": "part",
+    "uuid": "5020aee6-e50a-49e8-ac1e-0b56dab42d2a",
+    "value": [
+        false,
+        ""
+    ]
+}

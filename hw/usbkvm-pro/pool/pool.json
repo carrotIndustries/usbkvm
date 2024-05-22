@@ -1,0 +1,17 @@
+{
+    "default_frame": "ba34cbaf-e36e-44c3-af16-bab253fc720b",
+    "default_via": "3c4a52fe-3ae0-4c3e-a108-824b53d6d6da",
+    "name": "Project pool",
+    "pools_included": [
+        "6d752bc3-29b3-45df-8cf2-1e3aacefbcc6",
+        "9b4123d7-9bc4-48d3-9209-34053eac065b",
+        "d21ad56f-56a7-41a7-9c8e-68c8e4d735e3",
+        "d2a88d60-9ad7-43b1-a905-8721b6906f40",
+        "60eec687-e03f-4311-94b3-71e16f14faa2",
+        "71c48295-6a54-4cfb-a7f6-8c867bbbfcc4",
+        "aad769f8-8856-43fc-8dcd-28616e4eccd6"
+    ],
+    "type": "pool",
+    "uuid": "466088f9-3f15-420d-af8a-fff902537aed",
+    "version": 1
+}

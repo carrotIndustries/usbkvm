@@ -1,0 +1,236 @@
+{
+    "arcs": {},
+    "can_expand": false,
+    "junctions": {
+        "790aa5f6-a473-4a65-aa4e-2233cd9b54ee": {
+            "position": [
+                -5000000,
+                -8750000
+            ]
+        },
+        "7bb92839-3000-4087-87be-11ff20ead2d2": {
+            "position": [
+                5000000,
+                -8750000
+            ]
+        },
+        "7e303734-d69f-4559-a99c-c09774ac0d3c": {
+            "position": [
+                -5000000,
+                8750000
+            ]
+        },
+        "8102bff5-cd7a-4f3e-9b11-6622213bc0a0": {
+            "position": [
+                5000000,
+                8750000
+            ]
+        }
+    },
+    "lines": {
+        "49c2aba1-0824-4fb8-b4ed-15501a66e43d": {
+            "from": "8102bff5-cd7a-4f3e-9b11-6622213bc0a0",
+            "layer": 0,
+            "to": "7bb92839-3000-4087-87be-11ff20ead2d2",
+            "width": 0
+        },
+        "5528698d-b650-45af-b084-13a752b4ac02": {
+            "from": "7bb92839-3000-4087-87be-11ff20ead2d2",
+            "layer": 0,
+            "to": "790aa5f6-a473-4a65-aa4e-2233cd9b54ee",
+            "width": 0
+        },
+        "61d93eaa-483b-48e8-bdf2-6bef2a0e153d": {
+            "from": "7e303734-d69f-4559-a99c-c09774ac0d3c",
+            "layer": 0,
+            "to": "8102bff5-cd7a-4f3e-9b11-6622213bc0a0",
+            "width": 0
+        },
+        "9606584c-5e8f-4ef3-af52-f1e677fb8378": {
+            "from": "790aa5f6-a473-4a65-aa4e-2233cd9b54ee",
+            "layer": 0,
+            "to": "7e303734-d69f-4559-a99c-c09774ac0d3c",
+            "width": 0
+        }
+    },
+    "name": "I2C EEPROM with 3 address lines and write protect",
+    "pins": {
+        "2edae41f-8a1a-4ad0-8cc9-e3b8846ebced": {
+            "decoration": {
+                "clock": false,
+                "dot": false,
+                "driver": "default",
+                "schmitt": false
+            },
+            "length": 2500000,
+            "name_orientation": "in_line",
+            "name_visible": true,
+            "orientation": "right",
+            "pad_visible": true,
+            "position": [
+                7500000,
+                -3750000
+            ]
+        },
+        "48046849-2109-4d41-a774-c8b3eaf70c2b": {
+            "decoration": {
+                "clock": false,
+                "dot": false,
+                "driver": "default",
+                "schmitt": false
+            },
+            "length": 2500000,
+            "name_orientation": "in_line",
+            "name_visible": true,
+            "orientation": "left",
+            "pad_visible": true,
+            "position": [
+                -7500000,
+                -1250000
+            ]
+        },
+        "57efbc1c-5a3e-453f-aa96-ec9d2b366f3b": {
+            "decoration": {
+                "clock": false,
+                "dot": false,
+                "driver": "default",
+                "schmitt": false
+            },
+            "length": 2500000,
+            "name_orientation": "in_line",
+            "name_visible": true,
+            "orientation": "right",
+            "pad_visible": true,
+            "position": [
+                7500000,
+                1250000
+            ]
+        },
+        "5a474086-8213-4a05-802e-6114bc9b682c": {
+            "decoration": {
+                "clock": false,
+                "dot": false,
+                "driver": "default",
+                "schmitt": false
+            },
+            "length": 2500000,
+            "name_orientation": "in_line",
+            "name_visible": true,
+            "orientation": "right",
+            "pad_visible": true,
+            "position": [
+                7500000,
+                3750000
+            ]
+        },
+        "6c230be5-987e-4b87-b4e2-4085f809627a": {
+            "decoration": {
+                "clock": false,
+                "dot": false,
+                "driver": "default",
+                "schmitt": false
+            },
+            "length": 2500000,
+            "name_orientation": "in_line",
+            "name_visible": true,
+            "orientation": "right",
+            "pad_visible": true,
+            "position": [
+                7500000,
+                -1250000
+            ]
+        },
+        "88a59a9c-36d1-425b-a97b-282bfb26d29f": {
+            "decoration": {
+                "clock": false,
+                "dot": false,
+                "driver": "default",
+                "schmitt": false
+            },
+            "length": 2500000,
+            "name_orientation": "perpendicular",
+            "name_visible": true,
+            "orientation": "down",
+            "pad_visible": true,
+            "position": [
+                0,
+                -11250000
+            ]
+        },
+        "a6f94e2b-1183-49ce-818a-c47eced57c32": {
+            "decoration": {
+                "clock": false,
+                "dot": false,
+                "driver": "default",
+                "schmitt": false
+            },
+            "length": 2500000,
+            "name_orientation": "in_line",
+            "name_visible": true,
+            "orientation": "left",
+            "pad_visible": true,
+            "position": [
+                -7500000,
+                1250000
+            ]
+        },
+        "f43f0760-136d-42eb-b29e-a904dff62fea": {
+            "decoration": {
+                "clock": false,
+                "dot": false,
+                "driver": "default",
+                "schmitt": false
+            },
+            "length": 2500000,
+            "name_orientation": "perpendicular",
+            "name_visible": true,
+            "orientation": "up",
+            "pad_visible": true,
+            "position": [
+                0,
+                11250000
+            ]
+        }
+    },
+    "polygons": {},
+    "text_placements": {},
+    "texts": {
+        "27de1045-65d3-42a6-b0d2-9465d994edcd": {
+            "font": "simplex",
+            "from_smash": false,
+            "layer": 0,
+            "origin": "center",
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    2500000,
+                    10000000
+                ]
+            },
+            "size": 1500000,
+            "text": "$REFDES",
+            "width": 0
+        },
+        "8e8eb328-4389-4e81-9164-bfea5ada03ee": {
+            "font": "simplex",
+            "from_smash": false,
+            "layer": 0,
+            "origin": "center",
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    2500000,
+                    -10000000
+                ]
+            },
+            "size": 1500000,
+            "text": "$VALUE",
+            "width": 0
+        }
+    },
+    "type": "symbol",
+    "unit": "a60553f8-9c88-4469-9e10-863be1a94a26",
+    "uuid": "3e78a41c-39fd-4454-932c-2eded4e628bf"
+}

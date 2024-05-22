@@ -1,0 +1,104 @@
+{
+    "MPN": [
+        false,
+        "L77HDE15SD1CH4FVGA"
+    ],
+    "datasheet": [
+        false,
+        "https://cdn.amphenol-cs.com/media/wysiwyg/files/drawing/l77hde15sd1ch4fvga.pdf"
+    ],
+    "description": [
+        false,
+        "Right-ange D-Sub recpetacle, 15 pin"
+    ],
+    "entity": "4185ad20-9f25-405a-b48d-378d9b646085",
+    "inherit_model": true,
+    "inherit_tags": false,
+    "manufacturer": [
+        false,
+        "Amphenol"
+    ],
+    "model": "a342b578-68d1-4c23-93ae-4c8f07f9fe1b",
+    "package": "58667d3d-92dd-446f-a0b5-c84e88968673",
+    "pad_map": {
+        "0e4fbb95-96b4-4701-89a3-9be90082f05a": {
+            "gate": "93799942-b841-45ad-a1a6-e73a73b4c542",
+            "pin": "8c3a351a-070d-4de3-b354-96f09834f366"
+        },
+        "10d4d02c-0b32-490b-b7eb-26afea3150be": {
+            "gate": "93799942-b841-45ad-a1a6-e73a73b4c542",
+            "pin": "2c51a654-ea91-460a-8fa9-f22678bd33e3"
+        },
+        "15832324-0f0f-4dab-bc83-680f71e1ed25": {
+            "gate": "93799942-b841-45ad-a1a6-e73a73b4c542",
+            "pin": "7500a3bc-3c0a-4f16-b7f2-4649804ca445"
+        },
+        "1dd6bac2-3153-4e8f-bd97-e00479f62f54": {
+            "gate": "93799942-b841-45ad-a1a6-e73a73b4c542",
+            "pin": "78833f81-220d-48ac-9dfb-fb968138c7e8"
+        },
+        "22458c57-264f-49f2-a72d-53426a1b7146": {
+            "gate": "93799942-b841-45ad-a1a6-e73a73b4c542",
+            "pin": "f0754c68-efe3-4403-b164-e0b5f5eed237"
+        },
+        "44692951-b4c5-49ab-9794-3621eebfe299": {
+            "gate": "93799942-b841-45ad-a1a6-e73a73b4c542",
+            "pin": "15565fa2-75eb-4ea9-9729-02319416214f"
+        },
+        "4b2841e9-f68c-46a6-82a9-ca454b848117": {
+            "gate": "93799942-b841-45ad-a1a6-e73a73b4c542",
+            "pin": "7d8ab18c-a0d1-424e-be3d-ef008814b748"
+        },
+        "570fe65f-0750-4a7e-9c9d-dbc0bbf8fdec": {
+            "gate": "93799942-b841-45ad-a1a6-e73a73b4c542",
+            "pin": "15288131-c891-4e25-9553-684ef833aa1b"
+        },
+        "87538f22-c31d-4bb5-91fa-24a72baccd1e": {
+            "gate": "93799942-b841-45ad-a1a6-e73a73b4c542",
+            "pin": "56e016c4-f654-4d16-afad-3b6eabe442d0"
+        },
+        "a462e238-62c4-4158-a491-d6d8da4a56a0": {
+            "gate": "93799942-b841-45ad-a1a6-e73a73b4c542",
+            "pin": "b868862e-5635-45a3-808b-ed68efb11515"
+        },
+        "b2970e12-57ee-408e-8f8c-6d170d1da014": {
+            "gate": "93799942-b841-45ad-a1a6-e73a73b4c542",
+            "pin": "7871cf03-523e-4941-8caf-6dd061abc6ce"
+        },
+        "b86eb983-a82c-45fa-b3c8-85659b7ed875": {
+            "gate": "93799942-b841-45ad-a1a6-e73a73b4c542",
+            "pin": "6304d6d8-754e-4d80-851a-fff6292ec2db"
+        },
+        "c65580cc-a3fb-475f-8c09-0e1e153cdb44": {
+            "gate": "93799942-b841-45ad-a1a6-e73a73b4c542",
+            "pin": "65ee1350-8943-4a9a-a48d-d235be9213b4"
+        },
+        "e1581e7e-8c98-4453-804b-019ea33463c6": {
+            "gate": "93799942-b841-45ad-a1a6-e73a73b4c542",
+            "pin": "364527c2-064b-4829-a18a-2d7719e65092"
+        },
+        "f16e4932-0c75-4a3a-9c7a-4821bfc47cb5": {
+            "gate": "93799942-b841-45ad-a1a6-e73a73b4c542",
+            "pin": "2af098f2-565c-4920-b408-060eae3d8a9a"
+        },
+        "f2535aca-45d0-475c-b8df-39c526cf882e": {
+            "gate": "93799942-b841-45ad-a1a6-e73a73b4c542",
+            "pin": "2af098f2-565c-4920-b408-060eae3d8a9a"
+        },
+        "f4b2c702-d18d-4f3d-8571-e1c820b76f0d": {
+            "gate": "93799942-b841-45ad-a1a6-e73a73b4c542",
+            "pin": "1e26ba76-cfab-4fb1-9bba-b2ee40376e33"
+        }
+    },
+    "parametric": {},
+    "tags": [
+        "connector",
+        "d-sub"
+    ],
+    "type": "part",
+    "uuid": "89e435dc-2337-44bc-b8e3-46d73eb91880",
+    "value": [
+        false,
+        ""
+    ]
+}

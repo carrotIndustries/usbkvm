@@ -1,0 +1,30 @@
+{
+    "MPN": [
+        false,
+        "GRM18x 0603 base"
+    ],
+    "base": "436da8ee-a0a4-4ab4-ae41-10323bb580e5",
+    "datasheet": [
+        false,
+        "https://www.murata.com/-/media/webrenewal/support/library/catalog/products/capacitor/ceramiccapacitor/c02e.ashx"
+    ],
+    "description": [
+        false,
+        "Chip Multilayer Ceramic Capacitors for General Purpose"
+    ],
+    "inherit_model": true,
+    "inherit_tags": true,
+    "manufacturer": [
+        false,
+        "Murata"
+    ],
+    "model": "96c366ee-a963-41a0-9cc8-54c646979695",
+    "parametric": {},
+    "tags": [],
+    "type": "part",
+    "uuid": "cab72b27-6d92-47d2-9694-d5f2b4b74d91",
+    "value": [
+        false,
+        ""
+    ]
+}

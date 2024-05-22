@@ -1,0 +1,110 @@
+{
+    "arcs": {},
+    "junctions": {
+        "0f192bd3-3291-4fcc-987c-82e697bc6879": {
+            "position": [
+                0,
+                2500000
+            ]
+        },
+        "7ace7990-ce06-48e9-b060-062fa244e213": {
+            "position": [
+                -11250000,
+                2500000
+            ]
+        },
+        "8384b6d3-a236-4a14-8758-270fa1f90724": {
+            "position": [
+                25000000,
+                0
+            ]
+        },
+        "e9bc7797-8b69-4f5d-b14c-d72de2528a6d": {
+            "position": [
+                0,
+                0
+            ]
+        },
+        "fb763fd7-14a9-4386-94e1-c805af339362": {
+            "position": [
+                -11250000,
+                0
+            ]
+        }
+    },
+    "lines": {
+        "03c791bd-ca0a-43aa-9a60-9cbfa63441d1": {
+            "from": "e9bc7797-8b69-4f5d-b14c-d72de2528a6d",
+            "layer": 0,
+            "to": "0f192bd3-3291-4fcc-987c-82e697bc6879",
+            "width": 0
+        },
+        "0e94eedd-89c0-4a1f-a464-99a0ed6ee2a9": {
+            "from": "7ace7990-ce06-48e9-b060-062fa244e213",
+            "layer": 0,
+            "to": "fb763fd7-14a9-4386-94e1-c805af339362",
+            "width": 0
+        },
+        "2bb901b1-85f8-4c6f-b950-2d4f6b98f9f0": {
+            "from": "e9bc7797-8b69-4f5d-b14c-d72de2528a6d",
+            "layer": 0,
+            "to": "8384b6d3-a236-4a14-8758-270fa1f90724",
+            "width": 0
+        },
+        "41bacf3b-d68b-42ff-a153-12aa554304bd": {
+            "from": "fb763fd7-14a9-4386-94e1-c805af339362",
+            "layer": 0,
+            "to": "e9bc7797-8b69-4f5d-b14c-d72de2528a6d",
+            "width": 0
+        },
+        "71fc851c-630d-4620-8aaf-a6d1f0d9afd7": {
+            "from": "0f192bd3-3291-4fcc-987c-82e697bc6879",
+            "layer": 0,
+            "to": "7ace7990-ce06-48e9-b060-062fa244e213",
+            "width": 0
+        }
+    },
+    "name": "Mechanical part",
+    "pins": {},
+    "polygons": {},
+    "text_placements": {},
+    "texts": {
+        "0b63a4f9-f171-4688-a436-5d42b6b224ad": {
+            "font": "simplex",
+            "from_smash": false,
+            "layer": 0,
+            "origin": "center",
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    1250000,
+                    1250000
+                ]
+            },
+            "size": 1500000,
+            "text": "$VALUE",
+            "width": 0
+        },
+        "e9750556-d3e5-4187-9c03-39f73b8a113e": {
+            "font": "simplex",
+            "from_smash": false,
+            "layer": 0,
+            "origin": "center",
+            "placement": {
+                "angle": 0,
+                "mirror": true,
+                "shift": [
+                    -1250000,
+                    1250000
+                ]
+            },
+            "size": 1500000,
+            "text": "$REFDES",
+            "width": 0
+        }
+    },
+    "type": "symbol",
+    "unit": "4204a51f-5541-47a3-9faa-e62701e087ee",
+    "uuid": "1eeb2204-4f6d-4de7-bd63-6b07ad593a91"
+}

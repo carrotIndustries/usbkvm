@@ -1,0 +1,20 @@
+{
+    "manufacturer": "",
+    "name": "Two-terminal ferrite bead",
+    "pins": {
+        "a48aebb4-3bc9-4931-aaa5-49c5dc594471": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "B",
+            "swap_group": 0
+        },
+        "b249853f-f1b3-4128-9ff3-be7e5939dfdc": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "A",
+            "swap_group": 0
+        }
+    },
+    "type": "unit",
+    "uuid": "742d3965-2e4f-4b84-b375-93c2c817d933"
+}

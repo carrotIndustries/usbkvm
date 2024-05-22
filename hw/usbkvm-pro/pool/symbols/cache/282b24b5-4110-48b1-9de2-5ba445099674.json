@@ -1,0 +1,141 @@
+{
+    "arcs": {},
+    "junctions": {
+        "03862bb8-9299-4628-a4cb-50fa1fafa841": {
+            "position": [
+                1818972,
+                2122225
+            ]
+        },
+        "19dfa3eb-017c-4b23-aea5-cdfa4bf7a9ed": {
+            "position": [
+                -606396,
+                2728512
+            ]
+        },
+        "584d2fa3-cd05-417b-afd4-51d6d2a24319": {
+            "position": [
+                1818972,
+                2122225
+            ]
+        },
+        "74e32701-7796-4eb7-85e9-cccc0ad9b95f": {
+            "position": [
+                606396,
+                -2728512
+            ]
+        },
+        "953ea7c8-de0d-467d-a387-4999b56c974d": {
+            "position": [
+                1818972,
+                2122225
+            ]
+        },
+        "a1c12450-2ba7-4154-9fbb-ea0cb85e9bb1": {
+            "position": [
+                -1818972,
+                -2122225
+            ]
+        },
+        "e05f72b3-f4a4-4a03-8d53-f29c46821e09": {
+            "position": [
+                606396,
+                -2728512
+            ]
+        },
+        "f99366b8-80f6-4fa6-8150-34d734e11301": {
+            "position": [
+                606396,
+                -2728512
+            ]
+        }
+    },
+    "lines": {
+        "0f24eec6-587b-4267-975d-165dbfb4e22f": {
+            "from": "19dfa3eb-017c-4b23-aea5-cdfa4bf7a9ed",
+            "layer": 0,
+            "to": "a1c12450-2ba7-4154-9fbb-ea0cb85e9bb1",
+            "width": 0
+        },
+        "1f4d3128-621f-47f4-9696-a1f8cf654d9e": {
+            "from": "584d2fa3-cd05-417b-afd4-51d6d2a24319",
+            "layer": 0,
+            "to": "e05f72b3-f4a4-4a03-8d53-f29c46821e09",
+            "width": 0
+        },
+        "662c743b-bebf-4bcf-ad07-aac42cf58fbc": {
+            "from": "74e32701-7796-4eb7-85e9-cccc0ad9b95f",
+            "layer": 0,
+            "to": "a1c12450-2ba7-4154-9fbb-ea0cb85e9bb1",
+            "width": 0
+        },
+        "c0c80ae9-0e3a-46a0-bd80-394e2b5ca14c": {
+            "from": "19dfa3eb-017c-4b23-aea5-cdfa4bf7a9ed",
+            "layer": 0,
+            "to": "03862bb8-9299-4628-a4cb-50fa1fafa841",
+            "width": 0
+        }
+    },
+    "name": "Two-terminal ferrite bead",
+    "pins": {
+        "a48aebb4-3bc9-4931-aaa5-49c5dc594471": {
+            "length": 2460000,
+            "name_visible": false,
+            "orientation": "right",
+            "pad_visible": false,
+            "position": [
+                3750000,
+                0
+            ]
+        },
+        "b249853f-f1b3-4128-9ff3-be7e5939dfdc": {
+            "length": 2460000,
+            "name_visible": false,
+            "orientation": "left",
+            "pad_visible": false,
+            "position": [
+                -3750000,
+                0
+            ]
+        }
+    },
+    "polygons": {},
+    "text_placements": {},
+    "texts": {
+        "58871b28-f5f4-4086-b803-c6b17d274301": {
+            "from_smash": false,
+            "layer": 0,
+            "origin": "center",
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    -3750000,
+                    -3750000
+                ]
+            },
+            "size": 1500000,
+            "text": "$VALUE",
+            "width": 0
+        },
+        "a31ff0c0-bbec-4af6-8f9d-3d322cc79c3a": {
+            "from_smash": false,
+            "layer": 0,
+            "origin": "center",
+            "placement": {
+                "angle": 0,
+                "mirror": false,
+                "shift": [
+                    -3750000,
+                    3750000
+                ]
+            },
+            "size": 1500000,
+            "text": "$REFDES",
+            "width": 0
+        }
+    },
+    "type": "symbol",
+    "unit": "742d3965-2e4f-4b84-b375-93c2c817d933",
+    "uuid": "282b24b5-4110-48b1-9de2-5ba445099674"
+}

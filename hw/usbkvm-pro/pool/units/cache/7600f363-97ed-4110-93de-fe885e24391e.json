@@ -1,0 +1,38 @@
+{
+    "manufacturer": "",
+    "name": "Buck converter with enable",
+    "pins": {
+        "3224ac96-9c80-44c1-b5d3-68cccba86587": {
+            "direction": "power_output",
+            "names": [],
+            "primary_name": "SW",
+            "swap_group": 0
+        },
+        "507ecbe5-855d-4f2d-b1b4-76c3cfeb34b0": {
+            "direction": "power_input",
+            "names": [],
+            "primary_name": "GND",
+            "swap_group": 0
+        },
+        "75ccfda7-82c9-48c5-b419-4151a4090408": {
+            "direction": "input",
+            "names": [],
+            "primary_name": "FB",
+            "swap_group": 0
+        },
+        "d36a617d-c2ac-4112-b44b-2ff8e3ba19c7": {
+            "direction": "power_input",
+            "names": [],
+            "primary_name": "VIN",
+            "swap_group": 0
+        },
+        "ecc52d7c-9ce8-476a-96ef-dfd24b1951f9": {
+            "direction": "input",
+            "names": [],
+            "primary_name": "EN",
+            "swap_group": 0
+        }
+    },
+    "type": "unit",
+    "uuid": "7600f363-97ed-4110-93de-fe885e24391e"
+}

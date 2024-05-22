@@ -1,0 +1,52 @@
+{
+    "annotation": {
+        "fill_gaps": true,
+        "ignore_unknown": false,
+        "keep": true,
+        "mode": "sheet_100",
+        "order": "right_down"
+    },
+    "block": "7c2a7a33-12d6-4559-bb81-e05a2a1a2a5c",
+    "group_tag_visible": false,
+    "name": "",
+    "pdf_export_settings": {
+        "min_line_width": 0,
+        "output_filename": ""
+    },
+    "rules": {
+        "connectivity": {
+            "enabled": true,
+            "include_unnamed": true,
+            "order": -1
+        }
+    },
+    "sheets": {
+        "189f5616-f44c-4958-ba57-f3815a6a9fe2": {
+            "arcs": {},
+            "block_symbols": {},
+            "bus_labels": {},
+            "bus_rippers": {},
+            "frame": "ba34cbaf-e36e-44c3-af16-bab253fc720b",
+            "index": 1,
+            "junctions": {},
+            "lines": {},
+            "name": "First sheet",
+            "net_labels": {},
+            "net_lines": {},
+            "power_symbols": {},
+            "symbols": {},
+            "texts": {},
+            "title_block_values": {}
+        }
+    },
+    "title_block_values": {
+        "author": "Lukas K.",
+        "date": "2024-04-06",
+        "project_name": "usbkvm-pro-panel",
+        "project_title": "usbkvm pro panel",
+        "rev": "1"
+    },
+    "type": "schematic_block",
+    "uuid": "1e7a172b-5313-41c1-bced-0ec5a09cd408",
+    "version": 8
+}

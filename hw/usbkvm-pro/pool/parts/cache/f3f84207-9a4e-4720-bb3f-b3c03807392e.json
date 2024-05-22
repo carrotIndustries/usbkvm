@@ -1,0 +1,55 @@
+{
+    "MPN": [
+        false,
+        "Three-terminal SOT-23 voltage regulator"
+    ],
+    "datasheet": [
+        false,
+        ""
+    ],
+    "description": [
+        false,
+        ""
+    ],
+    "entity": "1d0055e8-b654-4bb9-b3e2-5ad87079ecca",
+    "flags": {
+        "base_part": "set",
+        "exclude_bom": "clear",
+        "exclude_pnp": "clear"
+    },
+    "inherit_model": true,
+    "inherit_tags": false,
+    "manufacturer": [
+        false,
+        ""
+    ],
+    "model": "1ebac498-5423-42dc-90a6-7ad333585f6a",
+    "package": "a37e4931-af72-4de0-b4e4-0357747ba44d",
+    "pad_map": {
+        "531c3759-a1b6-40c6-9474-5554dc94bcec": {
+            "gate": "8b4c20d8-37fd-40a5-8239-db8803c0baa0",
+            "pin": "304699c2-7433-4b03-ad2c-c8df631dd06f"
+        },
+        "9fe9b6c3-f887-4523-976a-6aa050235658": {
+            "gate": "8b4c20d8-37fd-40a5-8239-db8803c0baa0",
+            "pin": "20f0495c-5e6e-4975-b440-1399ca09d3c3"
+        },
+        "be802fd1-5220-4258-a11f-c1529e6187e0": {
+            "gate": "8b4c20d8-37fd-40a5-8239-db8803c0baa0",
+            "pin": "559d5e91-2169-486b-9ece-8db9867957dd"
+        }
+    },
+    "parametric": {},
+    "tags": [
+        "ic",
+        "ldo",
+        "regulator"
+    ],
+    "type": "part",
+    "uuid": "f3f84207-9a4e-4720-bb3f-b3c03807392e",
+    "value": [
+        false,
+        ""
+    ],
+    "version": 1
+}

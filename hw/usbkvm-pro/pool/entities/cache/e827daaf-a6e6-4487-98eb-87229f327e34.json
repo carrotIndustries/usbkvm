@@ -1,0 +1,16 @@
+{
+    "gates": {
+        "722dc605-c38d-4567-8f65-5e42401a3158": {
+            "name": "Main",
+            "suffix": "",
+            "swap_group": 0,
+            "unit": "0a35a855-2cf9-49ba-bd58-5f7b92586d83"
+        }
+    },
+    "manufacturer": "MacroSilicion",
+    "name": "MS9288C",
+    "prefix": "U",
+    "tags": [],
+    "type": "entity",
+    "uuid": "e827daaf-a6e6-4487-98eb-87229f327e34"
+}

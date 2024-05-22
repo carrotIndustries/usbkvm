@@ -1,0 +1,206 @@
+{
+    "manufacturer": "MacroSilicion",
+    "name": "MS9288C",
+    "pins": {
+        "02b33ac2-237a-48ed-89f7-dc5951f40635": {
+            "direction": "open_collector",
+            "names": [],
+            "primary_name": "SCL",
+            "swap_group": 0
+        },
+        "121c546a-13c0-4c95-98f9-2db007092c7c": {
+            "direction": "bidirectional",
+            "names": [],
+            "primary_name": "REFQ1",
+            "swap_group": 0
+        },
+        "2014b6d2-794b-4b01-b2d7-50e2be14f6b8": {
+            "direction": "output",
+            "names": [],
+            "primary_name": "HDMITX2P",
+            "swap_group": 0
+        },
+        "20fa21b1-d25f-413d-a480-3bc28122e39b": {
+            "direction": "output",
+            "names": [],
+            "primary_name": "HDMITXCN",
+            "swap_group": 0
+        },
+        "2c71b870-a942-4d03-877c-e4a8c9d5dff3": {
+            "direction": "input",
+            "names": [],
+            "primary_name": "BLUE_IN",
+            "swap_group": 0
+        },
+        "399176ec-f68a-4d74-b43c-cdb913542d0b": {
+            "direction": "input",
+            "names": [],
+            "primary_name": "HSYNC",
+            "swap_group": 0
+        },
+        "439d87d8-0ee2-4f99-896f-223ed6317e34": {
+            "direction": "output",
+            "names": [],
+            "primary_name": "XTALO",
+            "swap_group": 0
+        },
+        "4bebd43c-4241-4532-a25a-5d3af55a1f2b": {
+            "direction": "power_input",
+            "names": [],
+            "primary_name": "AVDD18",
+            "swap_group": 0
+        },
+        "4c8668b4-7808-4976-b6d1-44b06f623925": {
+            "direction": "input",
+            "names": [],
+            "primary_name": "MCUSEL",
+            "swap_group": 0
+        },
+        "4f297844-41d5-4ef5-975a-cb656d818677": {
+            "direction": "output",
+            "names": [],
+            "primary_name": "HDMITX1P",
+            "swap_group": 0
+        },
+        "565794d3-7f38-481f-b040-3d4d1267cbbc": {
+            "direction": "output",
+            "names": [],
+            "primary_name": "HDMITX0P",
+            "swap_group": 0
+        },
+        "56fce77d-f98d-4114-8dfb-de28216c3e5f": {
+            "direction": "open_collector",
+            "names": [],
+            "primary_name": "DDCSCL",
+            "swap_group": 0
+        },
+        "5df29a87-7ead-47ee-afce-a91e9efe8392": {
+            "direction": "input",
+            "names": [],
+            "primary_name": "GREEN_IN",
+            "swap_group": 0
+        },
+        "635a0f97-356c-4b62-b8dd-d32480cfa3d4": {
+            "direction": "bidirectional",
+            "names": [],
+            "primary_name": "VREF",
+            "swap_group": 0
+        },
+        "6798d430-e1a4-4127-b715-65ccc21fc698": {
+            "direction": "power_input",
+            "names": [],
+            "primary_name": "DVDD33",
+            "swap_group": 0
+        },
+        "712bc16e-fe3e-4739-b5f4-7129d331ef0a": {
+            "direction": "power_input",
+            "names": [],
+            "primary_name": "AVDD18_ADC",
+            "swap_group": 0
+        },
+        "7232d118-7b15-487a-b184-414b8a59e1cc": {
+            "direction": "input",
+            "names": [],
+            "primary_name": "RED_IN",
+            "swap_group": 0
+        },
+        "769401b0-7d47-4110-96bf-3092220dce58": {
+            "direction": "input",
+            "names": [],
+            "primary_name": "ALIN",
+            "swap_group": 0
+        },
+        "826e6160-28b0-485d-8cf6-b1ef73da79ec": {
+            "direction": "output",
+            "names": [],
+            "primary_name": "HDMITX2N",
+            "swap_group": 0
+        },
+        "8dd01acb-61ed-4013-a9c1-90ef9d91e2aa": {
+            "direction": "output",
+            "names": [],
+            "primary_name": "HDMITX1N",
+            "swap_group": 0
+        },
+        "8eeaac11-a7a1-4220-a521-4d2c9802601b": {
+            "direction": "output",
+            "names": [],
+            "primary_name": "HDMITXCP",
+            "swap_group": 0
+        },
+        "9447070a-d552-48db-bc5a-3b980a0b146b": {
+            "direction": "bidirectional",
+            "names": [],
+            "primary_name": "HPD",
+            "swap_group": 0
+        },
+        "9bb307c0-6b32-401b-975f-add63d7adac3": {
+            "direction": "bidirectional",
+            "names": [],
+            "primary_name": "SWREF",
+            "swap_group": 0
+        },
+        "aa27a063-03da-4380-b6a5-d653dbcabf87": {
+            "direction": "input",
+            "names": [],
+            "primary_name": "VSYNC",
+            "swap_group": 0
+        },
+        "c2dae868-e7bb-4e60-9058-71d8b4f96075": {
+            "direction": "open_collector",
+            "names": [],
+            "primary_name": "SDA",
+            "swap_group": 0
+        },
+        "c2e21dc3-4fdf-4b06-8135-bd8f4202f7de": {
+            "direction": "bidirectional",
+            "names": [],
+            "primary_name": "REFQ0",
+            "swap_group": 0
+        },
+        "cb178043-d893-475b-82ff-46b20ed4f80e": {
+            "direction": "power_input",
+            "names": [],
+            "primary_name": "AVDD33",
+            "swap_group": 0
+        },
+        "d9f38b66-8fa2-4b47-8903-d16390746cfc": {
+            "direction": "power_input",
+            "names": [],
+            "primary_name": "DVDD18",
+            "swap_group": 0
+        },
+        "db1bed17-bde2-4448-a7f7-79ae3482163c": {
+            "direction": "output",
+            "names": [],
+            "primary_name": "HDMITX0N",
+            "swap_group": 0
+        },
+        "e1353f41-d7df-4c4e-9843-ec7701bf80ee": {
+            "direction": "input",
+            "names": [],
+            "primary_name": "ARIN",
+            "swap_group": 0
+        },
+        "e366a486-6f7e-4880-8cb6-0222c364571b": {
+            "direction": "power_input",
+            "names": [],
+            "primary_name": "GND",
+            "swap_group": 0
+        },
+        "ec154160-41a0-4f0e-bbef-67e7460aa9b6": {
+            "direction": "input",
+            "names": [],
+            "primary_name": "XTALI",
+            "swap_group": 0
+        },
+        "fd7d5405-5896-4a2d-9730-6af0d21e420b": {
+            "direction": "open_collector",
+            "names": [],
+            "primary_name": "DDCSDA",
+            "swap_group": 0
+        }
+    },
+    "type": "unit",
+    "uuid": "0a35a855-2cf9-49ba-bd58-5f7b92586d83"
+}

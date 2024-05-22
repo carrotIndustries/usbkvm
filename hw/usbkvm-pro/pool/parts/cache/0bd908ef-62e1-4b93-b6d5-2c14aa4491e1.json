@@ -1,0 +1,27 @@
+{
+    "MPN": [
+        false,
+        "CPL-CAP-X7R-0603-1UF-25V"
+    ],
+    "base": "436da8ee-a0a4-4ab4-ae41-10323bb580e5",
+    "inherit_tags": true,
+    "manufacturer": [
+        false,
+        "CPL"
+    ],
+    "parametric": {
+        "table": "capacitors",
+        "value": "1.000000e-06",
+        "wvdc": "25.0",
+        "type": "X7R"
+    },
+    "tags": [
+        "cpl"
+    ],
+    "type": "part",
+    "uuid": "0bd908ef-62e1-4b93-b6d5-2c14aa4491e1",
+    "value": [
+        false,
+        "1 \u00b5F"
+    ]
+}

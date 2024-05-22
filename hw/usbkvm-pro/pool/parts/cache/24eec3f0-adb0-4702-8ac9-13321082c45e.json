@@ -1,0 +1,27 @@
+{
+    "MPN": [
+        false,
+        "CPL-CAP-X7R-0402-100NF-16V"
+    ],
+    "base": "29043bfd-c944-47cb-ae49-8dc6e1cf7257",
+    "inherit_tags": true,
+    "manufacturer": [
+        false,
+        "CPL"
+    ],
+    "parametric": {
+        "table": "capacitors",
+        "value": "1.000000e-07",
+        "wvdc": "16.0",
+        "type": "X7R"
+    },
+    "tags": [
+        "cpl"
+    ],
+    "type": "part",
+    "uuid": "24eec3f0-adb0-4702-8ac9-13321082c45e",
+    "value": [
+        false,
+        "100 nF"
+    ]
+}

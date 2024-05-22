@@ -1,0 +1,41 @@
+{
+    "MPN": [
+        false,
+        "CL21B475KOFNNN"
+    ],
+    "base": "b00f7f9a-540d-4440-a73a-32732a8a8027",
+    "datasheet": [
+        false,
+        "http://www.samsungsem.com/kr/support/product-search/mlcc/CL21B475KOFNNNF.jsp"
+    ],
+    "description": [
+        false,
+        "Ceramic Capacitor 4.7 \u00b5F 16 V X7R"
+    ],
+    "inherit_model": true,
+    "inherit_tags": true,
+    "manufacturer": [
+        true,
+        ""
+    ],
+    "model": "96c366ee-a963-41a0-9cc8-54c646979695",
+    "orderable_MPNs": {
+        "33741e58-f053-485f-a8fb-5b4c929bd0b6": "CL21B475KOFNNNF",
+        "5fac5a61-bba1-4cca-9b2a-4432e52f9476": "CL21B475KOFNNNG",
+        "6a1e3f53-6884-4f00-bfea-3c41289282f8": "CL21B475KOFNNNE"
+    },
+    "parametric": {
+        "table": "capacitors",
+        "tolerance": "10",
+        "type": "X7R",
+        "value": "4.7000e-06",
+        "wvdc": "16.0"
+    },
+    "tags": [],
+    "type": "part",
+    "uuid": "7cebc95c-3fb3-4442-b6e2-e2403732db00",
+    "value": [
+        false,
+        "4.7 \u00b5F"
+    ]
+}

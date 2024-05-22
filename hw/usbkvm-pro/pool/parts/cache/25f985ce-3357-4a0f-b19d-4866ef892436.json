@@ -1,0 +1,32 @@
+{
+    "MPN": [
+        false,
+        "ERJ 0603 Resistor Base Part"
+    ],
+    "base": "cbeda48c-7fb0-4cfb-a4de-d9672e8cc190",
+    "datasheet": [
+        false,
+        "https://industrial.panasonic.com/cdbs/www-data/pdf/RDA0000/AOA0000C304.pdf"
+    ],
+    "description": [
+        false,
+        "Thick Film Resistor"
+    ],
+    "entity": "3ce770af-7be0-4f72-b2af-2c8010911aaf",
+    "inherit_model": true,
+    "inherit_tags": true,
+    "manufacturer": [
+        false,
+        "Panasonic"
+    ],
+    "model": "96c366ee-a963-41a0-9cc8-54c646979695",
+    "package": "5267224e-79d4-4ff6-afe5-ee24f02f36a3",
+    "parametric": {},
+    "tags": [],
+    "type": "part",
+    "uuid": "25f985ce-3357-4a0f-b19d-4866ef892436",
+    "value": [
+        true,
+        "base 0402 resistor"
+    ]
+}

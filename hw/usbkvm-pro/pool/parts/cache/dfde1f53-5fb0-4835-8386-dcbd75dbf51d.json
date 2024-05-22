@@ -1,0 +1,27 @@
+{
+    "MPN": [
+        false,
+        "CPL-CAP-X7R-0603-47NF-50V"
+    ],
+    "base": "436da8ee-a0a4-4ab4-ae41-10323bb580e5",
+    "inherit_tags": true,
+    "manufacturer": [
+        false,
+        "CPL"
+    ],
+    "parametric": {
+        "table": "capacitors",
+        "value": "4.700000e-08",
+        "wvdc": "50.0",
+        "type": "X7R"
+    },
+    "tags": [
+        "cpl"
+    ],
+    "type": "part",
+    "uuid": "dfde1f53-5fb0-4835-8386-dcbd75dbf51d",
+    "value": [
+        false,
+        "47 nF"
+    ]
+}

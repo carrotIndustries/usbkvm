@@ -1,0 +1,1 @@
+{"type": "entity", "manufacturer": "", "prefix": "J", "name": "Generic 6 pin connector", "tags": ["connector", "generic"], "uuid": "c92588a0-86ac-4b1c-aa07-b591777d2617", "gates": {"d5f74729-19b9-4eba-87f9-f789bd6babf8": {"name": "Main", "suffix": "", "swap_group": 0, "unit": "903eed88-3d25-4290-a8e9-484a2e625c45"}}}

@@ -1,0 +1,104 @@
+{
+    "manufacturer": "",
+    "name": "Generic 15 pin connector with mounting pad",
+    "pins": {
+        "15288131-c891-4e25-9553-684ef833aa1b": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "4",
+            "swap_group": 0
+        },
+        "15565fa2-75eb-4ea9-9729-02319416214f": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "13",
+            "swap_group": 0
+        },
+        "1e26ba76-cfab-4fb1-9bba-b2ee40376e33": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "3",
+            "swap_group": 0
+        },
+        "2af098f2-565c-4920-b408-060eae3d8a9a": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "Mount",
+            "swap_group": 0
+        },
+        "2c51a654-ea91-460a-8fa9-f22678bd33e3": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "11",
+            "swap_group": 0
+        },
+        "364527c2-064b-4829-a18a-2d7719e65092": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "12",
+            "swap_group": 0
+        },
+        "56e016c4-f654-4d16-afad-3b6eabe442d0": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "2",
+            "swap_group": 0
+        },
+        "6304d6d8-754e-4d80-851a-fff6292ec2db": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "5",
+            "swap_group": 0
+        },
+        "65ee1350-8943-4a9a-a48d-d235be9213b4": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "6",
+            "swap_group": 0
+        },
+        "7500a3bc-3c0a-4f16-b7f2-4649804ca445": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "15",
+            "swap_group": 0
+        },
+        "7871cf03-523e-4941-8caf-6dd061abc6ce": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "1",
+            "swap_group": 0
+        },
+        "78833f81-220d-48ac-9dfb-fb968138c7e8": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "14",
+            "swap_group": 0
+        },
+        "7d8ab18c-a0d1-424e-be3d-ef008814b748": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "9",
+            "swap_group": 0
+        },
+        "8c3a351a-070d-4de3-b354-96f09834f366": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "7",
+            "swap_group": 0
+        },
+        "b868862e-5635-45a3-808b-ed68efb11515": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "8",
+            "swap_group": 0
+        },
+        "f0754c68-efe3-4403-b164-e0b5f5eed237": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "10",
+            "swap_group": 0
+        }
+    },
+    "type": "unit",
+    "uuid": "8b26c7c3-ac0b-4cb0-9bf9-ab5e75469fd7"
+}

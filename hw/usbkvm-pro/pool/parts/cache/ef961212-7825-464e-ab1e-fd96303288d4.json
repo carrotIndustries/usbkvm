@@ -1,0 +1,37 @@
+{
+    "MPN": [
+        false,
+        "GRM188R71A225KE15"
+    ],
+    "base": "cab72b27-6d92-47d2-9694-d5f2b4b74d91",
+    "datasheet": [
+        false,
+        "https://www.murata.com/en-us/products/productdetail.aspx?partno=GRM188R71A225KE15%23"
+    ],
+    "description": [
+        false,
+        "MLCC General Purpose 2.2 \u00b5F, 10 V, X7R"
+    ],
+    "inherit_model": true,
+    "inherit_tags": true,
+    "manufacturer": [
+        true,
+        ""
+    ],
+    "model": "96c366ee-a963-41a0-9cc8-54c646979695",
+    "orderable_MPNs": {},
+    "parametric": {
+        "table": "capacitors",
+        "tolerance": "10",
+        "type": "X7R",
+        "value": "2.2000e-06",
+        "wvdc": "10"
+    },
+    "tags": [],
+    "type": "part",
+    "uuid": "ef961212-7825-464e-ab1e-fd96303288d4",
+    "value": [
+        false,
+        "2.2 \u00b5F"
+    ]
+}

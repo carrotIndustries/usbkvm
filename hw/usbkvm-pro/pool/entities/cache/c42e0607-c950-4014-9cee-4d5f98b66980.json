@@ -1,0 +1,19 @@
+{
+    "gates": {
+        "efb1a118-b02e-4fc2-b5ee-03b9383ceb24": {
+            "name": "Main",
+            "suffix": "",
+            "swap_group": 0,
+            "unit": "bff29d97-da56-4d9d-b5a4-cc1e43c402b3"
+        }
+    },
+    "manufacturer": "",
+    "name": "HDMI connector",
+    "prefix": "J",
+    "tags": [
+        "connector",
+        "hdmi"
+    ],
+    "type": "entity",
+    "uuid": "c42e0607-c950-4014-9cee-4d5f98b66980"
+}

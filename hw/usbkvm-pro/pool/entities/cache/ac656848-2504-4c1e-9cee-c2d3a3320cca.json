@@ -1,0 +1,20 @@
+{
+    "gates": {
+        "ab5e5821-17f1-4052-bde8-4791cb782b42": {
+            "name": "Main",
+            "suffix": "",
+            "swap_group": 0,
+            "unit": "742d3965-2e4f-4b84-b375-93c2c817d933"
+        }
+    },
+    "manufacturer": "",
+    "name": "Two-terminal ferrite bead",
+    "prefix": "FB",
+    "tags": [
+        "bead",
+        "ferrite",
+        "magetics"
+    ],
+    "type": "entity",
+    "uuid": "ac656848-2504-4c1e-9cee-c2d3a3320cca"
+}

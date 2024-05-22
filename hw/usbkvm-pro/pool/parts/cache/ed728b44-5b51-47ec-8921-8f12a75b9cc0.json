@@ -1,0 +1,30 @@
+{
+    "MPN": [
+        false,
+        "JE2835AWT-R-U27EA0000-N0000001"
+    ],
+    "base": "dc7e4149-6cca-4fef-8517-7f63db7d5bb3",
+    "datasheet": [
+        true,
+        "https://downloads.cree-led.com/files/ds/j/JSeries-2835-3V-Consolidated.pdf"
+    ],
+    "description": [
+        true,
+        "J Series® 2835 3‑V LED"
+    ],
+    "inherit_model": true,
+    "inherit_tags": true,
+    "manufacturer": [
+        true,
+        "Cree"
+    ],
+    "model": "1e549660-1573-4328-b68d-3c195e9f9c44",
+    "parametric": {},
+    "tags": [],
+    "type": "part",
+    "uuid": "ed728b44-5b51-47ec-8921-8f12a75b9cc0",
+    "value": [
+        true,
+        "J2835 base part"
+    ]
+}

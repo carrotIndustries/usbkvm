@@ -1,0 +1,26 @@
+{
+    "manufacturer": "",
+    "name": "Crystal with shield",
+    "pins": {
+        "29995253-b4b1-4c7c-a049-b6db2713ca7c": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "B",
+            "swap_group": 1
+        },
+        "852f1fe6-06dc-4661-8a14-61a9a6ebb26a": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "A",
+            "swap_group": 1
+        },
+        "d118db9b-0850-4b8a-a5a0-5f50299fd232": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "SHIELD",
+            "swap_group": 0
+        }
+    },
+    "type": "unit",
+    "uuid": "6ac799fd-9f71-4cb6-b667-2e7d4039491c"
+}

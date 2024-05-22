@@ -1,0 +1,51 @@
+{
+    "MPN": [
+        false,
+        "base 0806 inductor"
+    ],
+    "datasheet": [
+        false,
+        ""
+    ],
+    "description": [
+        false,
+        ""
+    ],
+    "entity": "1d534e1d-704a-4d44-a6e6-c6106a2827ab",
+    "flags": {
+        "base_part": "set",
+        "exclude_bom": "clear",
+        "exclude_pnp": "clear"
+    },
+    "inherit_model": true,
+    "inherit_tags": false,
+    "manufacturer": [
+        false,
+        ""
+    ],
+    "model": "96c366ee-a963-41a0-9cc8-54c646979695",
+    "package": "f4eedd22-4468-455b-8de8-1d5d3328f543",
+    "pad_map": {
+        "487097d5-96e7-4e99-841a-42e1abf1d9cc": {
+            "gate": "48af78e5-730e-44eb-977a-cf188e4fcb39",
+            "pin": "6a44037c-65e2-4876-9359-42890048841d"
+        },
+        "a80c8983-726b-40b0-87a2-ef2e6575ff1b": {
+            "gate": "48af78e5-730e-44eb-977a-cf188e4fcb39",
+            "pin": "dda0ec99-5d70-4fbe-a8db-897542e7554e"
+        }
+    },
+    "parametric": {},
+    "tags": [
+        "inductor",
+        "passive",
+        "smd"
+    ],
+    "type": "part",
+    "uuid": "9ebf0f9d-cb5e-4e0a-bd03-ca0e0456cf11",
+    "value": [
+        false,
+        ""
+    ],
+    "version": 1
+}

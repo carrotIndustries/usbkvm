@@ -1,0 +1,40 @@
+{
+    "block_instance_mappings": {},
+    "block_instances": {},
+    "bom_export_settings": {
+        "concrete_parts": {},
+        "csv_settings": {
+            "columns": [
+                "QTY",
+                "MPN",
+                "value",
+                "manufacturer",
+                "refdes"
+            ],
+            "order": "asc",
+            "sort_column": "refdes"
+        },
+        "orderable_MPNs": {},
+        "output_filename": ""
+    },
+    "buses": {},
+    "components": {},
+    "group_names": {},
+    "name": "Top",
+    "net_class_default": "1f7b9dca-ae60-4c9a-8bb0-6e4d48a71e2e",
+    "net_classes": {
+        "1f7b9dca-ae60-4c9a-8bb0-6e4d48a71e2e": {
+            "name": "default"
+        }
+    },
+    "nets": {},
+    "project_meta": {
+        "author": "Lukas K.",
+        "date": "2024-04-06",
+        "project_name": "usbkvm-pro-panel",
+        "project_title": "usbkvm pro panel",
+        "rev": "1"
+    },
+    "tag_names": {},
+    "uuid": "7c2a7a33-12d6-4559-bb81-e05a2a1a2a5c"
+}

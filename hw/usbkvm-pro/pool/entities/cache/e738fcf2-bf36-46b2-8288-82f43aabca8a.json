@@ -1,0 +1,19 @@
+{
+    "gates": {
+        "01320073-bd92-4000-8ec0-7012e2106a18": {
+            "name": "Main",
+            "suffix": "",
+            "swap_group": 0,
+            "unit": "4204a51f-5541-47a3-9faa-e62701e087ee"
+        }
+    },
+    "manufacturer": "",
+    "name": "Mechanical part",
+    "prefix": "MP",
+    "tags": [
+        "generic",
+        "mechanical"
+    ],
+    "type": "entity",
+    "uuid": "e738fcf2-bf36-46b2-8288-82f43aabca8a"
+}

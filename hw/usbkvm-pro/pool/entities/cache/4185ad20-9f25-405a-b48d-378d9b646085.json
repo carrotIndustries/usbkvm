@@ -1,0 +1,19 @@
+{
+    "gates": {
+        "93799942-b841-45ad-a1a6-e73a73b4c542": {
+            "name": "Main",
+            "suffix": "",
+            "swap_group": 0,
+            "unit": "8b26c7c3-ac0b-4cb0-9bf9-ab5e75469fd7"
+        }
+    },
+    "manufacturer": "",
+    "name": "Generic 15 pin connector with mounting pad",
+    "prefix": "J",
+    "tags": [
+        "connector",
+        "generic"
+    ],
+    "type": "entity",
+    "uuid": "4185ad20-9f25-405a-b48d-378d9b646085"
+}
