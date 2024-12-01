@@ -556,20 +556,25 @@ void MainWindow::update_input_status()
     auto &hal = m_device->hal();
     std::string label;
 
-    auto w = hal.get_input_width();
-    auto h = hal.get_input_height();
-    auto fps = hal.get_input_fps();
-    label += format_resolution(w, h) + std::format(" {:.02f}Hz", fps);
-    update_auto_capture_resolution(w, h);
+    if (hal.get_has_signal()) {
+        auto w = hal.get_input_width();
+        auto h = hal.get_input_height();
+        auto fps = hal.get_input_fps();
+        label += format_resolution(w, h) + std::format("  {:.01f}Hz", fps);
+        update_auto_capture_resolution(w, h);
 
-    if (m_device->get_model() == Model::USBKVM_PRO) {
-        if (auto mcu = m_device->mcu()) {
-            auto status = mcu->get_status();
-            if (status.vga_connected)
-                label += " VGA";
-            else
-                label += " HDMI";
+        if (m_device->get_model() == Model::USBKVM_PRO) {
+            if (auto mcu = m_device->mcu()) {
+                auto status = mcu->get_status();
+                if (status.vga_connected)
+                    label += " VGA";
+                else
+                    label += " HDMI";
+            }
         }
+    }
+    else {
+        label = "No signal";
     }
 
 

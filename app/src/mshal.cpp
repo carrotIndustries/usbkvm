@@ -78,11 +78,10 @@ double MsHal::get_input_fps()
     return mem_read16be(0xc578) / 100.;
 }
 
-// doesn't work reliably
+// https://github.com/BertoldVdb/ms-tools/issues/18#issuecomment-2509151910
 bool MsHal::get_has_signal()
 {
-    std::cout << mem_read8(0xc568) << std::endl;
-    return mem_read8(0xc568) & 1;
+    return mem_read8(0xc74a) & 1;
 }
 
 MsHal::~MsHal()
