@@ -17,6 +17,9 @@ public:
     double get_input_fps();
     bool get_has_signal();
 
+    // for python interface
+    void close();
+
     virtual ~MsHal();
 
 private:

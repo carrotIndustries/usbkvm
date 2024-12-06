@@ -17,14 +17,24 @@ else
 	hidapi = dependency('hidapi-hidraw')
 endif
 
-src = files(
-  'src/usbkvm.cpp',
+libpython = dependency('python3', required: false, disabler:true)
+pybind11 = dependency('pybind11', required: false, disabler:true)
+
+src_common = files(
   'src/mshal.cpp',
   'src/i2c_util.cpp',
   'src/usbkvm_mcu.cpp',
   'src/usbkvm_device.cpp',
+)
+
+src = files(
+  'src/usbkvm.cpp',
   'src/main_window.cpp',
   'src/type_window.cpp'
+) + src_common
+
+src_python = files(
+  'src/usbkvm_py.cpp'
 )
 
 gnome = import('gnome')
@@ -50,6 +60,7 @@ if is_libstdcpp
 endif
 
 build_dependencies = [gtk3, gtkmm, gst, hidapi]
+build_dependencies_py = [hidapi, libpython, pybind11]
 
 prog_python = find_program('python3')
 
@@ -93,3 +104,10 @@ usbkvm = executable('usbkvm',
     install: true
 )
 
+usbkvm_py = shared_module('usbkvm_py',
+    [src_python, src_common, mslib],
+    dependencies: build_dependencies_py,
+    include_directories: include_directories,
+    build_by_default: false,
+    name_prefix: ''
+)

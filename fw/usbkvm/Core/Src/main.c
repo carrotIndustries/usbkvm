@@ -211,14 +211,25 @@ void i2c_req_handle_get_status(const i2c_req_unknown_t *unk)
   i2c_resp_buf.status.seq = unk->seq;
 }
 
+static i2c_req_set_led_t led_override;
+
+static uint8_t get_led(uint8_t led, uint8_t orig_state) {
+  if (led_override.mask & led)
+    return led_override.stat & led;
+  return orig_state;
+}
+
+void i2c_req_handle_set_led(const i2c_req_set_led_t *led) {
+  led_override = *led;
+}
 
 static uint16_t led_usb_counter = 0;
 
-
 void update_leds()
 {
-  HAL_GPIO_WritePin(LED_USB_GPIO_Port, LED_USB_Pin, led_usb_counter!=0);
-  if(led_usb_counter)
+  HAL_GPIO_WritePin(LED_USB_GPIO_Port, LED_USB_Pin,
+                    get_led(I2C_LED_USB, led_usb_counter != 0));
+  if (led_usb_counter)
     led_usb_counter--;
 }
 
@@ -238,6 +249,9 @@ void i2c_req_dispatch(i2c_req_all_t *req)
       break;
     case I2C_REQ_GET_STATUS:
       i2c_req_handle_get_status(&req->unk);
+      break;
+    case I2C_REQ_SET_LED:
+      i2c_req_handle_set_led(&req->set_led);
       break;
     case I2C_REQ_ENTER_BOOTLOADER:
       enter_bootloader();
@@ -299,9 +313,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1) {
     tud_task();
-    HAL_GPIO_WritePin(LED_HID_GPIO_Port, LED_HID_Pin, tud_hid_n_ready(ITF_NUM_KEYBOARD));
-    
-    if(hw_model == I2C_MODEL_USBKVM_PRO) {
+    HAL_GPIO_WritePin(LED_HID_GPIO_Port, LED_HID_Pin,
+                      get_led(I2C_LED_HID, tud_hid_n_ready(ITF_NUM_KEYBOARD)));
+    HAL_GPIO_WritePin(LED_HDMI_GPIO_Port, LED_HDMI_Pin,
+                      get_led(I2C_LED_HDMI, 0));
+
+    if (hw_model == I2C_MODEL_USBKVM_PRO) {
       uint8_t has_vga = read_vga_connected();
       HAL_GPIO_WritePin(LED_VGA_GPIO_Port, LED_VGA_Pin, has_vga);
       HAL_GPIO_WritePin(INPUT_SEL2_GPIO_Port, INPUT_SEL2_Pin, !has_vga);

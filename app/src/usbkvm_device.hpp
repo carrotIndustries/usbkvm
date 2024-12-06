@@ -26,9 +26,13 @@ public:
 
     Model get_model() const
     {
+        if (!m_model)
+            return Model::UNKNOWN;
         return m_model.value();
     }
     void set_model(Model model);
+
+    void close_hal();
 
     ~UsbKvmDevice();
 

@@ -84,9 +84,13 @@ bool MsHal::get_has_signal()
     return mem_read8(0xc74a) & 1;
 }
 
-MsHal::~MsHal()
+void MsHal::close()
 {
     std::lock_guard<std::mutex> guard(m_mutex);
-
     MsHalClose(m_handle);
+}
+
+MsHal::~MsHal()
+{
+    close();
 }

@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 
-#define I2C_VERSION 3
+#define I2C_VERSION 4
 
 #define I2C_REQ_COMMON \
     uint8_t type;\
@@ -13,7 +13,8 @@
 #define I2C_REQ_GET_INFO (3)
 #define I2C_REQ_ENTER_BOOTLOADER (4)
 #define I2C_REQ_GET_STATUS (5)
-    
+#define I2C_REQ_SET_LED (6)
+
 typedef struct {
     I2C_REQ_COMMON
 } i2c_req_unknown_t;
@@ -34,10 +35,21 @@ typedef struct {
     int8_t v;
 } i2c_req_mouse_report_t;
 
+#define I2C_LED_USB (1 << 0)
+#define I2C_LED_HID (1 << 1)
+#define I2C_LED_HDMI (1 << 2)
+
+typedef struct {
+  I2C_REQ_COMMON
+  uint8_t mask;
+  uint8_t stat;
+} i2c_req_set_led_t;
+
 typedef union {
     i2c_req_unknown_t unk;
     i2c_req_keyboard_report_t kbd;
     i2c_req_mouse_report_t mouse;
+    i2c_req_set_led_t set_led;
 } i2c_req_all_t;
 
 #define I2C_RESP_COMMON \

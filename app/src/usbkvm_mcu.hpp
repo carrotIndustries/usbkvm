@@ -57,6 +57,15 @@ public:
     static unsigned int get_expected_version();
     void enter_bootloader();
 
+    enum class Led {
+        NONE = 0,
+        USB = (1 << 0),
+        HID = (1 << 1),
+        HDMI = (1 << 2),
+        ALL = USB | HID | HDMI,
+    };
+    void set_led(Led mask, Led stat);
+
     ~UsbKvmMcu();
 
 private:
@@ -70,5 +79,9 @@ template <> struct enable_bitmask_operators<UsbKvmMcu::MouseReport::Button> {
 };
 
 template <> struct enable_bitmask_operators<UsbKvmMcu::KeyboardReport::Modifier> {
+    static constexpr bool enable = true;
+};
+
+template <> struct enable_bitmask_operators<UsbKvmMcu::Led> {
     static constexpr bool enable = true;
 };

@@ -32,4 +32,9 @@ void UsbKvmDevice::set_model(Model model)
     m_model = model;
 }
 
+void UsbKvmDevice::close_hal()
+{
+    m_hal->close();
+}
+
 UsbKvmDevice::~UsbKvmDevice() = default;

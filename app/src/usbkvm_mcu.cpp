@@ -162,4 +162,27 @@ unsigned int UsbKvmMcu::get_expected_version()
     return I2C_VERSION;
 }
 
+static uint8_t translate_led(UsbKvmMcu::Led led)
+{
+    uint8_t r = 0;
+#define X(l)                                                                                                           \
+    if ((led & UsbKvmMcu::Led::l) != UsbKvmMcu::Led::NONE)                                                             \
+        r |= I2C_LED_##l;
+    X(HID)
+    X(HDMI)
+    X(USB)
+#undef X
+
+    return r;
+}
+
+void UsbKvmMcu::set_led(Led mask, Led stat)
+{
+    std::lock_guard<std::mutex> guard(m_mutex);
+
+    i2c_req_set_led_t msg = {
+            .type = I2C_REQ_SET_LED, .seq = m_seq++, .mask = translate_led(mask), .stat = translate_led(stat)};
+    i2c_send(m_i2c, msg);
+}
+
 UsbKvmMcu::~UsbKvmMcu() = default;
