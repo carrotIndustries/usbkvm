@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <array>
 #include <mutex>
+#include <span>
 
 class II2COneDevice;
 
@@ -50,6 +51,7 @@ public:
 
     struct Info {
         unsigned int version;
+        bool in_bootloader;
         Model model;
     };
 
@@ -65,6 +67,11 @@ public:
         ALL = USB | HID | HDMI,
     };
     void set_led(Led mask, Led stat);
+    
+    bool flash_unlock();
+    bool flash_lock();
+    bool flash_erase(unsigned int first_page, unsigned int n_pages);
+    bool flash_write(unsigned int offset, std::span<const uint8_t, 256> data);
 
     ~UsbKvmMcu();
 

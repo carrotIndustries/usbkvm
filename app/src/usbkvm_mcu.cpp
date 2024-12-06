@@ -1,9 +1,12 @@
 #include "usbkvm_mcu.hpp"
 #include "ii2c.hpp"
 #include <algorithm>
+#include <cstring>
 #include <iostream>
 #include <unistd.h>
-#include "../fw/usbkvm/Core/Inc/i2c_msg.h"
+#include <thread>
+#define I2C_HAVE_BOOTLOADER
+#include "../fw/common/Inc/i2c_msg.h"
 
 #define TU_BIT(n) (1UL << (n))
 
@@ -57,6 +60,22 @@ template <typename Ts, typename Tr> void i2c_send_recv(II2COneDevice &i2c, const
 {
     i2c_send(i2c, req);
     i2c_recv(i2c, req.seq, resp);
+}
+
+template <typename Ts, typename Tr> void i2c_send_recv_retry(II2COneDevice &i2c, const Ts &req, Tr &resp)
+{
+    i2c_send(i2c, req);
+    for (size_t i = 0; i < 100; i++) {
+        try {
+            i2c_recv(i2c, req.seq, resp);
+            return;
+        }
+        catch (std::runtime_error &err) {
+            using namespace std::chrono_literals;
+            std::this_thread::sleep_for(10ms);
+        }
+    }
+    throw std::runtime_error("I2C receive timeout");
 }
 
 void UsbKvmMcu::send_report(const MouseReport &report)
@@ -133,7 +152,11 @@ UsbKvmMcu::Info UsbKvmMcu::get_info()
         break;
     }
 
-    return {.version = resp.version, .model = model};
+    return {
+            .version = static_cast<unsigned int>(resp.version & I2C_VERSION_MASK),
+            .in_bootloader = static_cast<bool>(resp.version & I2C_VERSION_BOOT),
+            .model = model,
+    };
 }
 
 void UsbKvmMcu::enter_bootloader()
@@ -184,5 +207,56 @@ void UsbKvmMcu::set_led(Led mask, Led stat)
             .type = I2C_REQ_SET_LED, .seq = m_seq++, .mask = translate_led(mask), .stat = translate_led(stat)};
     i2c_send(m_i2c, msg);
 }
+
+bool UsbKvmMcu::flash_unlock()
+{
+    std::lock_guard<std::mutex> guard(m_mutex);
+
+    i2c_req_unknown_t msg = {.type = I2C_REQ_FLASH_UNLOCK, .seq = m_seq++};
+    i2c_resp_flash_status_t resp;
+    i2c_send_recv(m_i2c, msg, resp);
+
+    return resp.success;
+}
+
+bool UsbKvmMcu::flash_lock()
+{
+    std::lock_guard<std::mutex> guard(m_mutex);
+
+    i2c_req_unknown_t msg = {.type = I2C_REQ_FLASH_LOCK, .seq = m_seq++};
+    i2c_send(m_i2c, msg);
+
+    return true;
+}
+
+bool UsbKvmMcu::flash_erase(unsigned int first_page, unsigned int n_pages)
+{
+    std::lock_guard<std::mutex> guard(m_mutex);
+
+    i2c_req_flash_erase_t msg = {
+            .type = I2C_REQ_FLASH_ERASE,
+            .seq = m_seq++,
+            .first_page = static_cast<uint8_t>(first_page),
+            .n_pages = static_cast<uint8_t>(n_pages),
+    };
+    i2c_resp_flash_status_t resp;
+    i2c_send_recv_retry(m_i2c, msg, resp);
+
+    return resp.success;
+}
+
+bool UsbKvmMcu::flash_write(unsigned int offset, std::span<const uint8_t, 256> data)
+{
+    std::lock_guard<std::mutex> guard(m_mutex);
+
+    i2c_req_flash_write_t msg = {.type = I2C_REQ_FLASH_WRITE, .seq = m_seq++, .offset = static_cast<uint16_t>(offset)};
+    static_assert(data.size() == sizeof(msg.data));
+    memcpy(msg.data, data.data(), sizeof(msg.data));
+    i2c_resp_flash_status_t resp;
+    i2c_send_recv_retry(m_i2c, msg, resp);
+
+    return resp.success;
+}
+
 
 UsbKvmMcu::~UsbKvmMcu() = default;

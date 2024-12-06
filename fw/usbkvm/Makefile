@@ -84,7 +84,9 @@ tinyusb/src/host/usbh.c\
 tinyusb/src/device/usbd.c\
 tinyusb/src/device/usbd_control.c\
 tinyusb/src/portable/st/stm32_fsdev/dcd_stm32_fsdev.c\
-Core/Src/usb_descriptors.c
+Core/Src/usb_descriptors.c\
+../common/Src/i2c_comm.c\
+../common/Src/usbkvm_common.c\
 
 # ASM sources
 ASM_SOURCES =  \

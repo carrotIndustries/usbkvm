@@ -24,8 +24,8 @@
 /* USER CODE BEGIN Includes */
 #include "tusb.h"
 #include "usb_descriptors.h"
-#include "i2c_msg.h"
-#include "common/tusb_fifo.h"
+#include "../../../common/Inc/i2c_comm.h"
+#include "../../../common/Inc/usbkvm_common.h"
 #include "boot.h"
 /* USER CODE END Includes */
 
@@ -63,8 +63,6 @@ static void MX_USB_PCD_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-static uint8_t hw_model = I2C_MODEL_USBKVM;
 
 static uint8_t read_vga_connected()
 {
@@ -111,67 +109,6 @@ typedef struct TU_ATTR_PACKED {
 } hid_mouse_abs_report_t;
 
 
-static void *ptxbuf ;
-static void *prxbuf;
-
-static i2c_req_all_t i2c_req_rxbuf;
-static i2c_resp_all_t i2c_resp_txbuf;
-static i2c_resp_all_t i2c_resp_buf;
-static uint8_t is_rx;
-
-static void copy_resp(i2c_resp_all_t *dest, const i2c_resp_all_t *src)
-{
-  const uint8_t *ps = (const void*)src;
-  uint8_t *pd = (void*)dest;
-  ps+=sizeof(i2c_resp_all_t);
-  pd+=sizeof(i2c_resp_all_t);
-  do {
-    ps--;
-    pd--;
-    *pd = *ps;
-  } while(ps != (void*)src);
-}
-
-
-TU_FIFO_DEF(i2c_req_fifo,  4, i2c_req_all_t, 0);
-
-void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode)
-{
-  if( TransferDirection==I2C_DIRECTION_TRANSMIT ) {
-    is_rx = 1;
-    prxbuf = &i2c_req_rxbuf;
-    HAL_I2C_Slave_Seq_Receive_IT(hi2c, prxbuf, 1, I2C_NEXT_FRAME);
-    prxbuf++;
-  }
-  else {
-    is_rx = 0;
-    copy_resp(&i2c_resp_txbuf, &i2c_resp_buf);
-    ptxbuf = &i2c_resp_txbuf;
-    ptxbuf++; // skip _head
-    HAL_I2C_Slave_Seq_Transmit_IT(hi2c, ptxbuf, 1, I2C_NEXT_FRAME);
-    ptxbuf++;
-  }
-}
-
-void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c)
-{
-  HAL_I2C_Slave_Seq_Transmit_IT(hi2c, ptxbuf, 1, I2C_NEXT_FRAME);
-  ptxbuf++;
-}
-
-void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c) {
-  HAL_I2C_Slave_Seq_Receive_IT(hi2c, prxbuf, 1, I2C_NEXT_FRAME);
-  prxbuf++;
-}
-
-void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c)
-{
-  if(is_rx) {
-    tu_fifo_write(&i2c_req_fifo, &i2c_req_rxbuf);
-  }
-  hi2c1.Instance->TXDR = 0x83;
-  HAL_I2C_EnableListen_IT(hi2c); // slave is ready again
-}
 
 void i2c_req_handle_keyboard_report(i2c_req_keyboard_report_t *req)
 {
@@ -198,7 +135,7 @@ void i2c_req_handle_mouse_report(i2c_req_mouse_report_t *req)
 void i2c_req_handle_get_info(const i2c_req_unknown_t *unk)
 {
   i2c_resp_buf.info.version = I2C_VERSION;
-  i2c_resp_buf.info.model = hw_model;
+  i2c_resp_buf.info.model = get_hw_model();
   i2c_resp_buf.info.seq = unk->seq;
 }
 
@@ -233,7 +170,7 @@ void update_leds()
     led_usb_counter--;
 }
 
-void i2c_req_dispatch(i2c_req_all_t *req)
+static void i2c_req_dispatch(i2c_req_all_t *req)
 {
   switch(req->unk.type) {
     case I2C_REQ_KEYBOARD_REPORT:
@@ -293,10 +230,9 @@ int main(void)
   MX_USB_PCD_Init();
   /* USER CODE BEGIN 2 */
   
-  if(HAL_GPIO_ReadPin(HW_DETECT_GPIO_Port, HW_DETECT_Pin) == GPIO_PIN_RESET)
-    hw_model = I2C_MODEL_USBKVM_PRO;
+  update_hw_model();
   
-  if(hw_model == I2C_MODEL_USBKVM_PRO) {
+  if(get_hw_model() == I2C_MODEL_USBKVM_PRO) {
     HAL_GPIO_WritePin(INPUT_SEL1_GPIO_Port, INPUT_SEL1_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(INPUT_SEL2_GPIO_Port, INPUT_SEL2_Pin, GPIO_PIN_RESET);
   }
@@ -318,14 +254,14 @@ int main(void)
     HAL_GPIO_WritePin(LED_HDMI_GPIO_Port, LED_HDMI_Pin,
                       get_led(I2C_LED_HDMI, 0));
 
-    if (hw_model == I2C_MODEL_USBKVM_PRO) {
+    if (get_hw_model() == I2C_MODEL_USBKVM_PRO) {
       uint8_t has_vga = read_vga_connected();
       HAL_GPIO_WritePin(LED_VGA_GPIO_Port, LED_VGA_Pin, has_vga);
       HAL_GPIO_WritePin(INPUT_SEL2_GPIO_Port, INPUT_SEL2_Pin, !has_vga);
     }
     
     i2c_req_all_t req;
-    if(tu_fifo_read(&i2c_req_fifo, &req)) {
+    if(i2c_read_req(&req)) {
       i2c_req_dispatch(&req);
     }
     /* USER CODE END WHILE */
