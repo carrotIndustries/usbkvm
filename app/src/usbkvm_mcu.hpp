@@ -68,11 +68,13 @@ public:
     };
     void set_led(Led mask, Led stat);
     
-    bool flash_unlock();
-    bool flash_lock();
-    bool flash_erase(unsigned int first_page, unsigned int n_pages);
-    bool flash_write(unsigned int offset, std::span<const uint8_t, 256> data);
-    void start_app();
+    bool boot_flash_unlock();
+    bool boot_flash_lock();
+    bool boot_flash_erase(unsigned int first_page, unsigned int n_pages);
+    bool boot_flash_write(unsigned int offset, std::span<const uint8_t, 256> data);
+    void boot_start_app();
+    uint8_t boot_get_boot_version();
+    void boot_enter_dfu();
 
     ~UsbKvmMcu();
 

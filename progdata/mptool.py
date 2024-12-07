@@ -78,11 +78,31 @@ if count_hid() != 1 :
 			time.sleep(1)
 
 	print("programming MCU")
-	subprocess.check_call(["make", "-C", "../fw/usbkvm/", "dfu"])
+	subprocess.check_call(["make", "dfu"])
 	cprint("MCU programming done", "green", attrs=["bold"])
 
 	print("programming option bytes")
 	subprocess.check_call(["dfu-util", "-a", "1", "-s", "0x1FFFF800:will-reset", "-D", "option.bin"])
+
+time.sleep(1)
+dev = usbkvm.Device("USBKVM")
+mcu = dev.mcu()
+dev_info = mcu.get_info()
+
+if dev_info.version == 5 and dev_info.model == usbkvm.Model.USBKVM :
+	cprint("MCU version and model okay", "green", attrs=["bold"])
+else :
+	cprint(f"MCU version and model mismatch, have version:{dev_info.version}, model:{dev_info.model.name}", "red", attrs=["bold"])
+	#print("entering bootloader")
+	#dev.enter_bootloader()
+	exit()
+
+if dev_info.in_bootloader :
+	print("found MCU in bootloader, starting app")
+	mcu.boot_start_app()
+	time.sleep(.1)
+	info2 = mcu.get_info()
+	assert(not info2.in_bootloader)
 
 
 while True:
@@ -97,31 +117,18 @@ while True:
 		print("connect only one MCU")
 		time.sleep(1)
 
-dev = usbkvm.Device("USBKVM")
-dev_info = dev.get_mcu_info()
-
-if dev_info.version == 4 and dev_info.model == usbkvm.Model.USBKVM :
-	cprint("MCU version and model okay", "green", attrs=["bold"])
-else :
-	cprint(f"MCU version and model mismatch, have version:{dev_info.version}, model:{dev_info.model.name}", "red", attrs=["bold"])
-	print("entering bootloader")
-	dev.enter_bootloader()
-	exit()
-
-
-
 led_seq = [usbkvm.Led.NONE, usbkvm.Led.USB, usbkvm.Led.HID, usbkvm.Led.HDMI]
 
 while True :
 	print("blinking LEDs")
 	for led in itertools.islice(itertools.cycle(led_seq), 10) :
-		dev.set_led(usbkvm.Led.ALL, led)
+		mcu.set_led(usbkvm.Led.ALL, led)
 		time.sleep(.2)
 
-	dev.set_led(usbkvm.Led.ALL, usbkvm.Led.NONE)
+	mcu.set_led(usbkvm.Led.ALL, usbkvm.Led.NONE)
 
 	led_result = input("Did LEDs blink in sequence [Y]?")
-	if led_result in ("Y", "") :
+	if led_result.lower() in ("Y", "") :
 		break
 
-dev.set_led(usbkvm.Led.NONE, usbkvm.Led.NONE)
+mcu.set_led(usbkvm.Led.NONE, usbkvm.Led.NONE)

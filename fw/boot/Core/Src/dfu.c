@@ -1,18 +1,18 @@
-#include "boot.h"
+#include "dfu.h"
 #include <stdint.h>
 #include "stm32f0xx.h"
 
 static uint32_t bootflag __attribute__ ((section (".noinit")));
 #define BOOTFLAG 0x1badb007
 
-void enter_bootloader()
+void enter_dfu()
 {
     bootflag = BOOTFLAG;
     NVIC_SystemReset();
     while(1);
 }
 
-void jump_to_bootloader()
+void jump_to_dfu()
 {
     if(bootflag != BOOTFLAG)
         return;

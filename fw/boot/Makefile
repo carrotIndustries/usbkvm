@@ -37,6 +37,7 @@ BUILD_DIR = build
 # C sources
 C_SOURCES =  \
 Core/Src/main.c \
+Core/Src/dfu.c \
 Core/Src/stm32f0xx_it.c \
 Core/Src/stm32f0xx_hal_msp.c \
 Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_i2c.c \
@@ -115,7 +116,7 @@ C_DEFS =  \
 -DSTM32F042x6 \
 -DUSE_FULL_LL_DRIVER \
 -DCFG_TUSB_MCU=OPT_MCU_STM32F0\
--DI2C_HAVE_BOOTLOADER
+-DUSBKVM_BOOT
 
 
 # AS includes
@@ -184,13 +185,18 @@ $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(BIN) $< $@	
-	
+
+$(BUILD_DIR)/%.dfu: $(BUILD_DIR)/%.bin | $(BUILD_DIR)
+	../common/dfuse-pack.py -b 0x8000000:$< $@
+
 $(BUILD_DIR):
 	mkdir $@		
 
 flash: $(BUILD_DIR)/$(TARGET).bin
 	echo "reset; sleep 500; halt; sleep 500; program $(realpath $^) 0x8000000 verify reset; exit" | nc -4 localhost 4444 2>/dev/null
 
+dfu: $(BUILD_DIR)/$(TARGET).dfu
+	dfu-util -D $<
 #######################################
 # clean up
 #######################################

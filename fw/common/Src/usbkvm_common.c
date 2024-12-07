@@ -1,5 +1,5 @@
 #include "../Inc/usbkvm_common.h"
-#include "../Inc/i2c_msg.h"
+#include "../Inc/i2c_msg_common.h"
 #include "main.h"
 
 static uint8_t hw_model = I2C_MODEL_USBKVM;

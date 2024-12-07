@@ -25,6 +25,7 @@
 #include "../../../common/Inc/i2c_comm.h"
 #include "../../../common/Inc/usbkvm_common.h"
 #include "../../../common/Inc/flash_header.h"
+#include "dfu.h"
 #include <string.h>
 /* USER CODE END Includes */
 
@@ -63,9 +64,27 @@ static void MX_CRC_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+
+static const volatile flash_header_t *g_flash_header = (void*)(0x8000000+0x2000);
+
+static uint8_t validate_app()
+{
+  if(g_flash_header->magic != FLASH_HEADER_MAGIC)
+    return I2C_VERSION_BOOT_APP_INVALID_MAGIC;
+  if(g_flash_header->header_crc != HAL_CRC_Calculate(&hcrc, (void*)g_flash_header, sizeof(flash_header_t)-4))
+    return I2C_VERSION_BOOT_APP_HEADER_CRC_MISMATCH;
+  if(g_flash_header->app_crc != HAL_CRC_Calculate(&hcrc, (void*)0x8000000+0x2000+0x20, g_flash_header->app_size))
+    return I2C_VERSION_BOOT_APP_CRC_MISMATCH;
+  return I2C_VERSION_BOOT_APP_OK;
+}
+
 void i2c_req_handle_get_info(const i2c_req_unknown_t *unk)
 {
-  i2c_resp_buf.info.version = I2C_VERSION | I2C_VERSION_BOOT;
+  uint8_t app_valid = validate_app();
+  if(app_valid == I2C_VERSION_BOOT_APP_OK)
+    i2c_resp_buf.info.version = g_flash_header->app_version | I2C_VERSION_BOOT;
+  else
+    i2c_resp_buf.info.version = app_valid | I2C_VERSION_BOOT;
   i2c_resp_buf.info.model = get_hw_model();
   i2c_resp_buf.info.seq = unk->seq;
 }
@@ -77,7 +96,7 @@ void i2c_req_handle_flash_unlock(const i2c_req_unknown_t *unk)
   i2c_resp_buf.flash_status.seq = unk->seq;
 }
 
-void i2c_req_handle_flash_erase(const i2c_req_flash_erase_t *req)
+void i2c_req_handle_flash_erase(const i2c_req_boot_flash_erase_t *req)
 {
   uint32_t PageError = 0;
   /* Variable contains Flash operation status */
@@ -95,7 +114,7 @@ void i2c_req_handle_flash_erase(const i2c_req_flash_erase_t *req)
   i2c_resp_buf.flash_status.seq = req->seq;
 }
 
-void i2c_req_handle_flash_write(const i2c_req_flash_write_t *req)
+void i2c_req_handle_flash_write(const i2c_req_boot_flash_write_t *req)
 {
   HAL_StatusTypeDef status = HAL_OK;
   for(uint16_t offset = 0; offset < sizeof(req->data); offset+=8) {
@@ -108,6 +127,12 @@ void i2c_req_handle_flash_write(const i2c_req_flash_write_t *req)
   
   i2c_resp_buf.flash_status.success = (status == HAL_OK);
   i2c_resp_buf.flash_status.seq = req->seq;
+}
+
+void i2c_req_handle_get_boot_version(const i2c_req_unknown_t *unk)
+{
+  i2c_resp_buf.boot_version.version = I2C_VERSION_BOOT;
+  i2c_resp_buf.flash_status.seq = unk->seq;
 }
 
 typedef  void (*pFunction)(void);
@@ -137,45 +162,31 @@ static void i2c_req_dispatch(i2c_req_all_t *req)
     case I2C_REQ_GET_INFO:
       i2c_req_handle_get_info(&req->unk);
       break;
-    case I2C_REQ_FLASH_UNLOCK:
+    case I2C_REQ_BOOT_FLASH_UNLOCK:
       i2c_req_handle_flash_unlock(&req->unk);
       break;
-    case I2C_REQ_FLASH_LOCK:
+    case I2C_REQ_BOOT_FLASH_LOCK:
       HAL_FLASH_Lock();
       break;
-    case I2C_REQ_FLASH_ERASE:
+    case I2C_REQ_BOOT_FLASH_ERASE:
       i2c_req_handle_flash_erase(&req->flash_erase);
       break;
-    case I2C_REQ_FLASH_WRITE:
+    case I2C_REQ_BOOT_FLASH_WRITE:
       i2c_req_handle_flash_write(&req->flash_write);
       break;
-    case I2C_REQ_START_APP:
+    case I2C_REQ_BOOT_START_APP:
       start_app();
+      break;
+    case I2C_REQ_BOOT_GET_BOOT_VERSION:
+      i2c_req_handle_get_boot_version(&req->unk);
+      break;
+    case I2C_REQ_BOOT_ENTER_DFU:
+      enter_dfu();
       break;
     default:;
   }
 }
 
-static const volatile flash_header_t *g_flash_header = (void*)(0x8000000+0x2000);
-typedef enum {
-  APP_INVALID_MAGIC,
-  APP_HEADER_CRC_MISMATCH,
-  APP_CRC_MISMATCH,
-  APP_OK,
-} app_valid_t;
-
-static app_valid_t validate_app()
-{
-  if(g_flash_header->magic != FLASH_HEADER_MAGIC)
-    return APP_INVALID_MAGIC;
-  if(g_flash_header->header_crc != HAL_CRC_Calculate(&hcrc, (void*)g_flash_header, sizeof(flash_header_t)-4))
-    return APP_HEADER_CRC_MISMATCH;
-  if(g_flash_header->app_crc != HAL_CRC_Calculate(&hcrc, (void*)0x8000000+0x2000+0x20, g_flash_header->app_size))
-    return APP_CRC_MISMATCH;
-  return APP_OK;
-}
-
-static volatile app_valid_t g_app_valid = APP_INVALID_MAGIC;
 
 /* USER CODE END 0 */
 
@@ -186,7 +197,7 @@ static volatile app_valid_t g_app_valid = APP_INVALID_MAGIC;
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+  jump_to_dfu();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -210,9 +221,7 @@ int main(void)
   MX_I2C1_Init();
   MX_CRC_Init();
   /* USER CODE BEGIN 2 */
-  
-  g_app_valid = validate_app();
-  
+    
   update_hw_model();
   
   hi2c1.Instance->TXDR = 0x83;

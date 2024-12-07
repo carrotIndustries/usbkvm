@@ -208,7 +208,7 @@ $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(BIN) $< $@	
 
 $(BUILD_DIR)/%.dfu: $(BUILD_DIR)/%.bin | $(BUILD_DIR)
-	./dfuse-pack.py -b 0x8000000:$< $@
+	../common/dfuse-pack.py -b 0x8002000:$< $@
 
 $(BUILD_DIR)/$(TARGET)-header.bin: $(BUILD_DIR)/$(TARGET).bin | $(BUILD_DIR)
 	./write_header.py $< $@

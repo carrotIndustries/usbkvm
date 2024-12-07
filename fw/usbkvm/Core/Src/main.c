@@ -28,7 +28,6 @@
 #include "../../../common/Inc/usbkvm_common.h"
 #include "../../../common/Inc/flash_header.h"
 #include "stm32f0xx_ll_system.h"
-#include "boot.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -66,7 +65,7 @@ static void MX_USB_PCD_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-const volatile flash_header_t g_flash_header __attribute__ ((section (".flash_hdr"))) = {.magic = 0x1337, .app_version = I2C_VERSION};
+const volatile flash_header_t g_flash_header __attribute__ ((section (".flash_hdr"))) = {.magic = 0x1337, .app_version = I2C_APP_VERSION};
 volatile uint32_t g_vector_table[48] __attribute__((section(".ram_vector_table")));
 
 
@@ -140,7 +139,7 @@ void i2c_req_handle_mouse_report(i2c_req_mouse_report_t *req)
 
 void i2c_req_handle_get_info(const i2c_req_unknown_t *unk)
 {
-  i2c_resp_buf.info.version = I2C_VERSION;
+  i2c_resp_buf.info.version = I2C_APP_VERSION;
   i2c_resp_buf.info.model = get_hw_model();
   i2c_resp_buf.info.seq = unk->seq;
 }
@@ -197,7 +196,7 @@ static void i2c_req_dispatch(i2c_req_all_t *req)
       i2c_req_handle_set_led(&req->set_led);
       break;
     case I2C_REQ_ENTER_BOOTLOADER:
-      enter_bootloader();
+      NVIC_SystemReset();
       break;
   }
 }
@@ -220,7 +219,6 @@ int main(void)
   __HAL_RCC_SYSCFG_CLK_ENABLE();
   /* Remap SRAM at 0x00000000 */
   LL_SYSCFG_SetRemapMemory(LL_SYSCFG_REMAP_SRAM);
-  //jump_to_bootloader();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/

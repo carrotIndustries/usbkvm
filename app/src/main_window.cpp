@@ -3,6 +3,7 @@
 #include <iostream>
 #include "keymap.h"
 #include <format>
+#include <thread>
 #include "usbkvm_mcu.hpp"
 #include "usbkvm_device.hpp"
 #include "mshal.hpp"
@@ -359,6 +360,16 @@ void MainWindow::create_device(const std::string &name)
             m_enter_bootloader_button->show();
             gtk_info_bar_set_revealed(m_mcu_info_bar->gobj(), true);
             m_device->delete_mcu();
+        }
+        else {
+            if (info.in_bootloader) {
+                m_device->mcu()->boot_start_app();
+                using namespace std::chrono_literals;
+                std::this_thread::sleep_for(100ms);
+                auto info2 = m_device->mcu()->get_info();
+                assert(info2.in_bootloader == false);
+                assert(info2.version == info.version);
+            }
         }
     }
     catch (const std::exception &ex) {

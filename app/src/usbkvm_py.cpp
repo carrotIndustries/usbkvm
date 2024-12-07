@@ -61,16 +61,17 @@ PYBIND11_MODULE(usbkvm_py, m)
 
     py::class_<UsbKvmMcu>(m, "Mcu")
             .def("get_info", &UsbKvmMcu::get_info)
-            .def("flash_unlock", &UsbKvmMcu::flash_unlock)
-            .def("flash_lock", &UsbKvmMcu::flash_lock)
-            .def("flash_erase", &UsbKvmMcu::flash_erase)
-            .def("flash_write",
+            .def("boot_flash_unlock", &UsbKvmMcu::boot_flash_unlock)
+            .def("boot_flash_lock", &UsbKvmMcu::boot_flash_lock)
+            .def("boot_flash_erase", &UsbKvmMcu::boot_flash_erase)
+            .def("boot_flash_write",
                  [](UsbKvmMcu &mcu, unsigned int offset, const std::vector<uint8_t> data) {
                      if (data.size() != 256)
                          throw std::runtime_error("size mismatch");
-                     return mcu.flash_write(offset, std::span<const uint8_t, 256>(data.data(), 256));
+                     return mcu.boot_flash_write(offset, std::span<const uint8_t, 256>(data.data(), 256));
                  })
-            .def("start_app", &UsbKvmMcu::start_app)
+            .def("boot_start_app", &UsbKvmMcu::boot_start_app)
+            .def("boot_enter_dfu", &UsbKvmMcu::boot_enter_dfu)
             .def("set_led", &UsbKvmMcu::set_led);
     /*.def("has_mcu", &UsbKvmDevice::has_mcu)
     .def("get_mcu_info", &UsbKvmDevice::get_mcu_info)

@@ -5,8 +5,8 @@
 #include <iostream>
 #include <unistd.h>
 #include <thread>
-#define I2C_HAVE_BOOTLOADER
-#include "../fw/common/Inc/i2c_msg.h"
+#include "../fw/boot/Core/Inc/i2c_msg_boot.h"
+#include "../fw/usbkvm/Core/Inc/i2c_msg_app.h"
 
 #define TU_BIT(n) (1UL << (n))
 
@@ -182,7 +182,7 @@ UsbKvmMcu::Status UsbKvmMcu::get_status()
 
 unsigned int UsbKvmMcu::get_expected_version()
 {
-    return I2C_VERSION;
+    return I2C_APP_VERSION;
 }
 
 static uint8_t translate_led(UsbKvmMcu::Led led)
@@ -208,33 +208,33 @@ void UsbKvmMcu::set_led(Led mask, Led stat)
     i2c_send(m_i2c, msg);
 }
 
-bool UsbKvmMcu::flash_unlock()
+bool UsbKvmMcu::boot_flash_unlock()
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    i2c_req_unknown_t msg = {.type = I2C_REQ_FLASH_UNLOCK, .seq = m_seq++};
-    i2c_resp_flash_status_t resp;
+    i2c_req_unknown_t msg = {.type = I2C_REQ_BOOT_FLASH_UNLOCK, .seq = m_seq++};
+    i2c_resp_boot_flash_status_t resp;
     i2c_send_recv(m_i2c, msg, resp);
 
     return resp.success;
 }
 
-bool UsbKvmMcu::flash_lock()
+bool UsbKvmMcu::boot_flash_lock()
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    i2c_req_unknown_t msg = {.type = I2C_REQ_FLASH_LOCK, .seq = m_seq++};
+    i2c_req_unknown_t msg = {.type = I2C_REQ_BOOT_FLASH_LOCK, .seq = m_seq++};
     i2c_send(m_i2c, msg);
 
     return true;
 }
 
-bool UsbKvmMcu::flash_erase(unsigned int first_page, unsigned int n_pages)
+bool UsbKvmMcu::boot_flash_erase(unsigned int first_page, unsigned int n_pages)
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    i2c_req_flash_erase_t msg = {
-            .type = I2C_REQ_FLASH_ERASE,
+    i2c_req_boot_flash_erase_t msg = {
+            .type = I2C_REQ_BOOT_FLASH_ERASE,
             .seq = m_seq++,
             .first_page = static_cast<uint8_t>(first_page),
             .n_pages = static_cast<uint8_t>(n_pages),
@@ -245,26 +245,44 @@ bool UsbKvmMcu::flash_erase(unsigned int first_page, unsigned int n_pages)
     return resp.success;
 }
 
-bool UsbKvmMcu::flash_write(unsigned int offset, std::span<const uint8_t, 256> data)
+bool UsbKvmMcu::boot_flash_write(unsigned int offset, std::span<const uint8_t, 256> data)
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    i2c_req_flash_write_t msg = {.type = I2C_REQ_FLASH_WRITE, .seq = m_seq++, .offset = static_cast<uint16_t>(offset)};
+    i2c_req_boot_flash_write_t msg = {.type = I2C_REQ_BOOT_FLASH_WRITE, .seq = m_seq++, .offset = static_cast<uint16_t>(offset)};
     static_assert(data.size() == sizeof(msg.data));
     memcpy(msg.data, data.data(), sizeof(msg.data));
-    i2c_resp_flash_status_t resp;
+    i2c_resp_boot_flash_status_t resp;
     i2c_send_recv_retry(m_i2c, msg, resp);
 
     return resp.success;
 }
 
-void UsbKvmMcu::start_app()
+void UsbKvmMcu::boot_start_app()
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    i2c_req_unknown_t msg = {.type = I2C_REQ_START_APP, .seq = m_seq++};
+    i2c_req_unknown_t msg = {.type = I2C_REQ_BOOT_START_APP, .seq = m_seq++};
     i2c_send(m_i2c, msg);
 }
 
+uint8_t UsbKvmMcu::boot_get_boot_version()
+{
+    std::lock_guard<std::mutex> guard(m_mutex);
+
+    i2c_req_unknown_t msg = {.type = I2C_REQ_BOOT_GET_BOOT_VERSION, .seq = m_seq++};
+    i2c_resp_boot_boot_version_t resp;
+    i2c_send_recv(m_i2c, msg, resp);
+
+    return resp.version;
+}
+
+void UsbKvmMcu::boot_enter_dfu()
+{
+    std::lock_guard<std::mutex> guard(m_mutex);
+
+    i2c_req_unknown_t msg = {.type = I2C_REQ_BOOT_ENTER_DFU, .seq = m_seq++};
+    i2c_send(m_i2c, msg);
+}
 
 UsbKvmMcu::~UsbKvmMcu() = default;
