@@ -72,6 +72,7 @@ public:
     bool flash_lock();
     bool flash_erase(unsigned int first_page, unsigned int n_pages);
     bool flash_write(unsigned int offset, std::span<const uint8_t, 256> data);
+    void start_app();
 
     ~UsbKvmMcu();
 

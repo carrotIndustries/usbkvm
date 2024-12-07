@@ -209,6 +209,9 @@ $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 
 $(BUILD_DIR)/%.dfu: $(BUILD_DIR)/%.bin | $(BUILD_DIR)
 	./dfuse-pack.py -b 0x8000000:$< $@
+
+$(BUILD_DIR)/$(TARGET)-header.bin: $(BUILD_DIR)/$(TARGET).bin | $(BUILD_DIR)
+	./write_header.py $< $@
 	
 $(BUILD_DIR):
 	mkdir $@		
@@ -224,8 +227,8 @@ clean:
 #######################################
 -include $(wildcard $(BUILD_DIR)/*.d)
 
-flash: $(BUILD_DIR)/$(TARGET).bin
-	echo "reset; sleep 500; halt; sleep 500; program $(realpath $^) 0x8000000 verify reset; exit" | nc -4 localhost 4444 2>/dev/null
+flash: $(BUILD_DIR)/$(TARGET)-header.bin
+	echo "reset; sleep 500; halt; sleep 500; program $(realpath $^) 0x8002000 verify reset; exit" | nc -4 localhost 4444 2>/dev/null
 
 dfu: $(BUILD_DIR)/$(TARGET).dfu
 	dfu-util  -D build/usbkvm.dfu

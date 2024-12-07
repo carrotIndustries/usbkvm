@@ -26,6 +26,8 @@
 #include "usb_descriptors.h"
 #include "../../../common/Inc/i2c_comm.h"
 #include "../../../common/Inc/usbkvm_common.h"
+#include "../../../common/Inc/flash_header.h"
+#include "stm32f0xx_ll_system.h"
 #include "boot.h"
 /* USER CODE END Includes */
 
@@ -63,6 +65,10 @@ static void MX_USB_PCD_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+const volatile flash_header_t g_flash_header __attribute__ ((section (".flash_hdr"))) = {.magic = 0x1337, .app_version = I2C_VERSION};
+volatile uint32_t g_vector_table[48] __attribute__((section(".ram_vector_table")));
+
 
 static uint8_t read_vga_connected()
 {
@@ -205,7 +211,16 @@ static void i2c_req_dispatch(i2c_req_all_t *req)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  jump_to_bootloader();
+  for(int i = 0; i < 48; i++)
+  {
+    g_vector_table[i] = *(volatile uint32_t*)(0x8000000+0x2000+0x20 + (i<<2));
+  }
+
+  /* Enable the SYSCFG peripheral clock*/
+  __HAL_RCC_SYSCFG_CLK_ENABLE();
+  /* Remap SRAM at 0x00000000 */
+  LL_SYSCFG_SetRemapMemory(LL_SYSCFG_REMAP_SRAM);
+  //jump_to_bootloader();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/

@@ -258,5 +258,13 @@ bool UsbKvmMcu::flash_write(unsigned int offset, std::span<const uint8_t, 256> d
     return resp.success;
 }
 
+void UsbKvmMcu::start_app()
+{
+    std::lock_guard<std::mutex> guard(m_mutex);
+
+    i2c_req_unknown_t msg = {.type = I2C_REQ_START_APP, .seq = m_seq++};
+    i2c_send(m_i2c, msg);
+}
+
 
 UsbKvmMcu::~UsbKvmMcu() = default;

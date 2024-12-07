@@ -18,6 +18,7 @@
 #define I2C_REQ_FLASH_LOCK (8)
 #define I2C_REQ_FLASH_ERASE (9)
 #define I2C_REQ_FLASH_WRITE (10)
+#define I2C_REQ_START_APP (11)
 
 typedef struct {
     I2C_REQ_COMMON

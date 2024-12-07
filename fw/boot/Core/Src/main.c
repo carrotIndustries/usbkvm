@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "../../../common/Inc/i2c_comm.h"
 #include "../../../common/Inc/usbkvm_common.h"
+#include "../../../common/Inc/flash_header.h"
 #include <string.h>
 /* USER CODE END Includes */
 
@@ -42,6 +43,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+CRC_HandleTypeDef hcrc;
+
 I2C_HandleTypeDef hi2c1;
 
 /* USER CODE BEGIN PV */
@@ -52,6 +55,7 @@ I2C_HandleTypeDef hi2c1;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
+static void MX_CRC_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -106,6 +110,25 @@ void i2c_req_handle_flash_write(const i2c_req_flash_write_t *req)
   i2c_resp_buf.flash_status.seq = req->seq;
 }
 
+typedef  void (*pFunction)(void);
+pFunction JumpToApplication;
+uint32_t JumpAddress;
+
+static void start_app() {
+  SysTick->CTRL = 0;
+  HAL_NVIC_DisableIRQ(SysTick_IRQn);
+  HAL_NVIC_DisableIRQ(I2C1_IRQn);
+
+  /* Jump to user application */
+  JumpAddress = *(__IO uint32_t*) (0x8002020 + 4);
+  JumpToApplication = (pFunction) JumpAddress;
+
+  /* Initialize user application's Stack Pointer */
+  __set_MSP(*(__IO uint32_t*) 0x8002020);
+  JumpToApplication();
+  while(1)
+    ;
+}
 
 static void i2c_req_dispatch(i2c_req_all_t *req)
 {
@@ -126,9 +149,33 @@ static void i2c_req_dispatch(i2c_req_all_t *req)
     case I2C_REQ_FLASH_WRITE:
       i2c_req_handle_flash_write(&req->flash_write);
       break;
+    case I2C_REQ_START_APP:
+      start_app();
+      break;
     default:;
   }
 }
+
+static const volatile flash_header_t *g_flash_header = (void*)(0x8000000+0x2000);
+typedef enum {
+  APP_INVALID_MAGIC,
+  APP_HEADER_CRC_MISMATCH,
+  APP_CRC_MISMATCH,
+  APP_OK,
+} app_valid_t;
+
+static app_valid_t validate_app()
+{
+  if(g_flash_header->magic != FLASH_HEADER_MAGIC)
+    return APP_INVALID_MAGIC;
+  if(g_flash_header->header_crc != HAL_CRC_Calculate(&hcrc, (void*)g_flash_header, sizeof(flash_header_t)-4))
+    return APP_HEADER_CRC_MISMATCH;
+  if(g_flash_header->app_crc != HAL_CRC_Calculate(&hcrc, (void*)0x8000000+0x2000+0x20, g_flash_header->app_size))
+    return APP_CRC_MISMATCH;
+  return APP_OK;
+}
+
+static volatile app_valid_t g_app_valid = APP_INVALID_MAGIC;
 
 /* USER CODE END 0 */
 
@@ -161,8 +208,11 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_I2C1_Init();
+  MX_CRC_Init();
   /* USER CODE BEGIN 2 */
-
+  
+  g_app_valid = validate_app();
+  
   update_hw_model();
   
   hi2c1.Instance->TXDR = 0x83;
@@ -228,6 +278,36 @@ void SystemClock_Config(void)
     Error_Handler();
   }
   LL_RCC_SetI2CClockSource(LL_RCC_I2C1_CLKSOURCE_HSI);
+}
+
+/**
+  * @brief CRC Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_CRC_Init(void)
+{
+
+  /* USER CODE BEGIN CRC_Init 0 */
+
+  /* USER CODE END CRC_Init 0 */
+
+  /* USER CODE BEGIN CRC_Init 1 */
+
+  /* USER CODE END CRC_Init 1 */
+  hcrc.Instance = CRC;
+  hcrc.Init.DefaultInitValueUse = DEFAULT_INIT_VALUE_ENABLE;
+  hcrc.Init.InputDataInversionMode = CRC_INPUTDATA_INVERSION_NONE;
+  hcrc.Init.OutputDataInversionMode = CRC_OUTPUTDATA_INVERSION_DISABLE;
+  hcrc.InputDataFormat = CRC_INPUTDATA_FORMAT_BYTES;
+  if (HAL_CRC_Init(&hcrc) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN CRC_Init 2 */
+
+  /* USER CODE END CRC_Init 2 */
+
 }
 
 /**

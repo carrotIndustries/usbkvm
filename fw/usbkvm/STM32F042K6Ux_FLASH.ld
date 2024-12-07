@@ -61,13 +61,20 @@ _Min_Stack_Size = 0x400; /* required amount of stack */
 /* Specify the memory areas */
 MEMORY
 {
-RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 6K
-FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 32K
+VTRAM (xrw)       : ORIGIN = 0x20000000, LENGTH = 0xc0  /* First part of RAM is reserved to the vector table */
+RAM (xrw)         : ORIGIN = 0x20000000+0xc0, LENGTH = 6K-0xc0
+FLASH_HEADER (rx) : ORIGIN = 0x8000000+0x2000, LENGTH = 0x20
+FLASH (rx)        : ORIGIN = 0x8000000+0x2000+0x20, LENGTH = 32K - 0x20 - 0x2000
 }
 
 /* Define output sections */
 SECTIONS
 {
+  .flash_hdr :
+  {
+    KEEP(*(.flash_hdr))
+  } >FLASH_HEADER
+  
   /* The startup code goes first into FLASH */
   .isr_vector :
   {
@@ -181,6 +188,7 @@ SECTIONS
   } >RAM
 
   
+  .ram_vector_table(NOLOAD): {KEEP(*(.ram_vector_table))} >VTRAM
 
   /* Remove information from the standard libraries */
   /DISCARD/ :

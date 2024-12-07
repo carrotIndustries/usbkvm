@@ -70,6 +70,7 @@ PYBIND11_MODULE(usbkvm_py, m)
                          throw std::runtime_error("size mismatch");
                      return mcu.flash_write(offset, std::span<const uint8_t, 256>(data.data(), 256));
                  })
+            .def("start_app", &UsbKvmMcu::start_app)
             .def("set_led", &UsbKvmMcu::set_led);
     /*.def("has_mcu", &UsbKvmDevice::has_mcu)
     .def("get_mcu_info", &UsbKvmDevice::get_mcu_info)
