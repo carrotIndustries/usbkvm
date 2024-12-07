@@ -70,7 +70,7 @@ public:
 
 private:
     II2COneDevice &m_i2c;
-    uint8_t m_seq = 0;
+    uint8_t m_seq = 1;
     std::mutex m_mutex;
 };
 
