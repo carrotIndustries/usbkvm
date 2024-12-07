@@ -71,6 +71,7 @@ PYBIND11_MODULE(usbkvm_py, m)
                      return mcu.boot_flash_write(offset, std::span<const uint8_t, 256>(data.data(), 256));
                  })
             .def("boot_start_app", &UsbKvmMcu::boot_start_app)
+            .def("boot_get_boot_version", &UsbKvmMcu::boot_get_boot_version)
             .def("boot_enter_dfu", &UsbKvmMcu::boot_enter_dfu)
             .def("set_led", &UsbKvmMcu::set_led);
     /*.def("has_mcu", &UsbKvmDevice::has_mcu)
