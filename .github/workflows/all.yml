@@ -1,0 +1,34 @@
+name: CI and tarball generation
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches: [ main ]
+
+env:
+  LANG: en_US.UTF-8
+  DEBIAN_FRONTEND: noninteractive
+
+jobs:
+  build-all:
+    runs-on: ubuntu-latest
+    container: debian:bookworm
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+    - name: Install build dependencies
+      run: apt-get update -y && apt-get install meson build-essential libgtkmm-3.0-dev golang gcc-arm-none-eabi libnewlib-arm-none-eabi python3
+    - name: Build bootloader
+      working-directory: fw/boot
+      run: make -j $(nproc)
+    - name: Build firmware
+      working-directory: fw/usbkvm
+      run: make -j $(nproc)
+    - name: Build app
+      run: |
+        mkdir ../build
+        meson setup ../build
+        ninja -C ../build
