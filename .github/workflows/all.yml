@@ -14,10 +14,10 @@ env:
 jobs:
   build-all:
     runs-on: ubuntu-latest
-    container: debian:bookworm
+    container: debian:trixie
     steps:
     - name: Install build dependencies
-      run: apt-get update -y && apt-get install -y meson build-essential libgtkmm-3.0-dev golang gcc-arm-none-eabi libnewlib-arm-none-eabi python3 git
+      run: apt-get update -y && apt-get install -y meson build-essential libgtkmm-3.0-dev golang gcc-arm-none-eabi libnewlib-arm-none-eabi python3 git gstreamer1.0-gtk3 gstreamer1.0-plugins-good libhidapi-dev libgstreamer1.0-dev
     - uses: actions/checkout@v4
       with:
         submodules: true
