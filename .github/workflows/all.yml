@@ -52,8 +52,8 @@ jobs:
       run: apt-get update -y && apt-get install -y meson build-essential libgtkmm-3.0-dev golang python3 gstreamer1.0-gtk3 gstreamer1.0-plugins-good libhidapi-dev libgstreamer1.0-dev
     - name: Download tarball
       uses: actions/download-artifact@v4
-        with:
-          name: usbkvm-src
+      with:
+        name: usbkvm-src
     - name: extract tarball
       run: tar xf usbkvm.tar.gz
     - name: Build app
