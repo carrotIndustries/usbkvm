@@ -5,8 +5,13 @@
 #include <array>
 #include <mutex>
 #include <span>
+#include <string>
+#include <functional>
+#include <stdexcept>
 
 class II2COneDevice;
+
+enum class UsbKvmMcuFirmwareUpdateStatus { BUSY, DONE, ERROR };
 
 class UsbKvmMcu {
 public:
@@ -79,6 +84,17 @@ public:
     void boot_start_app();
     uint8_t boot_get_boot_version();
     void boot_enter_dfu();
+
+    using FirmwareUpdateStatus = UsbKvmMcuFirmwareUpdateStatus;
+    struct FirmwareUpdateProgress {
+        FirmwareUpdateStatus status;
+        std::string message;
+        float progress = 0;
+    };
+
+
+    bool boot_update_firmware(std::function<void(const FirmwareUpdateProgress &)> progress_cb,
+                              std::span<const uint8_t> firmware);
 
     ~UsbKvmMcu();
 

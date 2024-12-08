@@ -5,6 +5,7 @@
 #include <atomic>
 
 class UsbKvmDevice;
+enum class UsbKvmMcuFirmwareUpdateStatus;
 
 class MainWindow : public Gtk::ApplicationWindow, private IMcuProvider {
 public:
@@ -30,8 +31,8 @@ private:
     Gtk::ProgressBar *m_firmware_update_progress_bar;
     Gtk::Label *m_firmware_update_label;
 
-    enum class FirmwareUpdateStatus { IDLE, BUSY, DONE, ERROR };
-    std::atomic<FirmwareUpdateStatus> m_firmware_update_status = FirmwareUpdateStatus::IDLE;
+    using FirmwareUpdateStatus = UsbKvmMcuFirmwareUpdateStatus;
+    std::atomic<FirmwareUpdateStatus> m_firmware_update_status;
     std::atomic<float> m_firmware_update_progress;
     std::string m_firmware_update_status_string;
     std::mutex m_firmware_update_status_mutex;

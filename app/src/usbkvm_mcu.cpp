@@ -297,4 +297,96 @@ void UsbKvmMcu::boot_enter_dfu()
     i2c_send(m_i2c, msg);
 }
 
+static std::string format_m_of_n(unsigned int m, unsigned int n)
+{
+    auto n_str = std::to_string(n);
+    auto digits_max = n_str.size();
+    auto m_str = std::to_string(m);
+    std::string prefix;
+    for (size_t i = 0; i < (digits_max - (int)m_str.size()); i++) {
+        prefix += " ";
+    }
+    return prefix + m_str + "/" + n_str;
+}
+
+bool UsbKvmMcu::boot_update_firmware(std::function<void(const FirmwareUpdateProgress &)> progress_cb,
+                                     std::span<const uint8_t> firmware)
+{
+    using S = FirmwareUpdateStatus;
+    if (!get_info().in_bootloader) {
+        progress_cb({S::ERROR, "not in bootloader"});
+        return false;
+    }
+
+
+    if (firmware.size() % UsbKvmMcu::write_flash_chunk_size) {
+        progress_cb({S::ERROR, "firmware size error"});
+        return false;
+    }
+
+    const unsigned int page_size = 1024;
+    const unsigned int n_pages = (firmware.size() + page_size - 1) / page_size;
+    const unsigned int n_chunks = firmware.size() / UsbKvmMcu::write_flash_chunk_size;
+    progress_cb({S::BUSY, "Erasing…"});
+
+    if (!boot_flash_unlock()) {
+        progress_cb({S::ERROR, "flash unlock"});
+        return false;
+    }
+    if (!boot_flash_erase(8, n_pages)) {
+        progress_cb({S::ERROR, "flash erase"});
+        return false;
+    }
+
+
+    for (unsigned int chunk = 0; chunk < n_chunks; chunk++) {
+        const float progress = chunk / ((float)n_chunks);
+        static const unsigned int flash_base = 0x8002000;
+        const unsigned int offset = chunk * UsbKvmMcu::write_flash_chunk_size;
+        progress_cb({S::BUSY, "Programming: " + format_m_of_n(offset, firmware.size()) + " Bytes", progress});
+
+        const unsigned int flash_offset = flash_base + offset;
+        if (!boot_flash_write(flash_offset, std::span<const uint8_t, 256>(firmware.data() + offset, 256))) {
+            progress_cb({S::ERROR, "flash program"});
+            return false;
+        }
+    }
+
+    progress_cb({S::BUSY, "Finishing…", 1.});
+
+    if (!boot_flash_lock()) {
+        progress_cb({S::ERROR, "lock"});
+        return false;
+    }
+
+    using namespace std::chrono_literals;
+
+    {
+        const auto info = get_info();
+        if (info.version != get_expected_version()) {
+            progress_cb({S::ERROR, "unexpected version after update"});
+            return false;
+        }
+    }
+    boot_start_app();
+    std::this_thread::sleep_for(200ms);
+
+    {
+        const auto info = get_info();
+        if (info.in_bootloader) {
+            progress_cb({S::ERROR, "stuck in bootloader"});
+            return false;
+        }
+        if (info.version != UsbKvmMcu::get_expected_version()) {
+            progress_cb({S::ERROR, "unexpected version after starting app"});
+            return false;
+        }
+    }
+
+    progress_cb({S::BUSY, "Done", 1.});
+
+
+    return true;
+}
+
 UsbKvmMcu::~UsbKvmMcu() = default;

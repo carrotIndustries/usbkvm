@@ -441,11 +441,7 @@ void MainWindow::update_firmware()
             m_firmware_update_label->set_label("Not in bootloader mode");
             return;
         }
-        if (!mcu->get_info().in_bootloader) {
-            m_firmware_update_label->set_label("Bootloader not active");
-            return;
-        }
-        m_firmware_update_status = FirmwareUpdateStatus::IDLE;
+        m_firmware_update_status = FirmwareUpdateStatus::BUSY;
         m_firmware_update_progress = 0;
         m_firmware_update_status_string.clear();
         m_firmware_update_label->set_label("Intializing");
@@ -473,7 +469,10 @@ void MainWindow::firmware_update_thread()
     auto update_status = [this](FirmwareUpdateStatus status, const std::string &msg) {
         {
             std::lock_guard<std::mutex> guard(m_firmware_update_status_mutex);
-            m_firmware_update_status_string = msg;
+            if (status == FirmwareUpdateStatus::ERROR)
+                m_firmware_update_status_string = "Error: " + msg;
+            else
+                m_firmware_update_status_string = msg;
         }
         m_firmware_update_status = status;
         m_firmware_update_dispatcher.emit();
@@ -488,60 +487,21 @@ void MainWindow::firmware_update_thread()
         gsize data_size;
         auto data = reinterpret_cast<const uint8_t *>(bytes->get_data(data_size));
 
-        const unsigned int page_size = 1024;
-        const unsigned int n_pages = (data_size + page_size - 1) / page_size;
-        if (bytes->get_size() % UsbKvmMcu::write_flash_chunk_size)
-            throw std::runtime_error("firmware blob size error");
-        const unsigned int n_chunks = data_size / UsbKvmMcu::write_flash_chunk_size;
-        update_status(FirmwareUpdateStatus::BUSY, "Erasing…");
+        const auto update_result = mcu->boot_update_firmware(
+                [this, &update_status](const UsbKvmMcu::FirmwareUpdateProgress &status) {
+                    if (status.status == FirmwareUpdateStatus::BUSY)
+                        m_firmware_update_progress = status.progress;
+                    update_status(status.status, status.message);
+                },
+                {data, data_size});
 
-        if (!mcu->boot_flash_unlock())
-            throw std::runtime_error("flash unlock");
-        if (!mcu->boot_flash_erase(8, n_pages))
-            throw std::runtime_error("flash erase");
+        if (update_result) {
+            m_device->leave_bootloader();
+            using namespace std::chrono_literals;
 
-
-        for (unsigned int chunk = 0; chunk < n_chunks; chunk++) {
-            m_firmware_update_progress = chunk / ((float)n_chunks);
-            static const unsigned int flash_base = 0x8002000;
-            const unsigned int offset = chunk * UsbKvmMcu::write_flash_chunk_size;
-            update_status(FirmwareUpdateStatus::BUSY, "Programming: " + format_m_of_n(offset, data_size) + " Bytes");
-
-
-            const unsigned int flash_offset = flash_base + offset;
-            if (!mcu->boot_flash_write(flash_offset, std::span<const uint8_t, 256>(data + offset, 256)))
-                throw std::runtime_error("flash program");
+            std::this_thread::sleep_for(700ms);
+            update_status(FirmwareUpdateStatus::DONE, "Done");
         }
-
-
-        m_firmware_update_progress = 1;
-        update_status(FirmwareUpdateStatus::BUSY, "Finishing…");
-
-        if (!mcu->boot_flash_lock())
-            throw std::runtime_error("flash lock");
-
-        using namespace std::chrono_literals;
-
-        {
-            const auto info = mcu->get_info();
-            if (info.version != UsbKvmMcu::get_expected_version())
-                throw std::runtime_error("unexpected version after update");
-        }
-        mcu->boot_start_app();
-        std::this_thread::sleep_for(200ms);
-
-        {
-            const auto info = mcu->get_info();
-            if (info.in_bootloader)
-                throw std::runtime_error("stuck in bootloader?");
-            if (info.version != UsbKvmMcu::get_expected_version())
-                throw std::runtime_error("unexpected version after starting app");
-        }
-
-        m_device->leave_bootloader();
-
-        std::this_thread::sleep_for(700ms);
-        update_status(FirmwareUpdateStatus::DONE, "Done");
     }
     catch (const std::exception &ex) {
         update_status(FirmwareUpdateStatus::ERROR, std::string{"Error: "} + ex.what());
@@ -560,18 +520,7 @@ void MainWindow::update_firmware_update_status()
     }
     m_firmware_update_label->set_label("Firmware update: " + status);
     m_firmware_update_progress_bar->set_fraction(m_firmware_update_progress);
-    switch (m_firmware_update_status) {
-    case FirmwareUpdateStatus::IDLE:
-    case FirmwareUpdateStatus::BUSY:
-        break;
-
-    case FirmwareUpdateStatus::DONE:
-        m_firmware_update_revealer->set_reveal_child(false);
-        break;
-
-    case FirmwareUpdateStatus::ERROR:
-        break;
-    }
+    m_firmware_update_revealer->set_reveal_child(m_firmware_update_status != FirmwareUpdateStatus::DONE);
 }
 
 MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &x) : Gtk::ApplicationWindow(cobject)
@@ -729,8 +678,7 @@ void MainWindow::update_input_status()
 {
     if (!m_device)
         return;
-    if (m_firmware_update_status != FirmwareUpdateStatus::IDLE
-        || m_firmware_update_status != FirmwareUpdateStatus::DONE)
+    if (m_firmware_update_status != FirmwareUpdateStatus::DONE)
         return;
     auto &hal = m_device->hal();
     std::string label;
