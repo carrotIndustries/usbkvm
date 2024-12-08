@@ -33,3 +33,32 @@ jobs:
         mkdir ../build-app
         meson setup ../build-app
         ninja -C ../build-app
+    - name: create tarball
+      working-directory: app
+      run: |
+        ./make_tarball.sh
+    - name: Upload tarball
+      uses: actions/upload-artifact@v4
+      with:
+        name: usbkvm-src
+        path: app/*.tar.gz
+
+  test-tarball:
+    runs-on: ubuntu-latest
+    container: debian:trixie
+    needs: build-all
+    steps:
+    - name: Install build dependencies
+      run: apt-get update -y && apt-get install -y meson build-essential libgtkmm-3.0-dev golang python3 gstreamer1.0-gtk3 gstreamer1.0-plugins-good libhidapi-dev libgstreamer1.0-dev
+    - name: Download tarball
+      uses: actions/download-artifact@v4
+        with:
+          name: usbkvm-src
+    - name: extract tarball
+      run: tar xf usbkvm.tar.gz
+    - name: Build app
+      working-directory: usbkvm
+      run: |
+        mkdir ../build-app
+        meson setup ../build-app
+        ninja -C ../build-app
