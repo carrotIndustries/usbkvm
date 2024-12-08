@@ -16,11 +16,11 @@ jobs:
     runs-on: ubuntu-latest
     container: debian:bookworm
     steps:
+    - name: Install build dependencies
+      run: apt-get update -y && apt-get install meson build-essential libgtkmm-3.0-dev golang gcc-arm-none-eabi libnewlib-arm-none-eabi python3 git
     - uses: actions/checkout@v4
       with:
         submodules: true
-    - name: Install build dependencies
-      run: apt-get update -y && apt-get install meson build-essential libgtkmm-3.0-dev golang gcc-arm-none-eabi libnewlib-arm-none-eabi python3
     - name: Build bootloader
       working-directory: fw/boot
       run: make -j $(nproc)
