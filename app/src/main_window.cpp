@@ -353,29 +353,57 @@ void MainWindow::create_device(const std::string &name)
         m_device->set_model(info.model);
         const int expected_version = UsbKvmMcu::get_expected_version();
         if (current_version != expected_version) {
+            std::string l;
+
+            switch (info.get_valid()) {
+                using enum UsbKvmMcu::Info::Valid;
+            case VALID:
+                l = std::format("Need version {}, but {} is running.", expected_version, current_version);
+                break;
+
+            case INVALID_MAGIC:
+                l = "Firmware corrupted: Invalid magic number";
+                break;
+
+            case APP_CRC_MISMATCH:
+                l = "Firmware corrupted: App CRC mismatch";
+                break;
+
+            case HEADER_CRC_MISMATCH:
+                l = "Firmware corrupted: Header CRC mismatch";
+                break;
+            }
             m_mcu_info_bar_label->set_label(
-                    std::format("MCU firmware update required. Need version {}, but {} is running. Video only, no "
-                                "mouse or keyboard.",
-                                expected_version, current_version));
-            m_enter_bootloader_button->show();
+                    std::format("MCU firmware update required. {} Video only, no mouse or keyboard.", l));
+            m_device->enter_bootloader();
+            m_update_firmware_button->show();
             gtk_info_bar_set_revealed(m_mcu_info_bar->gobj(), true);
-            m_device->delete_mcu();
         }
         else {
             if (info.in_bootloader) {
                 m_device->mcu()->boot_start_app();
                 using namespace std::chrono_literals;
                 std::this_thread::sleep_for(100ms);
+
                 auto info2 = m_device->mcu()->get_info();
-                assert(info2.in_bootloader == false);
-                assert(info2.version == info.version);
+                if (info2.in_bootloader) {
+                    m_mcu_info_bar_label->set_label("MCU stuck in bootloader. Video only, no mouse or keyboard.");
+                    gtk_info_bar_set_revealed(m_mcu_info_bar->gobj(), true);
+                    m_device->delete_mcu();
+                }
+                if (info2.version != info.version) {
+                    m_mcu_info_bar_label->set_label(
+                            "MCU app version not as expected. Video only, no mouse or keyboard.");
+                    gtk_info_bar_set_revealed(m_mcu_info_bar->gobj(), true);
+                    m_device->delete_mcu();
+                }
             }
         }
     }
     catch (const std::exception &ex) {
         if (m_device)
             m_device->delete_mcu();
-        m_mcu_info_bar_label->set_label("MCU not responding, may be in bootloader. Video only, no mouse or keyboard.");
+        m_mcu_info_bar_label->set_label("MCU not responding. Video only, no mouse or keyboard.");
         gtk_info_bar_set_revealed(m_mcu_info_bar->gobj(), true);
     }
 
@@ -403,13 +431,146 @@ void MainWindow::create_device(const std::string &name)
     }
 }
 
-void MainWindow::enter_bootloader()
+void MainWindow::update_firmware()
 {
     if (m_device) {
-        m_device->enter_bootloader();
-        m_mcu_info_bar_label->set_label("In bootloader. Video only, no mouse or keyboard.");
-        m_enter_bootloader_button->hide();
-        gtk_info_bar_set_revealed(m_mcu_info_bar->gobj(), true);
+        gtk_info_bar_set_revealed(m_mcu_info_bar->gobj(), false);
+        m_firmware_update_revealer->set_reveal_child(true);
+        auto mcu = m_device->mcu_boot();
+        if (!mcu) {
+            m_firmware_update_label->set_label("Not in bootloader mode");
+            return;
+        }
+        if (!mcu->get_info().in_bootloader) {
+            m_firmware_update_label->set_label("Bootloader not active");
+            return;
+        }
+        m_firmware_update_status = FirmwareUpdateStatus::IDLE;
+        m_firmware_update_progress = 0;
+        m_firmware_update_status_string.clear();
+        m_firmware_update_label->set_label("Intializing");
+
+        auto thr = std::thread(&MainWindow::firmware_update_thread, this);
+        thr.detach();
+    }
+}
+
+static std::string format_m_of_n(unsigned int m, unsigned int n)
+{
+    auto n_str = std::to_string(n);
+    auto digits_max = n_str.size();
+    auto m_str = std::to_string(m);
+    std::string prefix;
+    for (size_t i = 0; i < (digits_max - (int)m_str.size()); i++) {
+        prefix += " ";
+    }
+    return prefix + m_str + "/" + n_str;
+}
+
+void MainWindow::firmware_update_thread()
+{
+
+    auto update_status = [this](FirmwareUpdateStatus status, const std::string &msg) {
+        {
+            std::lock_guard<std::mutex> guard(m_firmware_update_status_mutex);
+            m_firmware_update_status_string = msg;
+        }
+        m_firmware_update_status = status;
+        m_firmware_update_dispatcher.emit();
+    };
+
+    try {
+        auto mcu = m_device->mcu_boot();
+        auto bytes = Gio::Resource::lookup_data_global("/net/carrotIndustries/usbkvm/usbkvm.bin");
+        if (!bytes)
+            throw std::runtime_error("can't open firmware blob");
+
+        gsize data_size;
+        auto data = reinterpret_cast<const uint8_t *>(bytes->get_data(data_size));
+
+        const unsigned int page_size = 1024;
+        const unsigned int n_pages = (data_size + page_size - 1) / page_size;
+        if (bytes->get_size() % UsbKvmMcu::write_flash_chunk_size)
+            throw std::runtime_error("firmware blob size error");
+        const unsigned int n_chunks = data_size / UsbKvmMcu::write_flash_chunk_size;
+        update_status(FirmwareUpdateStatus::BUSY, "Erasing…");
+
+        if (!mcu->boot_flash_unlock())
+            throw std::runtime_error("flash unlock");
+        if (!mcu->boot_flash_erase(8, n_pages))
+            throw std::runtime_error("flash erase");
+
+
+        for (unsigned int chunk = 0; chunk < n_chunks; chunk++) {
+            m_firmware_update_progress = chunk / ((float)n_chunks);
+            static const unsigned int flash_base = 0x8002000;
+            const unsigned int offset = chunk * UsbKvmMcu::write_flash_chunk_size;
+            update_status(FirmwareUpdateStatus::BUSY, "Programming: " + format_m_of_n(offset, data_size) + " Bytes");
+
+
+            const unsigned int flash_offset = flash_base + offset;
+            if (!mcu->boot_flash_write(flash_offset, std::span<const uint8_t, 256>(data + offset, 256)))
+                throw std::runtime_error("flash program");
+        }
+
+
+        m_firmware_update_progress = 1;
+        update_status(FirmwareUpdateStatus::BUSY, "Finishing…");
+
+        if (!mcu->boot_flash_lock())
+            throw std::runtime_error("flash lock");
+
+        using namespace std::chrono_literals;
+
+        {
+            const auto info = mcu->get_info();
+            if (info.version != UsbKvmMcu::get_expected_version())
+                throw std::runtime_error("unexpected version after update");
+        }
+        mcu->boot_start_app();
+        std::this_thread::sleep_for(200ms);
+
+        {
+            const auto info = mcu->get_info();
+            if (info.in_bootloader)
+                throw std::runtime_error("stuck in bootloader?");
+            if (info.version != UsbKvmMcu::get_expected_version())
+                throw std::runtime_error("unexpected version after starting app");
+        }
+
+        m_device->leave_bootloader();
+
+        std::this_thread::sleep_for(700ms);
+        update_status(FirmwareUpdateStatus::DONE, "Done");
+    }
+    catch (const std::exception &ex) {
+        update_status(FirmwareUpdateStatus::ERROR, std::string{"Error: "} + ex.what());
+    }
+    catch (...) {
+        update_status(FirmwareUpdateStatus::ERROR, "Unknown error");
+    }
+}
+
+void MainWindow::update_firmware_update_status()
+{
+    std::string status;
+    {
+        std::lock_guard<std::mutex> guard(m_firmware_update_status_mutex);
+        status = m_firmware_update_status_string;
+    }
+    m_firmware_update_label->set_label("Firmware update: " + status);
+    m_firmware_update_progress_bar->set_fraction(m_firmware_update_progress);
+    switch (m_firmware_update_status) {
+    case FirmwareUpdateStatus::IDLE:
+    case FirmwareUpdateStatus::BUSY:
+        break;
+
+    case FirmwareUpdateStatus::DONE:
+        m_firmware_update_revealer->set_reveal_child(false);
+        break;
+
+    case FirmwareUpdateStatus::ERROR:
+        break;
     }
 }
 
@@ -470,9 +631,13 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
     x->get_widget("evbox", m_evbox);
     x->get_widget("mcu_info_bar", m_mcu_info_bar);
     x->get_widget("mcu_info_bar_label", m_mcu_info_bar_label);
-    x->get_widget("enter_bootloader_button", m_enter_bootloader_button);
-    m_enter_bootloader_button->hide();
-    m_enter_bootloader_button->signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::enter_bootloader));
+    x->get_widget("update_firmware_button", m_update_firmware_button);
+    x->get_widget("firmware_update_revealer", m_firmware_update_revealer);
+    x->get_widget("firmware_update_label", m_firmware_update_label);
+    x->get_widget("firmware_update_progress_bar", m_firmware_update_progress_bar);
+    m_update_firmware_button->hide();
+    m_update_firmware_button->signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::update_firmware));
+    m_firmware_update_dispatcher.connect(sigc::mem_fun(*this, &MainWindow::update_firmware_update_status));
 
     m_evbox->signal_realize().connect(
             [this] { m_blank_cursor = Gdk::Cursor::create(m_evbox->get_window()->get_display(), Gdk::BLANK_CURSOR); });
@@ -534,7 +699,7 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
 
     update_resolution_button();
 
-    {
+    /*{
         auto hamburger_button = Gtk::manage(new Gtk::MenuButton);
         hamburger_button->set_image_from_icon_name("open-menu-symbolic", Gtk::ICON_SIZE_BUTTON);
 
@@ -549,7 +714,7 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
         hamburger_menu->append("Enter bootloader", "win.enter_bootloader");
 
         add_action("enter_bootloader", sigc::mem_fun(*this, &MainWindow::enter_bootloader));
-    }
+    }*/
 
     m_type_window = TypeWindow::create(*this);
     m_type_window->set_transient_for(*this);
@@ -563,6 +728,9 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
 void MainWindow::update_input_status()
 {
     if (!m_device)
+        return;
+    if (m_firmware_update_status != FirmwareUpdateStatus::IDLE
+        || m_firmware_update_status != FirmwareUpdateStatus::DONE)
         return;
     auto &hal = m_device->hal();
     std::string label;

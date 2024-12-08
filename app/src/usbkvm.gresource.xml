@@ -4,5 +4,6 @@
     <file>window.ui</file>
     <file>usbkvm.css</file>
     <file>type_window.ui</file>
+    <file alias="usbkvm.bin">../fw/usbkvm/build/usbkvm-header.bin</file>
   </gresource>
 </gresources>

@@ -53,6 +53,8 @@ public:
         unsigned int version;
         bool in_bootloader;
         Model model;
+        enum class Valid { INVALID_MAGIC, HEADER_CRC_MISMATCH, APP_CRC_MISMATCH, VALID };
+        Valid get_valid() const;
     };
 
     Info get_info();
@@ -67,11 +69,13 @@ public:
         ALL = USB | HID | HDMI,
     };
     void set_led(Led mask, Led stat);
-    
+
+    static constexpr size_t write_flash_chunk_size = 256;
+
     bool boot_flash_unlock();
     bool boot_flash_lock();
     bool boot_flash_erase(unsigned int first_page, unsigned int n_pages);
-    bool boot_flash_write(unsigned int offset, std::span<const uint8_t, 256> data);
+    bool boot_flash_write(unsigned int offset, std::span<const uint8_t, write_flash_chunk_size> data);
     void boot_start_app();
     uint8_t boot_get_boot_version();
     void boot_enter_dfu();

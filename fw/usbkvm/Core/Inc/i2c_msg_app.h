@@ -1,7 +1,7 @@
 #pragma once
 #include "../../../common/Inc/i2c_msg_common.h"
 
-#define I2C_APP_VERSION 5
+#define I2C_APP_VERSION 7
 
 #define I2C_REQ_NOP (0)
 #define I2C_REQ_KEYBOARD_REPORT (1)

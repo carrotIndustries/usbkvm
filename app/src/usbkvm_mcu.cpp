@@ -159,6 +159,17 @@ UsbKvmMcu::Info UsbKvmMcu::get_info()
     };
 }
 
+UsbKvmMcu::Info::Valid UsbKvmMcu::Info::get_valid() const
+{
+    if (version == I2C_VERSION_BOOT_APP_INVALID_MAGIC)
+        return Valid::INVALID_MAGIC;
+    else if (version == I2C_VERSION_BOOT_APP_HEADER_CRC_MISMATCH)
+        return Valid::HEADER_CRC_MISMATCH;
+    else if (version == I2C_VERSION_BOOT_APP_CRC_MISMATCH)
+        return Valid::APP_CRC_MISMATCH;
+    return Valid::VALID;
+}
+
 void UsbKvmMcu::enter_bootloader()
 {
     std::lock_guard<std::mutex> guard(m_mutex);
@@ -245,11 +256,12 @@ bool UsbKvmMcu::boot_flash_erase(unsigned int first_page, unsigned int n_pages)
     return resp.success;
 }
 
-bool UsbKvmMcu::boot_flash_write(unsigned int offset, std::span<const uint8_t, 256> data)
+bool UsbKvmMcu::boot_flash_write(unsigned int offset, std::span<const uint8_t, write_flash_chunk_size> data)
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    i2c_req_boot_flash_write_t msg = {.type = I2C_REQ_BOOT_FLASH_WRITE, .seq = m_seq++, .offset = static_cast<uint16_t>(offset)};
+    i2c_req_boot_flash_write_t msg = {
+            .type = I2C_REQ_BOOT_FLASH_WRITE, .seq = m_seq++, .offset = static_cast<uint16_t>(offset)};
     static_assert(data.size() == sizeof(msg.data));
     memcpy(msg.data, data.data(), sizeof(msg.data));
     i2c_resp_boot_flash_status_t resp;

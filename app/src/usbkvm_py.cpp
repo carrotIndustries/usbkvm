@@ -61,14 +61,16 @@ PYBIND11_MODULE(usbkvm_py, m)
 
     py::class_<UsbKvmMcu>(m, "Mcu")
             .def("get_info", &UsbKvmMcu::get_info)
+            .def("enter_bootloader", &UsbKvmMcu::enter_bootloader)
             .def("boot_flash_unlock", &UsbKvmMcu::boot_flash_unlock)
             .def("boot_flash_lock", &UsbKvmMcu::boot_flash_lock)
             .def("boot_flash_erase", &UsbKvmMcu::boot_flash_erase)
             .def("boot_flash_write",
                  [](UsbKvmMcu &mcu, unsigned int offset, const std::vector<uint8_t> data) {
-                     if (data.size() != 256)
+                     if (data.size() != UsbKvmMcu::write_flash_chunk_size)
                          throw std::runtime_error("size mismatch");
-                     return mcu.boot_flash_write(offset, std::span<const uint8_t, 256>(data.data(), 256));
+                     return mcu.boot_flash_write(offset, std::span<const uint8_t, UsbKvmMcu::write_flash_chunk_size>(
+                                                                 data.data(), UsbKvmMcu::write_flash_chunk_size));
                  })
             .def("boot_start_app", &UsbKvmMcu::boot_start_app)
             .def("boot_get_boot_version", &UsbKvmMcu::boot_get_boot_version)

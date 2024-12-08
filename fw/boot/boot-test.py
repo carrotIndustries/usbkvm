@@ -23,5 +23,5 @@ def load_flash(filename) :
 
 d=usbkvm.Device("USBKVM")
 m = d.mcu()
-info = m.get_info()
-print(info.version, info.in_bootloader)
+#info = m.get_info()
+#print(info.version, info.in_bootloader)

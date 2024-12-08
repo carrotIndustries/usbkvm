@@ -17,12 +17,26 @@ void UsbKvmDevice::enter_bootloader()
     if (!m_mcu)
         m_mcu = std::make_unique<UsbKvmMcu>(*m_i2c1dev_mcu);
     m_mcu->enter_bootloader();
-    m_mcu.reset();
+    set_boot_mcu();
 }
 
 void UsbKvmDevice::delete_mcu()
 {
     m_mcu.reset();
+}
+
+void UsbKvmDevice::set_boot_mcu()
+{
+    m_mcu_boot = std::move(m_mcu);
+    m_mcu.reset();
+}
+
+void UsbKvmDevice::leave_bootloader()
+{
+    if (!m_mcu_boot)
+        return;
+    m_mcu = std::move(m_mcu_boot);
+    m_mcu_boot.reset();
 }
 
 void UsbKvmDevice::set_model(Model model)
