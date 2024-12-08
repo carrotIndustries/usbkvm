@@ -28,7 +28,8 @@ jobs:
       working-directory: fw/usbkvm
       run: make -j $(nproc)
     - name: Build app
+      working-directory: app
       run: |
-        mkdir ../build
-        meson setup ../build
-        ninja -C ../build
+        mkdir ../build-app
+        meson setup ../build-app
+        ninja -C ../build-app
