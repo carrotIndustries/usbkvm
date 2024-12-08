@@ -36,6 +36,7 @@ jobs:
     - name: create tarball
       working-directory: app
       run: |
+        git config --global --add safe.directory $(realpath ..)
         ./make_tarball.sh
     - name: Upload tarball
       uses: actions/upload-artifact@v4
