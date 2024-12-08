@@ -5,8 +5,8 @@
 #include <iostream>
 #include <unistd.h>
 #include <thread>
-#include "../fw/boot/Core/Inc/i2c_msg_boot.h"
-#include "../fw/usbkvm/Core/Inc/i2c_msg_app.h"
+#include "i2c_msg_boot.h"
+#include "i2c_msg_app.h"
 
 #define TU_BIT(n) (1UL << (n))
 

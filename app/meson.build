@@ -37,12 +37,27 @@ src_python = files(
   'src/usbkvm_py.cpp'
 )
 
+fs = import('fs')
+use_bundled_fw = fs.is_dir('fw')
+if use_bundled_fw
+    message('using bundled firmware')
+else
+    message('using firmware from repo')
+endif
+
+resource_src_dirs = ['src']
+if use_bundled_fw
+    resource_src_dirs += 'fw'
+else
+    resource_src_dirs += '../fw/usbkvm/build/'
+endif
+
 gnome = import('gnome')
 resources = gnome.compile_resources(
   'resources',
   'src/usbkvm.gresource.xml',
   c_name: 'usbkvm_resources',
-  source_dir: 'src'
+  source_dir: resource_src_dirs
 )
 
 cpp_args = []
@@ -93,6 +108,12 @@ mslib = custom_target(
 include_directories = [
   include_directories('src'),
 ]
+
+if use_bundled_fw
+    include_directories += 'fw'
+else
+    include_directories += ['../fw/usbkvm/Core/Inc/', '../fw/boot/Core/Inc/', '../fw/common/Inc/']
+endif
 
 usbkvm = executable('usbkvm',
     [src,resources,keymap_c,keymap_h,mslib],

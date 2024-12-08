@@ -1,5 +1,5 @@
 #pragma once
-#include "../../../common/Inc/i2c_msg_common.h"
+#include "i2c_msg_common.h"
 
 #define I2C_BOOT_VERSION 1
 

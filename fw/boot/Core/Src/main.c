@@ -131,7 +131,7 @@ void i2c_req_handle_flash_write(const i2c_req_boot_flash_write_t *req)
 
 void i2c_req_handle_get_boot_version(const i2c_req_unknown_t *unk)
 {
-  i2c_resp_buf.boot_version.version = I2C_BOOT_VER1SION;
+  i2c_resp_buf.boot_version.version = I2C_BOOT_VERSION;
   i2c_resp_buf.flash_status.seq = unk->seq;
 }
 
