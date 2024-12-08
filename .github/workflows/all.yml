@@ -17,7 +17,7 @@ jobs:
     container: debian:bookworm
     steps:
     - name: Install build dependencies
-      run: apt-get update -y && apt-get install meson build-essential libgtkmm-3.0-dev golang gcc-arm-none-eabi libnewlib-arm-none-eabi python3 git
+      run: apt-get update -y && apt-get install -y meson build-essential libgtkmm-3.0-dev golang gcc-arm-none-eabi libnewlib-arm-none-eabi python3 git
     - uses: actions/checkout@v4
       with:
         submodules: true
