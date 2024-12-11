@@ -279,11 +279,7 @@ void MainWindow::set_capture_resolution(int w, int h)
     update_resolution_button();
 }
 
-#ifdef G_OS_WIN32
-static const std::string s_device_name = "USB Video";
-#else
 static const std::string s_device_name = "USBKVM";
-#endif
 
 gboolean MainWindow::monitor_bus_func(GstBus *bus, GstMessage *message)
 {
