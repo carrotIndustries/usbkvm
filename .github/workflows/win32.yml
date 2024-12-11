@@ -35,6 +35,7 @@ jobs:
           mingw-w64-x86_64-gst-plugins-bad
           mingw-w64-x86_64-gst-plugins-good
           mingw-w64-x86_64-hidapi
+          mingw-w64-x86_64-go
           mingw-w64-x86_64-arm-none-eabi-gcc
           make
           git
