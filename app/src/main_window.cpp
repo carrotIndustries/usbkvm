@@ -304,28 +304,30 @@ gboolean MainWindow::monitor_bus_func(GstBus *bus, GstMessage *message)
                 gst_caps_foreach(caps, &MainWindow::handle_cap, this);
                 gst_caps_unref(caps);
             }
+            if (m_pipeline) {
 #ifdef G_OS_WIN32
-            g_object_set(m_videosrc, "device-name", s_device_name.c_str(), NULL);
+                g_object_set(m_videosrc, "device-name", s_device_name.c_str(), NULL);
 #else
-            {
-                auto props = gst_device_get_properties(device);
-                auto path = gst_structure_get_string(props, "api.v4l2.path");
+                {
+                    auto props = gst_device_get_properties(device);
+                    auto path = gst_structure_get_string(props, "api.v4l2.path");
 
-                if (!path)
-                    path = gst_structure_get_string(props, "device.path");
+                    if (!path)
+                        path = gst_structure_get_string(props, "device.path");
 
-                if (path)
-                    g_object_set(m_videosrc, "device", path, NULL);
+                    if (path)
+                        g_object_set(m_videosrc, "device", path, NULL);
 
 
-                gst_structure_free(props);
-            }
+                    gst_structure_free(props);
+                }
 #endif
-            create_device("USBKVM");
-            auto ret = gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
-            if (ret == GST_STATE_CHANGE_FAILURE) {
-                g_print("Failed to start up pipeline!\n");
+                auto ret = gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
+                if (ret == GST_STATE_CHANGE_FAILURE) {
+                    g_print("Failed to start up pipeline!\n");
+                }
             }
+            create_device("USBKVM");
         }
         gst_object_unref(device);
     } break;
@@ -593,7 +595,7 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
     });
 
     m_evbox->grab_focus();
-    m_pipeline = gst_pipeline_new("pipeline");
+
 #ifdef G_OS_WIN32
     m_videosrc = gst_element_factory_make("ksvideosrc", "ksvideosrc");
 #else
@@ -603,27 +605,57 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
     m_jpegdec = gst_element_factory_make("jpegdec", "jpegdec");
     m_videocvt = gst_element_factory_make("videoconvert", "videoconvert");
     m_videosink = gst_element_factory_make("gtksink", "gtksink");
-    GtkWidget *area;
 
-    g_object_get(m_videosink, "widget", &area, NULL);
-    gtk_container_add(GTK_CONTAINER(m_evbox->gobj()), area);
-    gtk_widget_show(area);
-    g_object_unref(area);
-
-    gst_bin_add_many(GST_BIN(m_pipeline), m_videosrc, m_capsfilter, m_jpegdec, m_videocvt, m_videosink, NULL);
-
-    if (!gst_element_link_many(m_videosrc, m_capsfilter, m_jpegdec, m_videocvt, m_videosink, NULL)) {
-        g_warning("Failed to link videosrc to glfiltercube!\n");
-        // return -1;
+    std::string gst_errors;
+    if (m_videosrc == nullptr) {
+        gst_errors += "no videosrc, ";
     }
-    // set window id on this event
-    m_bus = gst_pipeline_get_bus(GST_PIPELINE(m_pipeline));
-    gst_bus_add_signal_watch_full(m_bus, G_PRIORITY_HIGH);
-    g_signal_connect(m_bus, "message::error", G_CALLBACK(end_stream_cb), m_pipeline);
-    g_signal_connect(m_bus, "message::warning", G_CALLBACK(end_stream_cb), m_pipeline);
-    g_signal_connect(m_bus, "message::eos", G_CALLBACK(end_stream_cb), m_pipeline);
-    g_signal_connect(m_bus, "message::state-changed", G_CALLBACK(state_cb), m_pipeline);
-    gst_object_unref(m_bus);
+    if (m_capsfilter == nullptr) {
+        gst_errors += "no capsfilter, ";
+    }
+    if (m_jpegdec == nullptr) {
+        gst_errors += "no jpegdec, ";
+    }
+    if (m_videocvt == nullptr) {
+        gst_errors += "no videoconvert, ";
+    }
+    if (m_videosink == nullptr) {
+        gst_errors += "no videosink, ";
+    }
+    if (gst_errors.size() >= 2) {
+        gst_errors.pop_back();
+        gst_errors.pop_back();
+
+        auto error_label = Gtk::make_managed<Gtk::Label>("couldn't initialize gstreamer: " + gst_errors);
+        error_label->set_line_wrap(true);
+        error_label->show();
+        m_evbox->add(*error_label);
+    }
+    else {
+        m_pipeline = gst_pipeline_new("pipeline");
+
+        GtkWidget *area;
+
+        g_object_get(m_videosink, "widget", &area, NULL);
+        gtk_container_add(GTK_CONTAINER(m_evbox->gobj()), area);
+        gtk_widget_show(area);
+        g_object_unref(area);
+
+        gst_bin_add_many(GST_BIN(m_pipeline), m_videosrc, m_capsfilter, m_jpegdec, m_videocvt, m_videosink, NULL);
+
+        if (!gst_element_link_many(m_videosrc, m_capsfilter, m_jpegdec, m_videocvt, m_videosink, NULL)) {
+            g_warning("Failed to link videosrc to glfiltercube!\n");
+            // return -1;
+        }
+        // set window id on this event
+        m_bus = gst_pipeline_get_bus(GST_PIPELINE(m_pipeline));
+        gst_bus_add_signal_watch_full(m_bus, G_PRIORITY_HIGH);
+        g_signal_connect(m_bus, "message::error", G_CALLBACK(end_stream_cb), m_pipeline);
+        g_signal_connect(m_bus, "message::warning", G_CALLBACK(end_stream_cb), m_pipeline);
+        g_signal_connect(m_bus, "message::eos", G_CALLBACK(end_stream_cb), m_pipeline);
+        g_signal_connect(m_bus, "message::state-changed", G_CALLBACK(state_cb), m_pipeline);
+        gst_object_unref(m_bus);
+    }
 
 
     Gtk::Button *dump_button;
