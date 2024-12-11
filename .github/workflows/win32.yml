@@ -56,6 +56,7 @@ jobs:
         meson compile -C build
     - name: Make dist
       shell: msys2 {0}
+      working-directory: app
       run: ./make_bindist.sh
     - name: set artifact name
       shell: msys2 {0}
@@ -63,4 +64,4 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: ${{ env.artifact_name }}
-        path: dist/*.zip
+        path: app/dist/*.zip
