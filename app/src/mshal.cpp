@@ -9,6 +9,7 @@
 MsHal::MsHal(const std::string &name)
 {
     std::vector<char> name_mut(name.begin(), name.end());
+    name_mut.push_back(0); // null terminator
     m_handle = MsHalOpen(name_mut.data());
     if (m_handle == 0)
         throw std::runtime_error("MsHalOpen failed");
