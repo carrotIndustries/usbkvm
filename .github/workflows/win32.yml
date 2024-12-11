@@ -39,6 +39,7 @@ jobs:
           mingw-w64-x86_64-arm-none-eabi-gcc
           make
           git
+          zip
           dos2unix
     - name: Build bootloader
       shell: msys2 {0}
