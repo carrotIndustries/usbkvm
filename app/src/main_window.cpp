@@ -451,18 +451,6 @@ void MainWindow::update_firmware()
     }
 }
 
-static std::string format_m_of_n(unsigned int m, unsigned int n)
-{
-    auto n_str = std::to_string(n);
-    auto digits_max = n_str.size();
-    auto m_str = std::to_string(m);
-    std::string prefix;
-    for (size_t i = 0; i < (digits_max - (int)m_str.size()); i++) {
-        prefix += " ";
-    }
-    return prefix + m_str + "/" + n_str;
-}
-
 void MainWindow::firmware_update_thread()
 {
 
