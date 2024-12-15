@@ -1,0 +1,66 @@
+name: CI and tarball generation
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches: [ main ]
+
+env:
+  LANG: en_US.UTF-8
+  DEBIAN_FRONTEND: noninteractive
+
+jobs:
+  build-all:
+    runs-on: ubuntu-latest
+    container: debian:trixie
+    steps:
+    - name: Install build dependencies
+      run: apt-get update -y && apt-get install -y meson build-essential libgtkmm-3.0-dev golang gcc-arm-none-eabi libnewlib-arm-none-eabi python3 git gstreamer1.0-gtk3 gstreamer1.0-plugins-good libhidapi-dev libgstreamer1.0-dev
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+    - name: Build bootloader
+      working-directory: fw/boot
+      run: make -j $(nproc)
+    - name: Build firmware
+      working-directory: fw/usbkvm
+      run: make -j $(nproc)
+    - name: Build app
+      working-directory: app
+      run: |
+        mkdir ../build-app
+        meson setup ../build-app
+        ninja -C ../build-app
+    - name: create tarball
+      working-directory: app
+      run: |
+        git config --global --add safe.directory $(realpath ..)
+        ./make_tarball.sh
+        sha256sum *.tar.gz
+    - name: Upload tarball
+      uses: actions/upload-artifact@v4
+      with:
+        name: usbkvm-src
+        path: app/*.tar.gz
+
+  test-tarball:
+    runs-on: ubuntu-latest
+    container: debian:trixie
+    needs: build-all
+    steps:
+    - name: Install build dependencies
+      run: apt-get update -y && apt-get install -y meson build-essential libgtkmm-3.0-dev golang python3 gstreamer1.0-gtk3 gstreamer1.0-plugins-good libhidapi-dev libgstreamer1.0-dev
+    - name: Download tarball
+      uses: actions/download-artifact@v4
+      with:
+        name: usbkvm-src
+    - name: extract tarball
+      run: tar xf usbkvm.tar.gz
+    - name: Build app
+      working-directory: usbkvm
+      run: |
+        mkdir ../build-app
+        meson setup ../build-app
+        ninja -C ../build-app
