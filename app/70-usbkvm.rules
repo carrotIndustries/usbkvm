@@ -1,0 +1,1 @@
+KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{product}=="USBKVM", TAG+="uaccess"
