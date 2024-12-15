@@ -117,24 +117,24 @@ typedef struct TU_ATTR_PACKED {
 
 void i2c_req_handle_keyboard_report(i2c_req_keyboard_report_t *req)
 {
-  if (!tud_hid_n_ready(ITF_NUM_KEYBOARD))
-    return;
-
-  tud_hid_n_keyboard_report(ITF_NUM_KEYBOARD, 0, req->mod, req->keycode);
+  if (tud_hid_n_ready(ITF_NUM_KEYBOARD)) {
+    tud_hid_n_keyboard_report(ITF_NUM_KEYBOARD, 0, req->mod, req->keycode);
+  }
+  i2c_resp_buf.unk.seq = req->seq;
 }
 
 void i2c_req_handle_mouse_report(i2c_req_mouse_report_t *req)
 {
-  if (!tud_hid_n_ready(ITF_NUM_MOUSE))
-    return;
-  
-  hid_mouse_abs_report_t report = {.buttons = req->button,
-                                     .x = req->x,
-                                     .y = req->y,
-                                     .wheel = req->v,
-                                     .pan = req->h};
+  if (!tud_hid_n_ready(ITF_NUM_MOUSE)) {
+    hid_mouse_abs_report_t report = {.buttons = req->button,
+                                      .x = req->x,
+                                      .y = req->y,
+                                      .wheel = req->v,
+                                      .pan = req->h};
 
-  tud_hid_n_report(ITF_NUM_MOUSE, 0, &report, sizeof(report));
+    tud_hid_n_report(ITF_NUM_MOUSE, 0, &report, sizeof(report));
+  }
+  i2c_resp_buf.unk.seq = req->seq;
 }
 
 void i2c_req_handle_get_info(const i2c_req_unknown_t *unk)
