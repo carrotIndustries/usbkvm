@@ -2,8 +2,10 @@
 #include <gtkmm.h>
 #include <gst/gst.h>
 #include "imcu_provider.hpp"
+#include <atomic>
 
 class UsbKvmDevice;
+enum class UsbKvmMcuFirmwareUpdateStatus;
 
 class MainWindow : public Gtk::ApplicationWindow, private IMcuProvider {
 public:
@@ -24,7 +26,20 @@ private:
     Glib::RefPtr<Gdk::Cursor> m_blank_cursor;
     Gtk::InfoBar *m_mcu_info_bar;
     Gtk::Label *m_mcu_info_bar_label;
-    Gtk::Button *m_enter_bootloader_button;
+    Gtk::Button *m_update_firmware_button;
+    Gtk::Revealer *m_firmware_update_revealer;
+    Gtk::ProgressBar *m_firmware_update_progress_bar;
+    Gtk::Label *m_firmware_update_label;
+
+    using FirmwareUpdateStatus = UsbKvmMcuFirmwareUpdateStatus;
+    std::atomic<FirmwareUpdateStatus> m_firmware_update_status;
+    std::atomic<float> m_firmware_update_progress;
+    std::string m_firmware_update_status_string;
+    std::mutex m_firmware_update_status_mutex;
+    Glib::Dispatcher m_firmware_update_dispatcher;
+    void firmware_update_thread();
+    void update_firmware_update_status();
+
     Gtk::Box *m_modifier_box;
     std::map<GdkModifierType, Gtk::ToggleButton *> m_modifier_buttons;
     void update_modifier_buttons();
@@ -48,7 +63,7 @@ private:
     void handle_motion(GdkEventMotion *ev);
 
     void create_device(const std::string &name);
-    void enter_bootloader();
+    void update_firmware();
 
     std::pair<int, int> m_capture_resolution = {1280, 720};
     std::set<std::pair<int, int>> m_capture_resolutions;

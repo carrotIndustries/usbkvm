@@ -37,7 +37,6 @@ BUILD_DIR = build
 # C sources
 C_SOURCES =  \
 Core/Src/main.c \
-Core/Src/boot.c \
 Core/Src/stm32f0xx_it.c \
 Core/Src/stm32f0xx_hal_msp.c \
 Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_usb.c \
@@ -84,7 +83,9 @@ tinyusb/src/host/usbh.c\
 tinyusb/src/device/usbd.c\
 tinyusb/src/device/usbd_control.c\
 tinyusb/src/portable/st/stm32_fsdev/dcd_stm32_fsdev.c\
-Core/Src/usb_descriptors.c
+Core/Src/usb_descriptors.c\
+../common/Src/i2c_comm.c\
+../common/Src/usbkvm_common.c\
 
 # ASM sources
 ASM_SOURCES =  \
@@ -147,6 +148,7 @@ C_INCLUDES =  \
 -IDrivers/STM32F0xx_HAL_Driver/Inc/Legacy \
 -IDrivers/CMSIS/Device/ST/STM32F0xx/Include \
 -IDrivers/CMSIS/Include \
+-I../common/Inc \
 -Itinyusb/src
 
 
@@ -176,7 +178,7 @@ LIBDIR =
 LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections -flto
 
 # default action: build all
-all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
+all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET)-header.bin
 
 
 #######################################
@@ -206,7 +208,10 @@ $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(BIN) $< $@	
 
 $(BUILD_DIR)/%.dfu: $(BUILD_DIR)/%.bin | $(BUILD_DIR)
-	./dfuse-pack.py -b 0x8000000:$< $@
+	../common/dfuse-pack.py -b 0x8002000:$< $@
+
+$(BUILD_DIR)/$(TARGET)-header.bin: $(BUILD_DIR)/$(TARGET).bin | $(BUILD_DIR)
+	./write_header.py $< $@
 	
 $(BUILD_DIR):
 	mkdir $@		
@@ -222,8 +227,8 @@ clean:
 #######################################
 -include $(wildcard $(BUILD_DIR)/*.d)
 
-flash: $(BUILD_DIR)/$(TARGET).bin
-	echo "reset; sleep 500; halt; sleep 500; program $(realpath $^) 0x8000000 verify reset; exit" | nc -4 localhost 4444 2>/dev/null
+flash: $(BUILD_DIR)/$(TARGET)-header.bin
+	echo "reset; sleep 500; halt; sleep 500; program $(realpath $^) 0x8002000 verify reset; exit" | nc -4 localhost 4444 2>/dev/null
 
 dfu: $(BUILD_DIR)/$(TARGET).dfu
 	dfu-util  -D build/usbkvm.dfu

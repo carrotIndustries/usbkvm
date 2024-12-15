@@ -4,8 +4,14 @@
 #include <stdint.h>
 #include <array>
 #include <mutex>
+#include <span>
+#include <string>
+#include <functional>
+#include <stdexcept>
 
 class II2COneDevice;
+
+enum class UsbKvmMcuFirmwareUpdateStatus { BUSY, DONE, ERROR };
 
 class UsbKvmMcu {
 public:
@@ -50,7 +56,10 @@ public:
 
     struct Info {
         unsigned int version;
+        bool in_bootloader;
         Model model;
+        enum class Valid { INVALID_MAGIC, HEADER_CRC_MISMATCH, APP_CRC_MISMATCH, VALID };
+        Valid get_valid() const;
     };
 
     Info get_info();
@@ -65,6 +74,27 @@ public:
         ALL = USB | HID | HDMI,
     };
     void set_led(Led mask, Led stat);
+
+    static constexpr size_t write_flash_chunk_size = 256;
+
+    bool boot_flash_unlock();
+    bool boot_flash_lock();
+    bool boot_flash_erase(unsigned int first_page, unsigned int n_pages);
+    bool boot_flash_write(unsigned int offset, std::span<const uint8_t, write_flash_chunk_size> data);
+    void boot_start_app();
+    uint8_t boot_get_boot_version();
+    void boot_enter_dfu();
+
+    using FirmwareUpdateStatus = UsbKvmMcuFirmwareUpdateStatus;
+    struct FirmwareUpdateProgress {
+        FirmwareUpdateStatus status;
+        std::string message;
+        float progress = 0;
+    };
+
+
+    bool boot_update_firmware(std::function<void(const FirmwareUpdateProgress &)> progress_cb,
+                              std::span<const uint8_t> firmware);
 
     ~UsbKvmMcu();
 

@@ -3,6 +3,7 @@
 #include <iostream>
 #include "keymap.h"
 #include <format>
+#include <thread>
 #include "usbkvm_mcu.hpp"
 #include "usbkvm_device.hpp"
 #include "mshal.hpp"
@@ -278,11 +279,7 @@ void MainWindow::set_capture_resolution(int w, int h)
     update_resolution_button();
 }
 
-#ifdef G_OS_WIN32
-static const std::string s_device_name = "USB Video";
-#else
 static const std::string s_device_name = "USBKVM";
-#endif
 
 gboolean MainWindow::monitor_bus_func(GstBus *bus, GstMessage *message)
 {
@@ -303,28 +300,30 @@ gboolean MainWindow::monitor_bus_func(GstBus *bus, GstMessage *message)
                 gst_caps_foreach(caps, &MainWindow::handle_cap, this);
                 gst_caps_unref(caps);
             }
+            if (m_pipeline) {
 #ifdef G_OS_WIN32
-            g_object_set(m_videosrc, "device-name", s_device_name.c_str(), NULL);
+                g_object_set(m_videosrc, "device-name", s_device_name.c_str(), NULL);
 #else
-            {
-                auto props = gst_device_get_properties(device);
-                auto path = gst_structure_get_string(props, "api.v4l2.path");
+                {
+                    auto props = gst_device_get_properties(device);
+                    auto path = gst_structure_get_string(props, "api.v4l2.path");
 
-                if (!path)
-                    path = gst_structure_get_string(props, "device.path");
+                    if (!path)
+                        path = gst_structure_get_string(props, "device.path");
 
-                if (path)
-                    g_object_set(m_videosrc, "device", path, NULL);
+                    if (path)
+                        g_object_set(m_videosrc, "device", path, NULL);
 
 
-                gst_structure_free(props);
-            }
+                    gst_structure_free(props);
+                }
 #endif
-            create_device("USBKVM");
-            auto ret = gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
-            if (ret == GST_STATE_CHANGE_FAILURE) {
-                g_print("Failed to start up pipeline!\n");
+                auto ret = gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
+                if (ret == GST_STATE_CHANGE_FAILURE) {
+                    g_print("Failed to start up pipeline!\n");
+                }
             }
+            create_device("USBKVM");
         }
         gst_object_unref(device);
     } break;
@@ -352,19 +351,57 @@ void MainWindow::create_device(const std::string &name)
         m_device->set_model(info.model);
         const int expected_version = UsbKvmMcu::get_expected_version();
         if (current_version != expected_version) {
+            std::string l;
+
+            switch (info.get_valid()) {
+                using enum UsbKvmMcu::Info::Valid;
+            case VALID:
+                l = std::format("Need version {}, but {} is running.", expected_version, current_version);
+                break;
+
+            case INVALID_MAGIC:
+                l = "Firmware corrupted: Invalid magic number";
+                break;
+
+            case APP_CRC_MISMATCH:
+                l = "Firmware corrupted: App CRC mismatch";
+                break;
+
+            case HEADER_CRC_MISMATCH:
+                l = "Firmware corrupted: Header CRC mismatch";
+                break;
+            }
             m_mcu_info_bar_label->set_label(
-                    std::format("MCU firmware update required. Need version {}, but {} is running. Video only, no "
-                                "mouse or keyboard.",
-                                expected_version, current_version));
-            m_enter_bootloader_button->show();
+                    std::format("MCU firmware update required. {} Video only, no mouse or keyboard.", l));
+            m_device->enter_bootloader();
+            m_update_firmware_button->show();
             gtk_info_bar_set_revealed(m_mcu_info_bar->gobj(), true);
-            m_device->delete_mcu();
+        }
+        else {
+            if (info.in_bootloader) {
+                m_device->mcu()->boot_start_app();
+                using namespace std::chrono_literals;
+                std::this_thread::sleep_for(100ms);
+
+                auto info2 = m_device->mcu()->get_info();
+                if (info2.in_bootloader) {
+                    m_mcu_info_bar_label->set_label("MCU stuck in bootloader. Video only, no mouse or keyboard.");
+                    gtk_info_bar_set_revealed(m_mcu_info_bar->gobj(), true);
+                    m_device->delete_mcu();
+                }
+                if (info2.version != info.version) {
+                    m_mcu_info_bar_label->set_label(
+                            "MCU app version not as expected. Video only, no mouse or keyboard.");
+                    gtk_info_bar_set_revealed(m_mcu_info_bar->gobj(), true);
+                    m_device->delete_mcu();
+                }
+            }
         }
     }
     catch (const std::exception &ex) {
         if (m_device)
             m_device->delete_mcu();
-        m_mcu_info_bar_label->set_label("MCU not responding, may be in bootloader. Video only, no mouse or keyboard.");
+        m_mcu_info_bar_label->set_label("MCU not responding. Video only, no mouse or keyboard.");
         gtk_info_bar_set_revealed(m_mcu_info_bar->gobj(), true);
     }
 
@@ -392,14 +429,84 @@ void MainWindow::create_device(const std::string &name)
     }
 }
 
-void MainWindow::enter_bootloader()
+void MainWindow::update_firmware()
 {
     if (m_device) {
-        m_device->enter_bootloader();
-        m_mcu_info_bar_label->set_label("In bootloader. Video only, no mouse or keyboard.");
-        m_enter_bootloader_button->hide();
-        gtk_info_bar_set_revealed(m_mcu_info_bar->gobj(), true);
+        gtk_info_bar_set_revealed(m_mcu_info_bar->gobj(), false);
+        m_firmware_update_revealer->set_reveal_child(true);
+        auto mcu = m_device->mcu_boot();
+        if (!mcu) {
+            m_firmware_update_label->set_label("Not in bootloader mode");
+            return;
+        }
+        m_firmware_update_status = FirmwareUpdateStatus::BUSY;
+        m_firmware_update_progress = 0;
+        m_firmware_update_status_string.clear();
+        m_firmware_update_label->set_label("Intializing");
+
+        auto thr = std::thread(&MainWindow::firmware_update_thread, this);
+        thr.detach();
     }
+}
+
+void MainWindow::firmware_update_thread()
+{
+
+    auto update_status = [this](FirmwareUpdateStatus status, const std::string &msg) {
+        {
+            std::lock_guard<std::mutex> guard(m_firmware_update_status_mutex);
+            if (status == FirmwareUpdateStatus::ERROR)
+                m_firmware_update_status_string = "Error: " + msg;
+            else
+                m_firmware_update_status_string = msg;
+        }
+        m_firmware_update_status = status;
+        m_firmware_update_dispatcher.emit();
+    };
+
+    try {
+        auto mcu = m_device->mcu_boot();
+        auto bytes = Gio::Resource::lookup_data_global("/net/carrotIndustries/usbkvm/usbkvm.bin");
+        if (!bytes)
+            throw std::runtime_error("can't open firmware blob");
+
+        gsize data_size;
+        auto data = reinterpret_cast<const uint8_t *>(bytes->get_data(data_size));
+
+        const auto update_result = mcu->boot_update_firmware(
+                [this, &update_status](const UsbKvmMcu::FirmwareUpdateProgress &status) {
+                    if (status.status == FirmwareUpdateStatus::BUSY)
+                        m_firmware_update_progress = status.progress;
+                    update_status(status.status, status.message);
+                },
+                {data, data_size});
+
+        if (update_result) {
+            m_device->leave_bootloader();
+            using namespace std::chrono_literals;
+
+            std::this_thread::sleep_for(700ms);
+            update_status(FirmwareUpdateStatus::DONE, "Done");
+        }
+    }
+    catch (const std::exception &ex) {
+        update_status(FirmwareUpdateStatus::ERROR, std::string{"Error: "} + ex.what());
+    }
+    catch (...) {
+        update_status(FirmwareUpdateStatus::ERROR, "Unknown error");
+    }
+}
+
+void MainWindow::update_firmware_update_status()
+{
+    std::string status;
+    {
+        std::lock_guard<std::mutex> guard(m_firmware_update_status_mutex);
+        status = m_firmware_update_status_string;
+    }
+    m_firmware_update_label->set_label("Firmware update: " + status);
+    m_firmware_update_progress_bar->set_fraction(m_firmware_update_progress);
+    m_firmware_update_revealer->set_reveal_child(m_firmware_update_status != FirmwareUpdateStatus::DONE);
 }
 
 MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &x) : Gtk::ApplicationWindow(cobject)
@@ -459,9 +566,13 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
     x->get_widget("evbox", m_evbox);
     x->get_widget("mcu_info_bar", m_mcu_info_bar);
     x->get_widget("mcu_info_bar_label", m_mcu_info_bar_label);
-    x->get_widget("enter_bootloader_button", m_enter_bootloader_button);
-    m_enter_bootloader_button->hide();
-    m_enter_bootloader_button->signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::enter_bootloader));
+    x->get_widget("update_firmware_button", m_update_firmware_button);
+    x->get_widget("firmware_update_revealer", m_firmware_update_revealer);
+    x->get_widget("firmware_update_label", m_firmware_update_label);
+    x->get_widget("firmware_update_progress_bar", m_firmware_update_progress_bar);
+    m_update_firmware_button->hide();
+    m_update_firmware_button->signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::update_firmware));
+    m_firmware_update_dispatcher.connect(sigc::mem_fun(*this, &MainWindow::update_firmware_update_status));
 
     m_evbox->signal_realize().connect(
             [this] { m_blank_cursor = Gdk::Cursor::create(m_evbox->get_window()->get_display(), Gdk::BLANK_CURSOR); });
@@ -480,7 +591,7 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
     });
 
     m_evbox->grab_focus();
-    m_pipeline = gst_pipeline_new("pipeline");
+
 #ifdef G_OS_WIN32
     m_videosrc = gst_element_factory_make("ksvideosrc", "ksvideosrc");
 #else
@@ -490,27 +601,57 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
     m_jpegdec = gst_element_factory_make("jpegdec", "jpegdec");
     m_videocvt = gst_element_factory_make("videoconvert", "videoconvert");
     m_videosink = gst_element_factory_make("gtksink", "gtksink");
-    GtkWidget *area;
 
-    g_object_get(m_videosink, "widget", &area, NULL);
-    gtk_container_add(GTK_CONTAINER(m_evbox->gobj()), area);
-    gtk_widget_show(area);
-    g_object_unref(area);
-
-    gst_bin_add_many(GST_BIN(m_pipeline), m_videosrc, m_capsfilter, m_jpegdec, m_videocvt, m_videosink, NULL);
-
-    if (!gst_element_link_many(m_videosrc, m_capsfilter, m_jpegdec, m_videocvt, m_videosink, NULL)) {
-        g_warning("Failed to link videosrc to glfiltercube!\n");
-        // return -1;
+    std::string gst_errors;
+    if (m_videosrc == nullptr) {
+        gst_errors += "no videosrc, ";
     }
-    // set window id on this event
-    m_bus = gst_pipeline_get_bus(GST_PIPELINE(m_pipeline));
-    gst_bus_add_signal_watch_full(m_bus, G_PRIORITY_HIGH);
-    g_signal_connect(m_bus, "message::error", G_CALLBACK(end_stream_cb), m_pipeline);
-    g_signal_connect(m_bus, "message::warning", G_CALLBACK(end_stream_cb), m_pipeline);
-    g_signal_connect(m_bus, "message::eos", G_CALLBACK(end_stream_cb), m_pipeline);
-    g_signal_connect(m_bus, "message::state-changed", G_CALLBACK(state_cb), m_pipeline);
-    gst_object_unref(m_bus);
+    if (m_capsfilter == nullptr) {
+        gst_errors += "no capsfilter, ";
+    }
+    if (m_jpegdec == nullptr) {
+        gst_errors += "no jpegdec, ";
+    }
+    if (m_videocvt == nullptr) {
+        gst_errors += "no videoconvert, ";
+    }
+    if (m_videosink == nullptr) {
+        gst_errors += "no videosink, ";
+    }
+    if (gst_errors.size() >= 2) {
+        gst_errors.pop_back();
+        gst_errors.pop_back();
+
+        auto error_label = Gtk::make_managed<Gtk::Label>("couldn't initialize gstreamer: " + gst_errors);
+        error_label->set_line_wrap(true);
+        error_label->show();
+        m_evbox->add(*error_label);
+    }
+    else {
+        m_pipeline = gst_pipeline_new("pipeline");
+
+        GtkWidget *area;
+
+        g_object_get(m_videosink, "widget", &area, NULL);
+        gtk_container_add(GTK_CONTAINER(m_evbox->gobj()), area);
+        gtk_widget_show(area);
+        g_object_unref(area);
+
+        gst_bin_add_many(GST_BIN(m_pipeline), m_videosrc, m_capsfilter, m_jpegdec, m_videocvt, m_videosink, NULL);
+
+        if (!gst_element_link_many(m_videosrc, m_capsfilter, m_jpegdec, m_videocvt, m_videosink, NULL)) {
+            g_warning("Failed to link videosrc to glfiltercube!\n");
+            // return -1;
+        }
+        // set window id on this event
+        m_bus = gst_pipeline_get_bus(GST_PIPELINE(m_pipeline));
+        gst_bus_add_signal_watch_full(m_bus, G_PRIORITY_HIGH);
+        g_signal_connect(m_bus, "message::error", G_CALLBACK(end_stream_cb), m_pipeline);
+        g_signal_connect(m_bus, "message::warning", G_CALLBACK(end_stream_cb), m_pipeline);
+        g_signal_connect(m_bus, "message::eos", G_CALLBACK(end_stream_cb), m_pipeline);
+        g_signal_connect(m_bus, "message::state-changed", G_CALLBACK(state_cb), m_pipeline);
+        gst_object_unref(m_bus);
+    }
 
 
     Gtk::Button *dump_button;
@@ -523,7 +664,7 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
 
     update_resolution_button();
 
-    {
+    /*{
         auto hamburger_button = Gtk::manage(new Gtk::MenuButton);
         hamburger_button->set_image_from_icon_name("open-menu-symbolic", Gtk::ICON_SIZE_BUTTON);
 
@@ -538,7 +679,7 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
         hamburger_menu->append("Enter bootloader", "win.enter_bootloader");
 
         add_action("enter_bootloader", sigc::mem_fun(*this, &MainWindow::enter_bootloader));
-    }
+    }*/
 
     m_type_window = TypeWindow::create(*this);
     m_type_window->set_transient_for(*this);
@@ -552,6 +693,8 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
 void MainWindow::update_input_status()
 {
     if (!m_device)
+        return;
+    if (m_firmware_update_status != FirmwareUpdateStatus::DONE)
         return;
     auto &hal = m_device->hal();
     std::string label;

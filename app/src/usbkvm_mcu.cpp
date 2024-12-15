@@ -1,9 +1,12 @@
 #include "usbkvm_mcu.hpp"
 #include "ii2c.hpp"
 #include <algorithm>
+#include <cstring>
 #include <iostream>
 #include <unistd.h>
-#include "../fw/usbkvm/Core/Inc/i2c_msg.h"
+#include <thread>
+#include "i2c_msg_boot.h"
+#include "i2c_msg_app.h"
 
 #define TU_BIT(n) (1UL << (n))
 
@@ -57,6 +60,22 @@ template <typename Ts, typename Tr> void i2c_send_recv(II2COneDevice &i2c, const
 {
     i2c_send(i2c, req);
     i2c_recv(i2c, req.seq, resp);
+}
+
+template <typename Ts, typename Tr> void i2c_send_recv_retry(II2COneDevice &i2c, const Ts &req, Tr &resp)
+{
+    i2c_send(i2c, req);
+    for (size_t i = 0; i < 100; i++) {
+        try {
+            i2c_recv(i2c, req.seq, resp);
+            return;
+        }
+        catch (std::runtime_error &err) {
+            using namespace std::chrono_literals;
+            std::this_thread::sleep_for(10ms);
+        }
+    }
+    throw std::runtime_error("I2C receive timeout");
 }
 
 void UsbKvmMcu::send_report(const MouseReport &report)
@@ -133,7 +152,22 @@ UsbKvmMcu::Info UsbKvmMcu::get_info()
         break;
     }
 
-    return {.version = resp.version, .model = model};
+    return {
+            .version = static_cast<unsigned int>(resp.version & I2C_VERSION_MASK),
+            .in_bootloader = static_cast<bool>(resp.version & I2C_VERSION_BOOT),
+            .model = model,
+    };
+}
+
+UsbKvmMcu::Info::Valid UsbKvmMcu::Info::get_valid() const
+{
+    if (version == I2C_VERSION_BOOT_APP_INVALID_MAGIC)
+        return Valid::INVALID_MAGIC;
+    else if (version == I2C_VERSION_BOOT_APP_HEADER_CRC_MISMATCH)
+        return Valid::HEADER_CRC_MISMATCH;
+    else if (version == I2C_VERSION_BOOT_APP_CRC_MISMATCH)
+        return Valid::APP_CRC_MISMATCH;
+    return Valid::VALID;
 }
 
 void UsbKvmMcu::enter_bootloader()
@@ -159,7 +193,7 @@ UsbKvmMcu::Status UsbKvmMcu::get_status()
 
 unsigned int UsbKvmMcu::get_expected_version()
 {
-    return I2C_VERSION;
+    return I2C_APP_VERSION;
 }
 
 static uint8_t translate_led(UsbKvmMcu::Led led)
@@ -183,6 +217,176 @@ void UsbKvmMcu::set_led(Led mask, Led stat)
     i2c_req_set_led_t msg = {
             .type = I2C_REQ_SET_LED, .seq = m_seq++, .mask = translate_led(mask), .stat = translate_led(stat)};
     i2c_send(m_i2c, msg);
+}
+
+bool UsbKvmMcu::boot_flash_unlock()
+{
+    std::lock_guard<std::mutex> guard(m_mutex);
+
+    i2c_req_unknown_t msg = {.type = I2C_REQ_BOOT_FLASH_UNLOCK, .seq = m_seq++};
+    i2c_resp_boot_flash_status_t resp;
+    i2c_send_recv(m_i2c, msg, resp);
+
+    return resp.success;
+}
+
+bool UsbKvmMcu::boot_flash_lock()
+{
+    std::lock_guard<std::mutex> guard(m_mutex);
+
+    i2c_req_unknown_t msg = {.type = I2C_REQ_BOOT_FLASH_LOCK, .seq = m_seq++};
+    i2c_send(m_i2c, msg);
+
+    return true;
+}
+
+bool UsbKvmMcu::boot_flash_erase(unsigned int first_page, unsigned int n_pages)
+{
+    std::lock_guard<std::mutex> guard(m_mutex);
+
+    i2c_req_boot_flash_erase_t msg = {
+            .type = I2C_REQ_BOOT_FLASH_ERASE,
+            .seq = m_seq++,
+            .first_page = static_cast<uint8_t>(first_page),
+            .n_pages = static_cast<uint8_t>(n_pages),
+    };
+    i2c_resp_flash_status_t resp;
+    i2c_send_recv_retry(m_i2c, msg, resp);
+
+    return resp.success;
+}
+
+bool UsbKvmMcu::boot_flash_write(unsigned int offset, std::span<const uint8_t, write_flash_chunk_size> data)
+{
+    std::lock_guard<std::mutex> guard(m_mutex);
+
+    i2c_req_boot_flash_write_t msg = {
+            .type = I2C_REQ_BOOT_FLASH_WRITE, .seq = m_seq++, .offset = static_cast<uint16_t>(offset)};
+    static_assert(data.size() == sizeof(msg.data));
+    memcpy(msg.data, data.data(), sizeof(msg.data));
+    i2c_resp_boot_flash_status_t resp;
+    i2c_send_recv_retry(m_i2c, msg, resp);
+
+    return resp.success;
+}
+
+void UsbKvmMcu::boot_start_app()
+{
+    std::lock_guard<std::mutex> guard(m_mutex);
+
+    i2c_req_unknown_t msg = {.type = I2C_REQ_BOOT_START_APP, .seq = m_seq++};
+    i2c_send(m_i2c, msg);
+}
+
+uint8_t UsbKvmMcu::boot_get_boot_version()
+{
+    std::lock_guard<std::mutex> guard(m_mutex);
+
+    i2c_req_unknown_t msg = {.type = I2C_REQ_BOOT_GET_BOOT_VERSION, .seq = m_seq++};
+    i2c_resp_boot_boot_version_t resp;
+    i2c_send_recv(m_i2c, msg, resp);
+
+    return resp.version;
+}
+
+void UsbKvmMcu::boot_enter_dfu()
+{
+    std::lock_guard<std::mutex> guard(m_mutex);
+
+    i2c_req_unknown_t msg = {.type = I2C_REQ_BOOT_ENTER_DFU, .seq = m_seq++};
+    i2c_send(m_i2c, msg);
+}
+
+static std::string format_m_of_n(unsigned int m, unsigned int n)
+{
+    auto n_str = std::to_string(n);
+    auto digits_max = n_str.size();
+    auto m_str = std::to_string(m);
+    std::string prefix;
+    for (size_t i = 0; i < (digits_max - (int)m_str.size()); i++) {
+        prefix += " ";
+    }
+    return prefix + m_str + "/" + n_str;
+}
+
+bool UsbKvmMcu::boot_update_firmware(std::function<void(const FirmwareUpdateProgress &)> progress_cb,
+                                     std::span<const uint8_t> firmware)
+{
+    using S = FirmwareUpdateStatus;
+    if (!get_info().in_bootloader) {
+        progress_cb({S::ERROR, "not in bootloader"});
+        return false;
+    }
+
+
+    if (firmware.size() % UsbKvmMcu::write_flash_chunk_size) {
+        progress_cb({S::ERROR, "firmware size error"});
+        return false;
+    }
+
+    const unsigned int page_size = 1024;
+    const unsigned int n_pages = (firmware.size() + page_size - 1) / page_size;
+    const unsigned int n_chunks = firmware.size() / UsbKvmMcu::write_flash_chunk_size;
+    progress_cb({S::BUSY, "Erasing…"});
+
+    if (!boot_flash_unlock()) {
+        progress_cb({S::ERROR, "flash unlock"});
+        return false;
+    }
+    if (!boot_flash_erase(8, n_pages)) {
+        progress_cb({S::ERROR, "flash erase"});
+        return false;
+    }
+
+
+    for (unsigned int chunk = 0; chunk < n_chunks; chunk++) {
+        const float progress = chunk / ((float)n_chunks);
+        static const unsigned int flash_base = 0x8002000;
+        const unsigned int offset = chunk * UsbKvmMcu::write_flash_chunk_size;
+        progress_cb({S::BUSY, "Programming: " + format_m_of_n(offset, firmware.size()) + " Bytes", progress});
+
+        const unsigned int flash_offset = flash_base + offset;
+        if (!boot_flash_write(flash_offset, std::span<const uint8_t, 256>(firmware.data() + offset, 256))) {
+            progress_cb({S::ERROR, "flash program"});
+            return false;
+        }
+    }
+
+    progress_cb({S::BUSY, "Finishing…", 1.});
+
+    if (!boot_flash_lock()) {
+        progress_cb({S::ERROR, "lock"});
+        return false;
+    }
+
+    using namespace std::chrono_literals;
+
+    {
+        const auto info = get_info();
+        if (info.version != get_expected_version()) {
+            progress_cb({S::ERROR, "unexpected version after update"});
+            return false;
+        }
+    }
+    boot_start_app();
+    std::this_thread::sleep_for(200ms);
+
+    {
+        const auto info = get_info();
+        if (info.in_bootloader) {
+            progress_cb({S::ERROR, "stuck in bootloader"});
+            return false;
+        }
+        if (info.version != UsbKvmMcu::get_expected_version()) {
+            progress_cb({S::ERROR, "unexpected version after starting app"});
+            return false;
+        }
+    }
+
+    progress_cb({S::BUSY, "Done", 1.});
+
+
+    return true;
 }
 
 UsbKvmMcu::~UsbKvmMcu() = default;

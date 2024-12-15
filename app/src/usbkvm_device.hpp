@@ -20,8 +20,13 @@ public:
     {
         return m_mcu.get();
     }
+    UsbKvmMcu *mcu_boot()
+    {
+        return m_mcu_boot.get();
+    }
 
     void enter_bootloader();
+    void leave_bootloader();
     void delete_mcu();
 
     Model get_model() const
@@ -37,9 +42,11 @@ public:
     ~UsbKvmDevice();
 
 private:
+    void set_boot_mcu();
     std::unique_ptr<MsHal> m_hal;
     std::unique_ptr<I2COneDevice> m_i2c1dev_mcu;
     std::unique_ptr<UsbKvmMcu> m_mcu;
+    std::unique_ptr<UsbKvmMcu> m_mcu_boot;
 
     std::optional<Model> m_model;
 };
