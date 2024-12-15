@@ -159,7 +159,7 @@ static void i2c_req_dispatch(i2c_req_all_t *req)
 {
   HAL_GPIO_TogglePin(LED_USB_GPIO_Port, LED_USB_Pin);
   switch(req->unk.type) {
-    case I2C_REQ_GET_INFO:
+    case I2C_REQ_COM_GET_INFO:
       i2c_req_handle_get_info(&req->unk);
       break;
     case I2C_REQ_BOOT_FLASH_UNLOCK:

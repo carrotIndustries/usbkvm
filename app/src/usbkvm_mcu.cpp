@@ -138,7 +138,7 @@ UsbKvmMcu::Info UsbKvmMcu::get_info()
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    i2c_req_unknown_t msg = {.type = I2C_REQ_GET_INFO, .seq = m_seq++};
+    i2c_req_unknown_t msg = {.type = I2C_REQ_COM_GET_INFO, .seq = m_seq++};
     i2c_resp_info_t resp;
     i2c_send_recv(m_i2c, msg, resp);
 

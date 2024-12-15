@@ -6,7 +6,6 @@
 #define I2C_REQ_NOP (0)
 #define I2C_REQ_KEYBOARD_REPORT (1)
 #define I2C_REQ_MOUSE_REPORT (2)
-#define I2C_REQ_GET_INFO (3)
 #define I2C_REQ_ENTER_BOOTLOADER (4)
 #define I2C_REQ_GET_STATUS (5)
 #define I2C_REQ_SET_LED (6)

@@ -5,8 +5,8 @@
     uint8_t type;\
     uint8_t seq;
 
-#define I2C_REQ_NOP (0)
-#define I2C_REQ_GET_INFO (3)
+#define I2C_REQ_COM_NOP (0)
+#define I2C_REQ_COM_GET_INFO (3)
 
 typedef struct {
     I2C_REQ_COMMON
