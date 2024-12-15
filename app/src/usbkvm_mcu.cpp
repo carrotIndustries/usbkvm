@@ -83,8 +83,6 @@ void UsbKvmMcu::send_report(const MouseReport &report)
     std::lock_guard<std::mutex> guard(m_mutex);
 
     i2c_req_mouse_report_t msg = {
-            .type = I2C_REQ_MOUSE_REPORT,
-            .seq = m_seq++,
             .button = 0,
             .x = scale_pos(report.x),
             .y = scale_pos(report.y),
@@ -104,17 +102,14 @@ void UsbKvmMcu::send_report(const MouseReport &report)
     TRANSLATE_BUTTON(FORWARD)
 #undef TRANSLATE_BUTTON
 
-    i2c_send(m_i2c, msg);
+    i2c_xfer<i2c_req_t::MOUSE_REPORT>(msg);
 }
 
 void UsbKvmMcu::send_report(const KeyboardReport &report)
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    i2c_req_keyboard_report_t msg = {
-            .type = I2C_REQ_KEYBOARD_REPORT,
-            .seq = m_seq++,
-    };
+    i2c_req_keyboard_report_t msg = {0};
 
 #define TRANSLATE_MOD(b)                                                                                               \
     if ((report.mod & KeyboardReport::Modifier::b) != KeyboardReport::Modifier::NONE) {                                \
@@ -131,16 +126,46 @@ void UsbKvmMcu::send_report(const KeyboardReport &report)
         msg.keycode[i] = report.keycode.at(i);
     }
 
-    i2c_send(m_i2c, msg);
+    i2c_xfer<i2c_req_t::KEYBOARD_REPORT>(msg);
+}
+
+template <auto req> xfer_t<req>::Tresp UsbKvmMcu::i2c_xfer(xfer_t<req>::Treq req_s, TransferMode mode)
+{
+    req_s.seq = m_seq++;
+    req_s.type = static_cast<uint8_t>(req);
+    if constexpr (std::is_void_v<typename xfer_t<req>::Tresp>) {
+        i2c_send(m_i2c, req_s);
+    }
+    else {
+        typename xfer_t<req>::Tresp resp;
+        if (mode == TransferMode::ONCE)
+            i2c_send_recv(m_i2c, req_s, resp);
+        else
+            i2c_send_recv_retry(m_i2c, req_s, resp);
+        return resp;
+    }
+}
+
+template <auto req> xfer_t<req>::Tresp UsbKvmMcu::i2c_xfer()
+{
+    return i2c_xfer<req>({});
+}
+
+template <auto req> xfer_t<req>::Tresp UsbKvmMcu::i2c_xfer(xfer_t<req>::Treq req_s)
+{
+    return i2c_xfer<req>(req_s, TransferMode::ONCE);
+}
+
+template <auto req> xfer_t<req>::Tresp UsbKvmMcu::i2c_xfer_retry(xfer_t<req>::Treq req_s)
+{
+    return i2c_xfer<req>(req_s, TransferMode::RETRY);
 }
 
 UsbKvmMcu::Info UsbKvmMcu::get_info()
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    i2c_req_unknown_t msg = {.type = I2C_REQ_COM_GET_INFO, .seq = m_seq++};
-    i2c_resp_info_t resp;
-    i2c_send_recv(m_i2c, msg, resp);
+    const auto resp = i2c_xfer<i2c_req_common_t::GET_INFO>({});
 
     Model model = Model::UNKNOWN;
     switch (resp.model) {
@@ -174,17 +199,14 @@ void UsbKvmMcu::enter_bootloader()
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    i2c_req_unknown_t msg = {.type = I2C_REQ_ENTER_BOOTLOADER, .seq = m_seq++};
-    i2c_send(m_i2c, msg);
+    i2c_xfer<i2c_req_t::ENTER_BOOTLOADER>();
 }
 
 UsbKvmMcu::Status UsbKvmMcu::get_status()
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    i2c_req_unknown_t msg = {.type = I2C_REQ_GET_STATUS, .seq = m_seq++};
-    i2c_resp_status_t resp;
-    i2c_send_recv(m_i2c, msg, resp);
+    auto resp = i2c_xfer<i2c_req_t::GET_STATUS>();
 
     UsbKvmMcu::Status ret;
     ret.vga_connected = resp.status & I2C_STATUS_VGA_CONNECTED;
@@ -214,18 +236,15 @@ void UsbKvmMcu::set_led(Led mask, Led stat)
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    i2c_req_set_led_t msg = {
-            .type = I2C_REQ_SET_LED, .seq = m_seq++, .mask = translate_led(mask), .stat = translate_led(stat)};
-    i2c_send(m_i2c, msg);
+    i2c_xfer<i2c_req_t::SET_LED>({.mask = translate_led(mask), .stat = translate_led(stat)});
+    ;
 }
 
 bool UsbKvmMcu::boot_flash_unlock()
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    i2c_req_unknown_t msg = {.type = I2C_REQ_BOOT_FLASH_UNLOCK, .seq = m_seq++};
-    i2c_resp_boot_flash_status_t resp;
-    i2c_send_recv(m_i2c, msg, resp);
+    auto resp = i2c_xfer<i2c_req_boot_t::FLASH_UNLOCK>();
 
     return resp.success;
 }
@@ -234,8 +253,7 @@ bool UsbKvmMcu::boot_flash_lock()
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    i2c_req_unknown_t msg = {.type = I2C_REQ_BOOT_FLASH_LOCK, .seq = m_seq++};
-    i2c_send(m_i2c, msg);
+    i2c_xfer<i2c_req_boot_t::FLASH_LOCK>();
 
     return true;
 }
@@ -244,14 +262,8 @@ bool UsbKvmMcu::boot_flash_erase(unsigned int first_page, unsigned int n_pages)
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    i2c_req_boot_flash_erase_t msg = {
-            .type = I2C_REQ_BOOT_FLASH_ERASE,
-            .seq = m_seq++,
-            .first_page = static_cast<uint8_t>(first_page),
-            .n_pages = static_cast<uint8_t>(n_pages),
-    };
-    i2c_resp_flash_status_t resp;
-    i2c_send_recv_retry(m_i2c, msg, resp);
+    auto resp = i2c_xfer_retry<i2c_req_boot_t::FLASH_ERASE>(
+            {.first_page = static_cast<uint8_t>(first_page), .n_pages = static_cast<uint8_t>(n_pages)});
 
     return resp.success;
 }
@@ -260,12 +272,12 @@ bool UsbKvmMcu::boot_flash_write(unsigned int offset, std::span<const uint8_t, w
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    i2c_req_boot_flash_write_t msg = {
-            .type = I2C_REQ_BOOT_FLASH_WRITE, .seq = m_seq++, .offset = static_cast<uint16_t>(offset)};
+    static constexpr auto req_type = i2c_req_boot_t::FLASH_WRITE;
+    xfer_t<req_type>::Treq msg = {.offset = static_cast<uint16_t>(offset)};
     static_assert(data.size() == sizeof(msg.data));
     memcpy(msg.data, data.data(), sizeof(msg.data));
-    i2c_resp_boot_flash_status_t resp;
-    i2c_send_recv_retry(m_i2c, msg, resp);
+
+    auto resp = i2c_xfer_retry<req_type>(msg);
 
     return resp.success;
 }
@@ -274,17 +286,14 @@ void UsbKvmMcu::boot_start_app()
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    i2c_req_unknown_t msg = {.type = I2C_REQ_BOOT_START_APP, .seq = m_seq++};
-    i2c_send(m_i2c, msg);
+    i2c_xfer<i2c_req_boot_t::START_APP>();
 }
 
 uint8_t UsbKvmMcu::boot_get_boot_version()
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    i2c_req_unknown_t msg = {.type = I2C_REQ_BOOT_GET_BOOT_VERSION, .seq = m_seq++};
-    i2c_resp_boot_boot_version_t resp;
-    i2c_send_recv(m_i2c, msg, resp);
+    auto resp = i2c_xfer<i2c_req_boot_t::GET_BOOT_VERSION>();
 
     return resp.version;
 }
@@ -293,8 +302,7 @@ void UsbKvmMcu::boot_enter_dfu()
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    i2c_req_unknown_t msg = {.type = I2C_REQ_BOOT_ENTER_DFU, .seq = m_seq++};
-    i2c_send(m_i2c, msg);
+    i2c_xfer<i2c_req_boot_t::ENTER_DFU>();
 }
 
 static std::string format_m_of_n(unsigned int m, unsigned int n)

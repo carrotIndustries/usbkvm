@@ -13,6 +13,8 @@ class II2COneDevice;
 
 enum class UsbKvmMcuFirmwareUpdateStatus { BUSY, DONE, ERROR };
 
+template <auto req_a> struct xfer_t;
+
 class UsbKvmMcu {
 public:
     UsbKvmMcu(II2COneDevice &i2c);
@@ -102,6 +104,13 @@ private:
     II2COneDevice &m_i2c;
     uint8_t m_seq = 1;
     std::mutex m_mutex;
+
+    template <auto req> xfer_t<req>::Tresp i2c_xfer();
+    template <auto req> xfer_t<req>::Tresp i2c_xfer(xfer_t<req>::Treq req_s);
+    template <auto req> xfer_t<req>::Tresp i2c_xfer_retry(xfer_t<req>::Treq req_s);
+
+    enum class TransferMode { ONCE, RETRY };
+    template <auto req> xfer_t<req>::Tresp i2c_xfer(xfer_t<req>::Treq req_s, TransferMode mode);
 };
 
 template <> struct enable_bitmask_operators<UsbKvmMcu::MouseReport::Button> {
@@ -115,3 +124,4 @@ template <> struct enable_bitmask_operators<UsbKvmMcu::KeyboardReport::Modifier>
 template <> struct enable_bitmask_operators<UsbKvmMcu::Led> {
     static constexpr bool enable = true;
 };
+

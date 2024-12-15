@@ -1,13 +1,20 @@
 #pragma once
 #include <stdint.h>
+#ifdef USBKVM_FIRMWARE
+#include "i2c_req_enum_fw.h"
+#else
+#include "i2c_req_enum_app.hpp"
+#endif
 
 #define I2C_REQ_COMMON \
     uint8_t type;\
     uint8_t seq;
 
-#define I2C_REQ_COM_NOP (0)
-#define I2C_REQ_COM_GET_INFO (3)
-
+REQ_ENUM_BEGIN(i2c_req_common)
+    REQ_ENUM_ITEM(I2C_REQ_COM, NOP, 0)
+    REQ_ENUM_ITEM(I2C_REQ_COM, GET_INFO, 3)
+REQ_ENUM_END
+    
 typedef struct {
     I2C_REQ_COMMON
 } i2c_req_unknown_t;
@@ -30,3 +37,5 @@ typedef struct {
     uint8_t version;
     uint8_t model;
 } i2c_resp_info_t;
+
+DEFINE_XFER(i2c_req_common_t::GET_INFO, i2c_req_unknown_t, i2c_resp_info_t)

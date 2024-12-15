@@ -3,16 +3,17 @@
 
 #define I2C_APP_VERSION 5
 
-#define I2C_REQ_NOP (0)
-#define I2C_REQ_KEYBOARD_REPORT (1)
-#define I2C_REQ_MOUSE_REPORT (2)
-#define I2C_REQ_ENTER_BOOTLOADER (4)
-#define I2C_REQ_GET_STATUS (5)
-#define I2C_REQ_SET_LED (6)
-#define I2C_REQ_FLASH_UNLOCK (7)
-#define I2C_REQ_FLASH_LOCK (8)
-#define I2C_REQ_FLASH_ERASE (9)
-#define I2C_REQ_FLASH_WRITE (10)
+REQ_ENUM_BEGIN(i2c_req)
+    REQ_ENUM_ITEM(I2C_REQ, KEYBOARD_REPORT  ,  1)
+    REQ_ENUM_ITEM(I2C_REQ, MOUSE_REPORT     ,  2)
+    REQ_ENUM_ITEM(I2C_REQ, ENTER_BOOTLOADER ,  4)
+    REQ_ENUM_ITEM(I2C_REQ, GET_STATUS       ,  5)
+    REQ_ENUM_ITEM(I2C_REQ, SET_LED          ,  6)
+    REQ_ENUM_ITEM(I2C_REQ, FLASH_UNLOCK     ,  7)
+    REQ_ENUM_ITEM(I2C_REQ, FLASH_LOCK       ,  8)
+    REQ_ENUM_ITEM(I2C_REQ, FLASH_ERASE      ,  9)
+    REQ_ENUM_ITEM(I2C_REQ, FLASH_WRITE      , 10)
+REQ_ENUM_END
 
 typedef struct {
     I2C_REQ_COMMON
@@ -83,3 +84,11 @@ typedef union {
     i2c_resp_status_t status;
     i2c_resp_flash_status_t flash_status;
 } i2c_resp_app_all_t;
+
+DEFINE_XFER(i2c_req_t::KEYBOARD_REPORT  , i2c_req_keyboard_report_t , void              )
+DEFINE_XFER(i2c_req_t::MOUSE_REPORT     , i2c_req_mouse_report_t    , void              )
+DEFINE_XFER(i2c_req_t::ENTER_BOOTLOADER , i2c_req_unknown_t         , void              )
+DEFINE_XFER(i2c_req_t::GET_STATUS       , i2c_req_unknown_t         , i2c_resp_status_t )
+DEFINE_XFER(i2c_req_t::SET_LED          , i2c_req_set_led_t         , void              )
+ 
+ 

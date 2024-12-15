@@ -3,13 +3,15 @@
 
 #define I2C_BOOT_VERSION 1
 
-#define I2C_REQ_BOOT_FLASH_UNLOCK (200)
-#define I2C_REQ_BOOT_FLASH_LOCK (201)
-#define I2C_REQ_BOOT_FLASH_ERASE (202)
-#define I2C_REQ_BOOT_FLASH_WRITE (203)
-#define I2C_REQ_BOOT_START_APP (204)
-#define I2C_REQ_BOOT_GET_BOOT_VERSION (205)
-#define I2C_REQ_BOOT_ENTER_DFU (206)
+REQ_ENUM_BEGIN(i2c_req_boot)
+  REQ_ENUM_ITEM(I2C_REQ_BOOT, FLASH_UNLOCK     , 200)
+  REQ_ENUM_ITEM(I2C_REQ_BOOT, FLASH_LOCK       , 201)
+  REQ_ENUM_ITEM(I2C_REQ_BOOT, FLASH_ERASE      , 202)
+  REQ_ENUM_ITEM(I2C_REQ_BOOT, FLASH_WRITE      , 203)
+  REQ_ENUM_ITEM(I2C_REQ_BOOT, START_APP        , 204)
+  REQ_ENUM_ITEM(I2C_REQ_BOOT, GET_BOOT_VERSION , 205)
+  REQ_ENUM_ITEM(I2C_REQ_BOOT, ENTER_DFU        , 206)
+REQ_ENUM_END
 
 typedef struct {
   I2C_REQ_COMMON;
@@ -50,3 +52,11 @@ typedef union {
     i2c_resp_boot_flash_status_t flash_status;
     i2c_resp_boot_boot_version_t boot_version;
 } i2c_resp_boot_all_t;
+
+DEFINE_XFER(i2c_req_boot_t::FLASH_UNLOCK     , i2c_req_unknown_t          , i2c_resp_boot_flash_status_t )
+DEFINE_XFER(i2c_req_boot_t::FLASH_LOCK       , i2c_req_unknown_t          , void                         )
+DEFINE_XFER(i2c_req_boot_t::FLASH_ERASE      , i2c_req_boot_flash_erase_t , i2c_resp_boot_flash_status_t )
+DEFINE_XFER(i2c_req_boot_t::FLASH_WRITE      , i2c_req_boot_flash_write_t , i2c_resp_boot_flash_status_t )
+DEFINE_XFER(i2c_req_boot_t::START_APP        , i2c_req_unknown_t          , void                         )
+DEFINE_XFER(i2c_req_boot_t::GET_BOOT_VERSION , i2c_req_unknown_t          , i2c_resp_boot_boot_version_t )
+DEFINE_XFER(i2c_req_boot_t::ENTER_DFU        , i2c_req_unknown_t          , void                         )
