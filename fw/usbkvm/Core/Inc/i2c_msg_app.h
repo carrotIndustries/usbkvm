@@ -1,7 +1,7 @@
 #pragma once
 #include "i2c_msg_common.h"
 
-#define I2C_APP_VERSION 5
+#define I2C_APP_VERSION 6
 
 REQ_ENUM_BEGIN(i2c_req)
     REQ_ENUM_ITEM(I2C_REQ, KEYBOARD_REPORT  ,  1)
@@ -30,6 +30,11 @@ typedef struct {
     int8_t h;
     int8_t v;
 } i2c_req_mouse_report_t;
+
+typedef struct {
+    I2C_RESP_COMMON
+    uint8_t success;
+} i2c_resp_report_t;
 
 #define I2C_LED_USB (1 << 0)
 #define I2C_LED_HID (1 << 1)
@@ -62,10 +67,6 @@ typedef union {
     i2c_req_flash_write_t flash_write;
 } i2c_req_app_all_t;
 
-#define I2C_RESP_COMMON \
-    uint8_t _head; \
-    uint8_t seq; \
-
 #define I2C_STATUS_VGA_CONNECTED (1<<0)
 
 typedef struct {
@@ -83,12 +84,13 @@ typedef union {
     i2c_resp_info_t info;
     i2c_resp_status_t status;
     i2c_resp_flash_status_t flash_status;
+    i2c_resp_report_t report;
 } i2c_resp_app_all_t;
 
-DEFINE_XFER(i2c_req_t::KEYBOARD_REPORT  , i2c_req_keyboard_report_t , void              )
-DEFINE_XFER(i2c_req_t::MOUSE_REPORT     , i2c_req_mouse_report_t    , void              )
-DEFINE_XFER(i2c_req_t::ENTER_BOOTLOADER , i2c_req_unknown_t         , void              )
-DEFINE_XFER(i2c_req_t::GET_STATUS       , i2c_req_unknown_t         , i2c_resp_status_t )
-DEFINE_XFER(i2c_req_t::SET_LED          , i2c_req_set_led_t         , void              )
+DEFINE_XFER(i2c_req_t::KEYBOARD_REPORT  , i2c_req_keyboard_report_t , i2c_resp_report_t  )
+DEFINE_XFER(i2c_req_t::MOUSE_REPORT     , i2c_req_mouse_report_t    , i2c_resp_report_t  )
+DEFINE_XFER(i2c_req_t::ENTER_BOOTLOADER , i2c_req_unknown_t         , void               )
+DEFINE_XFER(i2c_req_t::GET_STATUS       , i2c_req_unknown_t         , i2c_resp_status_t  )
+DEFINE_XFER(i2c_req_t::SET_LED          , i2c_req_set_led_t         , void               )
  
  

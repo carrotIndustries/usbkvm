@@ -78,7 +78,7 @@ template <typename Ts, typename Tr> void i2c_send_recv_retry(II2COneDevice &i2c,
     throw std::runtime_error("I2C receive timeout");
 }
 
-void UsbKvmMcu::send_report(const MouseReport &report)
+bool UsbKvmMcu::send_report(const MouseReport &report)
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
@@ -102,10 +102,10 @@ void UsbKvmMcu::send_report(const MouseReport &report)
     TRANSLATE_BUTTON(FORWARD)
 #undef TRANSLATE_BUTTON
 
-    i2c_xfer<i2c_req_t::MOUSE_REPORT>(msg);
+    return i2c_xfer<i2c_req_t::MOUSE_REPORT>(msg).success;
 }
 
-void UsbKvmMcu::send_report(const KeyboardReport &report)
+bool UsbKvmMcu::send_report(const KeyboardReport &report)
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
@@ -126,7 +126,7 @@ void UsbKvmMcu::send_report(const KeyboardReport &report)
         msg.keycode[i] = report.keycode.at(i);
     }
 
-    i2c_xfer<i2c_req_t::KEYBOARD_REPORT>(msg);
+    return i2c_xfer<i2c_req_t::KEYBOARD_REPORT>(msg).success;
 }
 
 template <auto req> xfer_t<req>::Tresp UsbKvmMcu::i2c_xfer(xfer_t<req>::Treq req_s, TransferMode mode)

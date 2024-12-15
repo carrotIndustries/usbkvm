@@ -195,8 +195,10 @@ void TypeWindow::type_thread()
         UsbKvmMcu::KeyboardReport report;
         report.keycode.at(0) = ki.scancode;
         report.mod = ki.mod;
-        mcu.send_report(report);
-        mcu.send_report(UsbKvmMcu::KeyboardReport{});
+        if(!mcu.send_report(report))
+            break;
+        if(!mcu.send_report(UsbKvmMcu::KeyboardReport{}))
+            break;
         m_pos++;
         m_dispatcher.emit();
     }
