@@ -5,5 +5,6 @@
     <file>usbkvm.css</file>
     <file>type_window.ui</file>
     <file alias="usbkvm.bin">usbkvm-header.bin</file>
+    <file preprocess="xml-stripblanks">icons/scalable/apps/usbkvm.svg</file>
   </gresource>
 </gresources>
