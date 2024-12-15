@@ -120,6 +120,13 @@ datadir = get_option('datadir')
 install_data('net.carrotIndustries.usbkvm.desktop', install_dir:datadir / 'applications')
 icondir = datadir / 'icons/hicolor'
 install_data('src/icons/scalable/apps/usbkvm.svg', install_dir: icondir /  'scalable/apps', rename: 'net.carrotIndustries.usbkvm.svg')
+
+udev = dependency('udev', required: false)
+if udev.found()
+  udevrulesdir = udev.get_variable('udevdir') / 'rules.d'
+  install_data('70-usbkvm.rules', install_dir: udevrulesdir)
+endif
+
 usbkvm = executable('usbkvm',
     [src,resources,keymap_c,keymap_h,mslib],
     dependencies: [build_dependencies],
