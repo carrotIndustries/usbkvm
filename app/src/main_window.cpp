@@ -521,6 +521,8 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
         gst_device_monitor_start(monitor);
     }
 
+    set_icon_name("usbkvm");
+
     x->get_widget("capture_resolution_box", m_capture_resolution_box);
     x->get_widget("resolution_button", m_resolution_button);
     x->get_widget("modifier_box", m_modifier_box);

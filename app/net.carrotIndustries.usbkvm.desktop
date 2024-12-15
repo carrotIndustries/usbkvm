@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=USBKVM
+Comment=USBKVM client app
+Categories=Video;AudioVideo;
+Type=Application
+Terminal=false
+Icon=net.carrotIndustries.usbkvm
+Exec=usbkvm
