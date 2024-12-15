@@ -126,6 +126,8 @@ jobs:
       - test-tarball
       - build-win32
     steps:
+    - name: install
+      run: apt-get update -y && apt-get install -y curl
     - name: Download artifacts
       uses: actions/download-artifact@v4
     - name: Create release
