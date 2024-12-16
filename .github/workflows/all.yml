@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - '*'
+    tags: [ '*' ]
   pull_request:
     branches: [ main ]
 
@@ -68,9 +69,6 @@ jobs:
   build-win32:
     runs-on: windows-latest
     steps:
-    - name: Check tag
-      if: startsWith(github.ref, 'refs/tags/')
-      run: echo "Building tag ${{ github.ref }}"
     - uses: actions/checkout@v4
       with:
         submodules: true
@@ -120,3 +118,31 @@ jobs:
         name: ${{ env.artifact_name }}
         path: app/dist/*.zip
 
+  release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    container: debian:trixie
+    if: startsWith(github.ref, 'refs/tags')
+    needs: 
+      - test-tarball
+      - build-win32
+    steps:
+    - name: install
+      run: apt-get update -y && apt-get install -y curl jq
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+    - name: Create release
+      run: |
+        find
+        curl -f -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+        https://api.github.com/repos/carrotIndustries/usbkvm/releases \
+        -d '{"tag_name":"${{github.ref_name}}","generate_release_notes":true}' | tee release.json
+        UPLOAD_URL=$(jq -r .upload_url < release.json | cut -d '{' -f1)
+        echo $UPLOAD_URL
+        curl -f -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+        -H "Content-Type: application/octet-stream" \
+        $UPLOAD_URL?name=usbkvm-${{github.ref_name}}.tar.gz --data-binary "@usbkvm-src/usbkvm.tar.gz"
+        curl -f -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+        -H "Content-Type: application/octet-stream" \
+        $UPLOAD_URL?name=usbkvm-win64-${{github.ref_name}}.zip --data-binary "@$(echo usbkvm-win64-*/usbkvm-*.zip)"
