@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>net.carrotindustries.usbkvm</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0+</project_license>
+  <name>USBKVM</name>
+  <summary>Keyboard, video and mouse over USB</summary>
+  <developer_name>Lukas K.</developer_name>
+
+  <description>
+    <p>The client app for the USBKVM hardware</p>
+    <ul>
+        <li>Displays the captured video Feed</li>
+        <li>Keyboard and mouse emulation</li>
+        <li>Pasting text as keystrokes</li>
+        <li>Automatic firmware updates</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">net.carrotIndustries.usbkvm</launchable>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>The USBKVM client main window</caption>
+      <image>https://raw.githubusercontent.com/carrotIndustries/usbkvm/main/media/client.png</image>
+    </screenshot>
+  </screenshots>
+
+  <url type="homepage">https://github.com/carrotIndustries/usbkvm</url>
+  <url type="bugtracker">https://github.com/carrotIndustries/usbkvm/issues</url>
+  <url type="vcs-browser">https://github.com/carrotIndustries/usbkvm</url>
+
+  <requires>
+    <control>pointing</control>
+    <control>keyboard</control>
+  </requires>
+
+  <provides>
+    <binary>usbkvm</binary>
+  </provides>
+
+  <content_rating type="oars-1.0" />
+
+  <releases>
+    <release version="0.0.16" date="2024-12-16">
+      <url>https://github.com/carrotIndustries/usbkvm/releases/tag/v0.0.16</url>
+    </release>
+  </releases>
+</component>
