@@ -9,7 +9,9 @@ cp ../fw/usbkvm/Core/Inc/i2c_msg_app.h fw
 cp ../fw/common/Inc/i2c_msg_common.h fw
 cp ../fw/usbkvm/build/usbkvm-header.bin fw
 
-{ git ls-files --recurse-submodules && ls fw/* ;} | grep -v keycodemapdb/tests | grep -v ms-tools/board/ | \
+go mod vendor -C ms-tools
+
+{ git ls-files --recurse-submodules && ls fw/* && find ms-tools/vendor/ -type f ;} | grep -v keycodemapdb/tests | grep -v ms-tools/board/ | \
  tar caf usbkvm.tar.gz  --xform s:^:usbkvm/: -T -
 
 rm -rf fw
