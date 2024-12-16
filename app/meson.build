@@ -118,6 +118,7 @@ endif
 
 datadir = get_option('datadir')
 install_data('net.carrotIndustries.usbkvm.desktop', install_dir:datadir / 'applications')
+install_data('net.carrotIndustries.usbkvm.metainfo.xml', install_dir:datadir / 'metainfo')
 icondir = datadir / 'icons/hicolor'
 install_data('src/icons/scalable/apps/usbkvm.svg', install_dir: icondir /  'scalable/apps', rename: 'net.carrotIndustries.usbkvm.svg')
 
