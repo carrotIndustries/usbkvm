@@ -35,7 +35,7 @@ public:
         int8_t vscroll = 0;
     };
 
-    void send_report(const MouseReport &report);
+    bool send_report(const MouseReport &report);
 
     struct KeyboardReport {
         enum class Modifier {
@@ -49,7 +49,7 @@ public:
         std::array<uint8_t, 6> keycode = {0};
     };
 
-    void send_report(const KeyboardReport &report);
+    bool send_report(const KeyboardReport &report);
 
     struct Status {
         bool vga_connected = false;
