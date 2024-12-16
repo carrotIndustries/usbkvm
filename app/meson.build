@@ -1,6 +1,6 @@
 project('usbkvm', ['cpp', 'c'],
   version: '1.0.0',
-  meson_version: '>=0.53',
+  meson_version: '>=0.58',
   default_options: ['cpp_std=c++20', 'warning_level=1'],
 )
 
@@ -127,13 +127,19 @@ if udev.found()
   install_data('70-usbkvm.rules', install_dir: udevrulesdir)
 endif
 
+if is_windows
+	windows = import('windows')
+	rc_compiled =  windows.compile_resources('src/usbkvm.rc', include_directories:include_directories('.'))
+else
+	rc_compiled = []
+endif
+
 usbkvm = executable('usbkvm',
-    [src,resources,keymap_c,keymap_h,mslib],
+    [src,resources,keymap_c,keymap_h,mslib, rc_compiled],
     dependencies: [build_dependencies],
-    #link_with: [solvespace, clipper],
     cpp_args: cpp_args,
     include_directories: include_directories,
-    gui_app: true, 
+    win_subsystem: 'windows',
     install: true
 )
 
