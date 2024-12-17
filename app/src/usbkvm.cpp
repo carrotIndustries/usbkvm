@@ -5,7 +5,7 @@
 int main(int argc, char *argv[])
 {
     gst_init(&argc, &argv);
-    auto app = Gtk::Application::create(argc, argv, "net.carrotIndustries.usbkvm");
+    auto app = Gtk::Application::create(argc, argv, "net.carrotindustries.usbkvm");
     auto cssp = Gtk::CssProvider::create();
     cssp->load_from_resource("/net/carrotIndustries/usbkvm/usbkvm.css");
     Gtk::StyleContext::add_provider_for_screen(Gdk::Screen::get_default(), cssp,

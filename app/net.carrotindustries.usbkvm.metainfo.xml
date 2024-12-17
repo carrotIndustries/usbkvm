@@ -17,7 +17,7 @@
     </ul>
   </description>
 
-  <launchable type="desktop-id">net.carrotIndustries.usbkvm</launchable>
+  <launchable type="desktop-id">net.carrotindustries.usbkvm.desktop</launchable>
 
   <screenshots>
     <screenshot type="default">
