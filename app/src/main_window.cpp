@@ -247,7 +247,8 @@ gboolean MainWindow::handle_cap(GstCapsFeatures *features, GstStructure *structu
     if (name == "image/jpeg") {
         gint width, height;
         if (gst_structure_get_int(structure, "width", &width) && gst_structure_get_int(structure, "height", &height)) {
-            m_capture_resolutions.emplace(width, height);
+            if (!m_capture_resolutions.emplace(width, height).second)
+                return true;
             auto rb = Gtk::make_managed<Gtk::RadioButton>(format_resolution(width, height));
             {
                 auto children = m_capture_resolution_box->get_children();
@@ -334,7 +335,7 @@ gboolean MainWindow::monitor_bus_func(GstBus *bus, GstMessage *message)
         g_print("Device removed: %s\n", name);
         g_free(name);
         gst_object_unref(device);
-        gst_element_set_state(m_pipeline, GST_STATE_PAUSED);
+        gst_element_set_state(m_pipeline, GST_STATE_NULL);
         break;
     default:
         break;
