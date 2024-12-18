@@ -575,6 +575,7 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
     m_update_firmware_button->hide();
     m_update_firmware_button->signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::update_firmware));
     m_firmware_update_dispatcher.connect(sigc::mem_fun(*this, &MainWindow::update_firmware_update_status));
+    m_firmware_update_status = FirmwareUpdateStatus::DONE;
 
     m_evbox->signal_realize().connect(
             [this] { m_blank_cursor = Gdk::Cursor::create(m_evbox->get_window()->get_display(), Gdk::BLANK_CURSOR); });
