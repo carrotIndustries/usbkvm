@@ -1,4 +1,5 @@
 #pragma once
+#include <stdexcept>
 #include <stdint.h>
 #include <string>
 #include <span>
@@ -21,6 +22,10 @@ public:
     void close();
 
     virtual ~MsHal();
+
+    struct IOError : public std::runtime_error {
+        using std::runtime_error::runtime_error;
+    };
 
 private:
     enum class AccessMode : bool { WRITE = true, READ = false };

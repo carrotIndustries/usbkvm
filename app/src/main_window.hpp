@@ -21,6 +21,7 @@ private:
     GstElement *m_videosink = nullptr;
     GstStateChangeReturn ret;
     GstBus *m_bus;
+    bool m_has_video = false;
 
     Gtk::EventBox *m_evbox;
     Glib::RefPtr<Gdk::Cursor> m_blank_cursor;
@@ -48,7 +49,7 @@ private:
     void update_modifier_buttons();
 
     Gtk::Label *m_input_status_label;
-    void update_input_status();
+    bool update_input_status();
 
     std::unique_ptr<UsbKvmDevice> m_device;
     std::set<guint> m_keys_pressed;
@@ -86,4 +87,6 @@ private:
 
     class TypeWindow *m_type_window = nullptr;
     UsbKvmMcu *get_mcu() override;
+
+    void handle_io_error(const std::string &err) override;
 };

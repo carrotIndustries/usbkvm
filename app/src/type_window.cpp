@@ -1,6 +1,7 @@
 #include "type_window.hpp"
 #include "usbkvm_mcu.hpp"
 #include "imcu_provider.hpp"
+#include "mshal.hpp"
 #include <thread>
 
 struct KeyItem {
@@ -157,6 +158,13 @@ TypeWindow::TypeWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
             m_type_button->set_sensitive(true);
             set_modal(false);
             m_cancel_button->hide();
+            std::string io_error;
+            {
+                std::lock_guard<std::mutex> guard{m_io_error_mutex};
+                io_error = m_io_error;
+            }
+            if (io_error.size())
+                m_mcu_provider.handle_io_error(io_error);
         }
         else {
             m_progress_bar->set_fraction((double)m_pos / m_text.size());
@@ -171,12 +179,16 @@ void TypeWindow::type_text()
     if (!m_mcu_provider.get_mcu())
         return;
 
+    if (m_is_busy)
+        return;
+
     m_is_busy = true;
     m_type_button->set_sensitive(false);
     m_pos = 0;
     m_progress_bar->set_fraction(0);
     m_cancel_button->show();
     m_cancel = false;
+    m_io_error = "";
     set_modal(true);
     m_text = m_text_view->get_buffer()->get_text();
     auto thr = std::thread(&TypeWindow::type_thread, this);
@@ -195,10 +207,19 @@ void TypeWindow::type_thread()
         UsbKvmMcu::KeyboardReport report;
         report.keycode.at(0) = ki.scancode;
         report.mod = ki.mod;
-        if(!mcu.send_report(report))
+        try {
+            if (!mcu.send_report(report))
+                break;
+            if (!mcu.send_report(UsbKvmMcu::KeyboardReport{}))
+                break;
+        }
+        catch (MsHal::IOError &err) {
+            {
+                std::lock_guard<std::mutex> guard{m_io_error_mutex};
+                m_io_error = err.what();
+            }
             break;
-        if(!mcu.send_report(UsbKvmMcu::KeyboardReport{}))
-            break;
+        }
         m_pos++;
         m_dispatcher.emit();
     }

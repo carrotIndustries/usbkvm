@@ -26,4 +26,7 @@ private:
     std::atomic_bool m_is_busy = false;
     std::atomic_uint32_t m_pos = false;
     std::atomic_bool m_cancel = false;
+    
+    std::string m_io_error;
+    std::mutex m_io_error_mutex;
 };

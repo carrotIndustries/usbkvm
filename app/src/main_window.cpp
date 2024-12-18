@@ -74,7 +74,12 @@ void MainWindow::send_mouse_report(int scroll_delta)
     report.y = m_cursor_y;
     report.vscroll = scroll_delta;
 
-    mcu.send_report(report);
+    try {
+        mcu.send_report(report);
+    }
+    catch (MsHal::IOError &e) {
+        handle_io_error(e.what());
+    }
 }
 
 
@@ -115,8 +120,12 @@ void MainWindow::send_keyboard_report()
         report.keycode.at(i) = gdk_key_to_hid(k);
         i++;
     }
-
-    mcu.send_report(report);
+    try {
+        mcu.send_report(report);
+    }
+    catch (MsHal::IOError &e) {
+        handle_io_error(e.what());
+    }
 }
 
 
@@ -324,19 +333,27 @@ gboolean MainWindow::monitor_bus_func(GstBus *bus, GstMessage *message)
                 if (ret == GST_STATE_CHANGE_FAILURE) {
                     g_print("Failed to start up pipeline!\n");
                 }
+                else {
+                    m_has_video = true;
+                }
             }
-            create_device("USBKVM");
+            create_device(s_device_name);
         }
         gst_object_unref(device);
     } break;
-    case GST_MESSAGE_DEVICE_REMOVED:
+    case GST_MESSAGE_DEVICE_REMOVED: {
         gst_message_parse_device_removed(message, &device);
         name = gst_device_get_display_name(device);
+        std::string name_s = name;
         g_print("Device removed: %s\n", name);
         g_free(name);
         gst_object_unref(device);
-        gst_element_set_state(m_pipeline, GST_STATE_NULL);
-        break;
+        if (name_s == s_device_name) {
+            gst_element_set_state(m_pipeline, GST_STATE_NULL);
+            m_has_video = false;
+            set_overlay_label_text("No USBKVM connected");
+        }
+    } break;
     default:
         break;
     }
@@ -346,6 +363,8 @@ gboolean MainWindow::monitor_bus_func(GstBus *bus, GstMessage *message)
 
 void MainWindow::create_device(const std::string &name)
 {
+    if (m_device)
+        return;
     try {
         m_device = std::make_unique<UsbKvmDevice>(name);
         auto info = m_device->mcu()->get_info();
@@ -424,7 +443,7 @@ void MainWindow::create_device(const std::string &name)
                     if (!m_device)
                         return false;
                     if (!m_type_window->is_busy())
-                        update_input_status();
+                        return update_input_status();
                     return true;
                 },
                 1);
@@ -698,42 +717,47 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
     set_overlay_label_text("No USBKVM connected");
 }
 
-void MainWindow::update_input_status()
+bool MainWindow::update_input_status()
 {
     if (!m_device) {
         m_input_status_label->set_label("Not connected");
-        return;
+        return false;
     }
     if (m_firmware_update_status != FirmwareUpdateStatus::DONE)
-        return;
-    auto &hal = m_device->hal();
-    std::string label;
+        return true;
+    try {
+        auto &hal = m_device->hal();
+        std::string label;
 
-    if (hal.get_has_signal()) {
-        auto w = hal.get_input_width();
-        auto h = hal.get_input_height();
-        auto fps = hal.get_input_fps();
-        label += format_resolution(w, h) + std::format("  {:.01f}Hz", fps);
-        update_auto_capture_resolution(w, h);
+        if (hal.get_has_signal()) {
+            auto w = hal.get_input_width();
+            auto h = hal.get_input_height();
+            auto fps = hal.get_input_fps();
+            label += format_resolution(w, h) + std::format("  {:.01f}Hz", fps);
+            update_auto_capture_resolution(w, h);
 
-        if (m_device->get_model() == Model::USBKVM_PRO) {
-            if (auto mcu = m_device->mcu()) {
-                auto status = mcu->get_status();
-                if (status.vga_connected)
-                    label += " VGA";
-                else
-                    label += " HDMI";
+            if (m_device->get_model() == Model::USBKVM_PRO) {
+                if (auto mcu = m_device->mcu()) {
+                    auto status = mcu->get_status();
+                    if (status.vga_connected)
+                        label += " VGA";
+                    else
+                        label += " HDMI";
+                }
             }
+            set_overlay_label_text("");
         }
-        set_overlay_label_text("");
+        else {
+            label = "No signal";
+            set_overlay_label_text(label);
+        }
+        m_input_status_label->set_label(label);
     }
-    else {
-        label = "No signal";
-        set_overlay_label_text(label);
+    catch (MsHal::IOError &e) {
+        handle_io_error(e.what());
+        return false;
     }
-
-
-    m_input_status_label->set_label(label);
+    return true;
 }
 
 void MainWindow::update_auto_capture_resolution(int w, int h)
@@ -774,4 +798,20 @@ void MainWindow::set_overlay_label_text(const std::string &label)
 {
     m_overlay_label->set_visible(label.size());
     m_overlay_label->set_label(label);
+}
+
+void MainWindow::handle_io_error(const std::string &err)
+{
+    m_device.reset();
+    m_input_status_label->set_label("IO Error: " + err);
+    if (m_has_video) {
+        // video device there, try reconnecting
+        Glib::signal_timeout().connect_seconds_once(
+                [this] {
+                    if (m_has_video) {
+                        create_device(s_device_name);
+                    }
+                },
+                1);
+    }
 }

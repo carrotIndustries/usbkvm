@@ -12,7 +12,7 @@ MsHal::MsHal(const std::string &name)
     name_mut.push_back(0); // null terminator
     m_handle = MsHalOpen(name_mut.data());
     if (m_handle == 0)
-        throw std::runtime_error("MsHalOpen failed");
+        throw IOError("MsHalOpen failed");
 }
 
 void MsHal::i2c_transfer(uint8_t device_addr, std::span<const uint8_t> data_wr, std::span<uint8_t> data_rd)
@@ -36,7 +36,7 @@ void MsHal::i2c_transfer(uint8_t device_addr, std::span<const uint8_t> data_wr, 
         free(rdbuf);
     }
     if (retval != 0)
-        throw std::runtime_error("MsHalI2CTransfer failed");
+        throw IOError("MsHalI2CTransfer failed");
 }
 
 void MsHal::mem_access(AccessMode mode, unsigned int addr, std::span<uint8_t> data)
@@ -45,7 +45,7 @@ void MsHal::mem_access(AccessMode mode, unsigned int addr, std::span<uint8_t> da
 
     int retval = MsHalMemAccess(m_handle, (int)mode, addr, data.data(), data.size_bytes());
     if (retval)
-        throw std::runtime_error("MsHalMemAccess failed");
+        throw IOError("MsHalMemAccess failed");
 }
 
 uint16_t MsHal::mem_read16be(unsigned int addr)
