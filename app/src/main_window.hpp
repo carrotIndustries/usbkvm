@@ -30,6 +30,9 @@ private:
     Gtk::Revealer *m_firmware_update_revealer;
     Gtk::ProgressBar *m_firmware_update_progress_bar;
     Gtk::Label *m_firmware_update_label;
+    Gtk::Label *m_overlay_label;
+
+    void set_overlay_label_text(const std::string &label);
 
     using FirmwareUpdateStatus = UsbKvmMcuFirmwareUpdateStatus;
     std::atomic<FirmwareUpdateStatus> m_firmware_update_status;

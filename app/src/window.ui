@@ -222,12 +222,41 @@
           </packing>
         </child>
         <child>
-          <object class="GtkEventBox" id="evbox">
+          <object class="GtkOverlay" id="overlay">
             <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="events">GDK_POINTER_MOTION_MASK | GDK_STRUCTURE_MASK | GDK_SCROLL_MASK</property>
+            <property name="can-focus">False</property>
             <child>
-              <placeholder/>
+              <object class="GtkEventBox" id="evbox">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="events">GDK_POINTER_MOTION_MASK | GDK_STRUCTURE_MASK | GDK_SCROLL_MASK</property>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+              <packing>
+                <property name="index">-1</property>
+              </packing>
+            </child>
+            <child type="overlay">
+              <object class="GtkLabel" id="overlay_label">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="label" translatable="yes">fixme</property>
+                <attributes>
+                  <attribute name="weight" value="bold"/>
+                  <attribute name="scale" value="2"/>
+                </attributes>
+                <style>
+                  <class name="osd"/>
+                  <class name="overlay-label"/>
+                </style>
+              </object>
+              <packing>
+                <property name="pass-through">True</property>
+              </packing>
             </child>
           </object>
           <packing>
@@ -244,7 +273,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">3</property>
+            <property name="position">4</property>
           </packing>
         </child>
         <child>
@@ -261,7 +290,7 @@
                 <property name="can-focus">False</property>
                 <property name="margin-top">3</property>
                 <property name="margin-bottom">3</property>
-                <property name="label" translatable="yes">No signal</property>
+                <property name="label" translatable="yes">Not connected</property>
                 <property name="width-chars">17</property>
                 <property name="xalign">0</property>
                 <style>
@@ -305,7 +334,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">4</property>
+            <property name="position">5</property>
           </packing>
         </child>
       </object>

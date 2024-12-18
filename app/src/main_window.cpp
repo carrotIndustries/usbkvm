@@ -295,6 +295,7 @@ gboolean MainWindow::monitor_bus_func(GstBus *bus, GstMessage *message)
         g_free(name);
         if (name_str.starts_with(s_device_name)) {
             std::cout << "found usbkvm" << std::endl;
+            set_overlay_label_text("");
             {
                 auto caps = gst_device_get_caps(device);
                 gst_caps_foreach(caps, &MainWindow::handle_cap, this);
@@ -566,6 +567,7 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
 
     x->get_widget("input_status_label", m_input_status_label);
     x->get_widget("evbox", m_evbox);
+    x->get_widget("overlay_label", m_overlay_label);
     x->get_widget("mcu_info_bar", m_mcu_info_bar);
     x->get_widget("mcu_info_bar_label", m_mcu_info_bar_label);
     x->get_widget("update_firmware_button", m_update_firmware_button);
@@ -691,12 +693,16 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
         x->get_widget("keyboard_button", keyboard_button);
         keyboard_button->signal_clicked().connect([this] { m_type_window->present(); });
     }
+
+    set_overlay_label_text("No USBKVM connected");
 }
 
 void MainWindow::update_input_status()
 {
-    if (!m_device)
+    if (!m_device) {
+        m_input_status_label->set_label("Not connected");
         return;
+    }
     if (m_firmware_update_status != FirmwareUpdateStatus::DONE)
         return;
     auto &hal = m_device->hal();
@@ -718,9 +724,11 @@ void MainWindow::update_input_status()
                     label += " HDMI";
             }
         }
+        set_overlay_label_text("");
     }
     else {
         label = "No signal";
+        set_overlay_label_text(label);
     }
 
 
@@ -759,4 +767,10 @@ UsbKvmMcu *MainWindow::get_mcu()
     if (m_device && m_device->mcu())
         return m_device->mcu();
     return nullptr;
+}
+
+void MainWindow::set_overlay_label_text(const std::string &label)
+{
+    m_overlay_label->set_visible(label.size());
+    m_overlay_label->set_label(label);
 }
