@@ -40,10 +40,4 @@
   </provides>
 
   <content_rating type="oars-1.0" />
-
-  <releases>
-    <release version="0.0.16" date="2024-12-16">
-      <url>https://github.com/carrotIndustries/usbkvm/releases/tag/v0.0.16</url>
-    </release>
-  </releases>
 </component>
