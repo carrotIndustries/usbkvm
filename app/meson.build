@@ -1,5 +1,5 @@
 project('usbkvm', ['cpp', 'c'],
-  version: '1.0.0',
+  version: '0.0.19',
   meson_version: '>=0.58',
   default_options: ['cpp_std=c++20', 'warning_level=1'],
 )
@@ -30,7 +30,9 @@ src_common = files(
 src = files(
   'src/usbkvm.cpp',
   'src/main_window.cpp',
-  'src/type_window.cpp'
+  'src/type_window.cpp',
+  'src/version.cpp',
+  'src/about_dialog.cpp'
 ) + src_common
 
 src_python = files(
@@ -60,6 +62,25 @@ resources = gnome.compile_resources(
   source_dir: resource_src_dirs
 )
 
+fs = import('fs')
+has_git_dir = fs.is_dir('../.git')
+version_deps = []
+if has_git_dir
+    message('including git commit')
+    version_deps += ['../.git/HEAD', '../.git/index']
+endif
+
+prog_python = find_program('python3')
+
+version_gen_cpp = custom_target(
+    'version_gen.cpp',
+    output : 'version_gen.cpp',
+    input : ['make_version.py'],
+    depend_files: version_deps,
+    command : [prog_python, '@INPUT@', '@OUTPUT@', '@SOURCE_ROOT@', meson.project_version()],
+)
+src += version_gen_cpp
+
 cpp_args = []
 
 stdlibs = []
@@ -77,7 +98,6 @@ endif
 build_dependencies = [gtk3, gtkmm, gst, hidapi]
 build_dependencies_py = [hidapi, libpython, pybind11]
 
-prog_python = find_program('python3')
 
 keymap_format = ['x11', 'usb']
 keymap_input = ['keycodemapdb/tools/keymap-gen', 'keycodemapdb/data/keymaps.csv']

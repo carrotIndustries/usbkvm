@@ -8,6 +8,7 @@
 #include "usbkvm_device.hpp"
 #include "mshal.hpp"
 #include "type_window.hpp"
+#include "about_dialog.hpp"
 
 static void end_stream_cb(GstBus *bus, GstMessage *message, GstElement *pipeline)
 {
@@ -689,7 +690,7 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
 
     update_resolution_button();
 
-    /*{
+    {
         auto hamburger_button = Gtk::manage(new Gtk::MenuButton);
         hamburger_button->set_image_from_icon_name("open-menu-symbolic", Gtk::ICON_SIZE_BUTTON);
 
@@ -701,10 +702,14 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
 
         headerbar->pack_end(*hamburger_button);
 
-        hamburger_menu->append("Enter bootloader", "win.enter_bootloader");
+        hamburger_menu->append("About", "win.about");
 
-        add_action("enter_bootloader", sigc::mem_fun(*this, &MainWindow::enter_bootloader));
-    }*/
+        add_action("about", [this] {
+            AboutDialog dia;
+            dia.set_transient_for(*this);
+            dia.run();
+        });
+    }
 
     m_type_window = TypeWindow::create(*this);
     m_type_window->set_transient_for(*this);
