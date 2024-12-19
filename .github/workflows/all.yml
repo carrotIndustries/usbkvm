@@ -31,13 +31,13 @@ jobs:
     - name: Build app
       working-directory: app
       run: |
+        git config --global --add safe.directory $(realpath ..)
         mkdir ../build-app
         meson setup ../build-app
         ninja -C ../build-app
     - name: create tarball
       working-directory: app
       run: |
-        git config --global --add safe.directory $(realpath ..)
         ./make_tarball.sh
         sha256sum *.tar.gz
     - name: Upload tarball
