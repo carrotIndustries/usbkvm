@@ -115,7 +115,7 @@ bus number to the right one for your system.
 Apart from the firmware, the MCU needs the BOOT_SEL option bit cleared 
 so that it can jump to the ROM bootloader. Unfortunately, openocd 
 doesn't support this bit(?), so it has to be modified using the 
-STM32Cube Programmer.
+STM32Cube Programmer or via DFU.
 
 # Software
 
@@ -184,15 +184,13 @@ and floating on USBKVM.
 
 ## Firmware updates
 
-For updating itself without special programming adapters, the firmware 
-can activate the built-in ROM bootloader of the STM32. Unfortunately, I 
-picked the wrong pins so only the USB DFU bootloader can be used and 
-not the I²C one. Run `make dfu` in the firmware directory to build and 
-flash the firmware.
+TL;DR: Don't worry about it, the client app automatically does the right thing.
 
-Future improvement: Implement a custom I²C bootloader, that will also 
-make the device less brickable since the activating the ROM bootloaders 
-requires a working firmware.
+The first 8k of the 32kByte flash are reserved for the bootloader that can re-program the application image as directed via the I²C interface. The application image is prefixed by a header that contains its length and CRC checksum that the bootloader verifies before jumping to it. To make USBKVM brick-proof under normal usage, the bootloader doesn't immediately jump to the application on its own, but has to be told so by the client app. That way even an application image that passes the CRC check, but can't jump back to the bootloader doesn't result in a bricked USBKVM.
+
+## Development
+
+There are two firmware projects in the `fw/boot` and `fw/usbkvm` subdirectories. They share some code in `fw/common/`. Building them requires the usual arm-none-eabi toolchain, GNU make and python.
 
 # Case
 
@@ -252,8 +250,7 @@ when making modifications to it.
 ## What platforms does the client run on?
 
 Right now, the client app builds and runs on Linux. Windows support is 
-experimental as it's significantly more involved to determine the 
-correct video capture device.
+experimental.
 
 ## Are there plans for clients for other platforms?
 
@@ -265,17 +262,13 @@ favourite platform based on the client included in this repo.
 While there's not much to improve on the hardware as it is right now, 
 the client app still has a lot of room for improvement.
 
- - Handle disconnecting the USBKVM more gracefully, potentially allow 
- reconnects
- - Improved feedback for when no USBKVM is found
  - Make sure that it handles non-US keyboard layouts on both ends
  - Relative mouse emulation, requires firmware support
- - Firmware updates via I²C, requires firmware support
  - Screen recording, should be easy to add to the GStreamer pipeline
  - Instant replay to show screen content that just scrolled by
- - Translating text input into keyboard events for pasting text
  - Key macros for repeatedly pressing keys
  - OCR for copying text from the video feed
+ - Hardware mod: Wire up CEC from the HDMI connector to the MCU
 
 # Licenses
 

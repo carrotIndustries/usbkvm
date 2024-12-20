@@ -109,7 +109,9 @@ jobs:
     - name: Make dist
       shell: msys2 {0}
       working-directory: app
-      run: ./make_bindist.sh
+      run: |
+        ./make_bindist.sh
+        sha256sum dist/*.zip
     - name: set artifact name
       shell: msys2 {0}
       run: echo "artifact_name=usbkvm-win64-$(date +%Y-%m-%d-%H%M)-$(echo ${{ github.ref_name }} | tr / -)" >> $GITHUB_ENV
