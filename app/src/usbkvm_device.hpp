@@ -11,7 +11,7 @@ class UsbKvmMcu;
 
 class UsbKvmDevice {
 public:
-    UsbKvmDevice(const std::string &name);
+    UsbKvmDevice(const std::string &path);
 
     MsHal &hal()
     {

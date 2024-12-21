@@ -3,6 +3,7 @@
 #include <gst/gst.h>
 #include "imcu_provider.hpp"
 #include <atomic>
+#include <optional>
 
 namespace usbkvm {
 
@@ -10,12 +11,37 @@ class UsbKvmDevice;
 class UsbKvmApplication;
 enum class UsbKvmMcuFirmwareUpdateStatus;
 
+struct DeviceInfo {
+    std::string video_path;
+    std::string hid_path;
+    std::string bus_info;
+
+    using ResolutionList = std::vector<std::pair<int, int>>;
+    ResolutionList capture_resolutions;
+};
+
 class UsbKvmAppWindow : public Gtk::ApplicationWindow, private IMcuProvider {
 public:
     UsbKvmAppWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &x, UsbKvmApplication &app);
     static UsbKvmAppWindow *create(UsbKvmApplication &app);
-    
+
     ~UsbKvmAppWindow();
+
+    const std::string &get_last_bus_info() const
+    {
+        return m_last_bus_info;
+    }
+
+    void set_device(const DeviceInfo &devinfo);
+    void unset_device();
+
+    const DeviceInfo *get_device_info() const
+    {
+        if (m_device_info)
+            return &m_device_info.value();
+        else
+            return nullptr;
+    }
 
 private:
     UsbKvmApplication &m_app;
@@ -72,7 +98,7 @@ private:
     void handle_scroll(GdkEventScroll *ev);
     void handle_motion(GdkEventMotion *ev);
 
-    void create_device(const std::string &name);
+    void create_device(const std::string &path);
     void update_firmware();
 
     std::pair<int, int> m_capture_resolution = {1280, 720};
@@ -85,16 +111,15 @@ private:
     Gtk::Box *m_capture_resolution_box = nullptr;
     void update_resolution_button();
 
-    gboolean monitor_bus_func(GstBus *bus, GstMessage *message);
-    static gboolean monitor_bus_func(GstBus *bus, GstMessage *message, gpointer user_data);
-
-    static gboolean handle_cap(GstCapsFeatures *features, GstStructure *structure, gpointer user_data);
-    gboolean handle_cap(GstCapsFeatures *features, GstStructure *structure);
+    void add_capture_resolution(int width, int height);
 
     class TypeWindow *m_type_window = nullptr;
     UsbKvmMcu *get_mcu() override;
 
     void handle_io_error(const std::string &err) override;
+
+    std::optional<DeviceInfo> m_device_info;
+    std::string m_last_bus_info;
 };
 
 } // namespace usbkvm
