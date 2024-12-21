@@ -536,7 +536,8 @@ void UsbKvmAppWindow::update_firmware_update_status()
     m_firmware_update_revealer->set_reveal_child(m_firmware_update_status != FirmwareUpdateStatus::DONE);
 }
 
-UsbKvmAppWindow::UsbKvmAppWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &x) : Gtk::ApplicationWindow(cobject)
+UsbKvmAppWindow::UsbKvmAppWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &x, UsbKvmApplication &app)
+    : Gtk::ApplicationWindow(cobject), m_app(app)
 {
     {
         GstDeviceMonitor *monitor = gst_device_monitor_new();
@@ -788,12 +789,12 @@ void UsbKvmAppWindow::update_resolution_button()
     m_resolution_button->set_label(label);
 }
 
-UsbKvmAppWindow *UsbKvmAppWindow::create()
+UsbKvmAppWindow *UsbKvmAppWindow::create(UsbKvmApplication &app)
 {
     UsbKvmAppWindow *w;
     Glib::RefPtr<Gtk::Builder> x = Gtk::Builder::create();
     x->add_from_resource("/net/carrotIndustries/usbkvm/window.ui");
-    x->get_widget_derived("mainWindow", w);
+    x->get_widget_derived("mainWindow", w, app);
     return w;
 }
 
@@ -824,6 +825,12 @@ void UsbKvmAppWindow::handle_io_error(const std::string &err)
                 },
                 1);
     }
+}
+
+UsbKvmAppWindow::~UsbKvmAppWindow()
+{
+    if (m_pipeline)
+        gst_element_set_state(m_pipeline, GST_STATE_NULL);
 }
 
 } // namespace usbkvm

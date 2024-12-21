@@ -7,14 +7,18 @@
 namespace usbkvm {
 
 class UsbKvmDevice;
+class UsbKvmApplication;
 enum class UsbKvmMcuFirmwareUpdateStatus;
 
 class UsbKvmAppWindow : public Gtk::ApplicationWindow, private IMcuProvider {
 public:
-    UsbKvmAppWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &x);
-    static UsbKvmAppWindow *create();
+    UsbKvmAppWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &x, UsbKvmApplication &app);
+    static UsbKvmAppWindow *create(UsbKvmApplication &app);
+    
+    ~UsbKvmAppWindow();
 
 private:
+    UsbKvmApplication &m_app;
     GstElement *m_pipeline = nullptr;
     GstElement *m_videosrc = nullptr;
     GstElement *m_capsfilter = nullptr;
