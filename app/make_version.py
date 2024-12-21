@@ -7,11 +7,13 @@ import xml.etree.ElementTree as ET
 
 
 cpp_template = """#include "version.hpp"
+namespace usbkvm {
 const unsigned int Version::major = $major;
 const unsigned int Version::minor = $minor;
 const unsigned int Version::micro = $micro;
 const char *Version::commit = "$commit";
 const char *Version::commit_hash = "$commit_hash";
+}
 """
 
 meson_version = sys.argv[3]

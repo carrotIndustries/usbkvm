@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     Gtk::IconTheme::get_default()->add_resource_path("/net/carrotIndustries/usbkvm/icons");
 
 
-    auto win = MainWindow::create();
+    auto win = usbkvm::UsbKvmAppWindow::create();
     return app->run(*win);
     gst_deinit();
 }

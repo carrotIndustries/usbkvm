@@ -3,6 +3,8 @@
 #include "i2c_util.hpp"
 #include "usbkvm_mcu.hpp"
 
+namespace usbkvm {
+
 static const uint8_t s_mcu_addr = 0x0a;
 
 UsbKvmDevice::UsbKvmDevice(const std::string &name)
@@ -52,3 +54,5 @@ void UsbKvmDevice::close_hal()
 }
 
 UsbKvmDevice::~UsbKvmDevice() = default;
+
+} // namespace usbkvm

@@ -8,6 +8,8 @@
 #include "i2c_msg_boot.h"
 #include "i2c_msg_app.h"
 
+namespace usbkvm {
+
 #define TU_BIT(n) (1UL << (n))
 
 typedef enum {
@@ -237,7 +239,6 @@ void UsbKvmMcu::set_led(Led mask, Led stat)
     std::lock_guard<std::mutex> guard(m_mutex);
 
     i2c_xfer<i2c_req_t::SET_LED>({.mask = translate_led(mask), .stat = translate_led(stat)});
-    ;
 }
 
 bool UsbKvmMcu::boot_flash_unlock()
@@ -398,3 +399,5 @@ bool UsbKvmMcu::boot_update_firmware(std::function<void(const FirmwareUpdateProg
 }
 
 UsbKvmMcu::~UsbKvmMcu() = default;
+
+} // namespace usbkvm

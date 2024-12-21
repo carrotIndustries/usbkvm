@@ -6,6 +6,8 @@
 #include <mutex>
 #include "ii2c.hpp"
 
+namespace usbkvm {
+
 class MsHal : public II2C {
 public:
     MsHal(const std::string &name);
@@ -34,3 +36,5 @@ private:
 
     std::mutex m_mutex;
 };
+
+} // namespace usbkvm

@@ -3,42 +3,9 @@
 #include "usbkvm_device.hpp"
 #include "usbkvm_mcu.hpp"
 
-
 namespace py = pybind11;
 
-struct UsbKvmDevicePy {
-    UsbKvmDevicePy(const std::string &name) : m_device(name)
-    {
-    }
-
-    bool has_mcu()
-    {
-        return m_device.mcu();
-    }
-
-    void close()
-    {
-        m_device.close_hal();
-    }
-
-    void enter_bootloader()
-    {
-        m_device.enter_bootloader();
-    }
-
-    auto get_mcu_info()
-    {
-        return m_device.mcu()->get_info();
-    }
-
-    void set_led(UsbKvmMcu::Led mask, UsbKvmMcu::Led stat)
-    {
-        m_device.mcu()->set_led(mask, stat);
-    }
-
-private:
-    UsbKvmDevice m_device;
-};
+using namespace usbkvm;
 
 PYBIND11_MODULE(usbkvm_py, m)
 {
@@ -76,18 +43,10 @@ PYBIND11_MODULE(usbkvm_py, m)
             .def("boot_get_boot_version", &UsbKvmMcu::boot_get_boot_version)
             .def("boot_enter_dfu", &UsbKvmMcu::boot_enter_dfu)
             .def("set_led", &UsbKvmMcu::set_led);
-    /*.def("has_mcu", &UsbKvmDevice::has_mcu)
-    .def("get_mcu_info", &UsbKvmDevice::get_mcu_info)
-    .def("set_led", &UsbKvmDevice::set_led)
-    .def("flash_unlock", &UsbKvmDevice::flash_unlock)*/
 
     py::class_<UsbKvmDevice>(m, "Device")
             .def(py::init<const std::string &>())
             .def("close_hal", &UsbKvmDevice::close_hal)
             .def("mcu", &UsbKvmDevice::mcu, py::return_value_policy::reference)
-            /*.def("has_mcu", &UsbKvmDevice::has_mcu)
-            .def("get_mcu_info", &UsbKvmDevice::get_mcu_info)
-            .def("set_led", &UsbKvmDevice::set_led)
-            .def("flash_unlock", &UsbKvmDevice::flash_unlock)*/
             .def("enter_bootloader", &UsbKvmDevice::enter_bootloader);
 }

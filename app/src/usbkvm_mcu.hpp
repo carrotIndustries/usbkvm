@@ -9,11 +9,13 @@
 #include <functional>
 #include <stdexcept>
 
+template <auto req_a> struct xfer_t;
+
+namespace usbkvm {
+
 class II2COneDevice;
 
 enum class UsbKvmMcuFirmwareUpdateStatus { BUSY, DONE, ERROR };
-
-template <auto req_a> struct xfer_t;
 
 class UsbKvmMcu {
 public:
@@ -113,15 +115,16 @@ private:
     template <auto req> xfer_t<req>::Tresp i2c_xfer(xfer_t<req>::Treq req_s, TransferMode mode);
 };
 
-template <> struct enable_bitmask_operators<UsbKvmMcu::MouseReport::Button> {
+} // namespace usbkvm
+
+template <> struct enable_bitmask_operators<usbkvm::UsbKvmMcu::MouseReport::Button> {
     static constexpr bool enable = true;
 };
 
-template <> struct enable_bitmask_operators<UsbKvmMcu::KeyboardReport::Modifier> {
+template <> struct enable_bitmask_operators<usbkvm::UsbKvmMcu::KeyboardReport::Modifier> {
     static constexpr bool enable = true;
 };
 
-template <> struct enable_bitmask_operators<UsbKvmMcu::Led> {
+template <> struct enable_bitmask_operators<usbkvm::UsbKvmMcu::Led> {
     static constexpr bool enable = true;
 };
-

@@ -3,6 +3,8 @@
 #include <optional>
 #include "model.hpp"
 
+namespace usbkvm {
+
 class MsHal;
 class I2COneDevice;
 class UsbKvmMcu;
@@ -50,3 +52,5 @@ private:
 
     std::optional<Model> m_model;
 };
+
+} // namespace usbkvm

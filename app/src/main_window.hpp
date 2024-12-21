@@ -4,13 +4,15 @@
 #include "imcu_provider.hpp"
 #include <atomic>
 
+namespace usbkvm {
+
 class UsbKvmDevice;
 enum class UsbKvmMcuFirmwareUpdateStatus;
 
-class MainWindow : public Gtk::ApplicationWindow, private IMcuProvider {
+class UsbKvmAppWindow : public Gtk::ApplicationWindow, private IMcuProvider {
 public:
-    MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &x);
-    static MainWindow *create();
+    UsbKvmAppWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &x);
+    static UsbKvmAppWindow *create();
 
 private:
     GstElement *m_pipeline = nullptr;
@@ -90,3 +92,5 @@ private:
 
     void handle_io_error(const std::string &err) override;
 };
+
+} // namespace usbkvm

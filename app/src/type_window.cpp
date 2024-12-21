@@ -4,6 +4,8 @@
 #include "mshal.hpp"
 #include <thread>
 
+namespace usbkvm {
+
 struct KeyItem {
     uint8_t scancode;
     UsbKvmMcu::KeyboardReport::Modifier mod;
@@ -235,3 +237,5 @@ TypeWindow *TypeWindow::create(IMcuProvider &mcu_provider)
     x->get_widget_derived("window", w, mcu_provider);
     return w;
 }
+
+} // namespace usbkvm

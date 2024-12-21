@@ -6,6 +6,8 @@
 #include <iostream>
 #include <format>
 
+namespace usbkvm {
+
 MsHal::MsHal(const std::string &name)
 {
     std::vector<char> name_mut(name.begin(), name.end());
@@ -95,3 +97,5 @@ MsHal::~MsHal()
 {
     close();
 }
+
+} // namespace usbkvm

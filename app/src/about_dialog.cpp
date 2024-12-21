@@ -1,6 +1,7 @@
 #include "about_dialog.hpp"
 #include "version.hpp"
 
+namespace usbkvm {
 
 AboutDialog::AboutDialog() : Gtk::AboutDialog()
 {
@@ -17,3 +18,5 @@ AboutDialog::AboutDialog() : Gtk::AboutDialog()
 
     set_logo_icon_name("usbkvm");
 }
+
+} // namespace usbkvm

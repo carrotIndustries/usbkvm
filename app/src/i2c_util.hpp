@@ -1,6 +1,8 @@
 #pragma once
 #include "ii2c.hpp"
 
+namespace usbkvm {
+
 class I2COneDevice : public II2COneDevice {
 public:
     I2COneDevice(II2C &i2c, uint8_t device_addr);
@@ -12,3 +14,5 @@ private:
     II2C &m_i2c;
     uint8_t m_device_addr;
 };
+
+} // namespace usbkvm

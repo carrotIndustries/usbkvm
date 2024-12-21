@@ -10,6 +10,8 @@
 #include "type_window.hpp"
 #include "about_dialog.hpp"
 
+namespace usbkvm {
+
 static void end_stream_cb(GstBus *bus, GstMessage *message, GstElement *pipeline)
 {
     g_print("End of stream\n");
@@ -33,7 +35,7 @@ static void state_cb(GstBus *bus, GstMessage *message, GstElement *pipeline)
 }
 
 
-void MainWindow::handle_button(GdkEventButton *ev)
+void UsbKvmAppWindow::handle_button(GdkEventButton *ev)
 {
     const auto mask = 1 << ev->button;
     bool handled = false;
@@ -51,7 +53,7 @@ void MainWindow::handle_button(GdkEventButton *ev)
         send_mouse_report();
 }
 
-void MainWindow::send_mouse_report(int scroll_delta)
+void UsbKvmAppWindow::send_mouse_report(int scroll_delta)
 {
     if (!(m_device && m_device->mcu()))
         return;
@@ -95,7 +97,7 @@ static int gdk_key_to_hid(int keyval)
     return 0;
 }
 
-void MainWindow::send_keyboard_report()
+void UsbKvmAppWindow::send_keyboard_report()
 {
     if (!(m_device && m_device->mcu()))
         return;
@@ -130,7 +132,7 @@ void MainWindow::send_keyboard_report()
 }
 
 
-void MainWindow::handle_scroll(GdkEventScroll *ev)
+void UsbKvmAppWindow::handle_scroll(GdkEventScroll *ev)
 {
     switch (ev->direction) {
     case GDK_SCROLL_DOWN:
@@ -146,7 +148,7 @@ void MainWindow::handle_scroll(GdkEventScroll *ev)
 }
 
 
-bool MainWindow::handle_key(GdkEventKey *ev)
+bool UsbKvmAppWindow::handle_key(GdkEventKey *ev)
 {
     auto last_keys = m_keys_pressed;
     auto last_mod = m_modifiers;
@@ -185,7 +187,7 @@ static bool in_area(double x)
     return x >= 0 && x <= 1;
 }
 
-void MainWindow::handle_motion(GdkEventMotion *ev)
+void UsbKvmAppWindow::handle_motion(GdkEventMotion *ev)
 {
 
     auto alloc = m_evbox->get_allocation();
@@ -221,22 +223,22 @@ void MainWindow::handle_motion(GdkEventMotion *ev)
     m_evbox->grab_focus();
 }
 
-void MainWindow::update_modifier_buttons()
+void UsbKvmAppWindow::update_modifier_buttons()
 {
     for (auto &[mod, bu] : m_modifier_buttons) {
         bu->set_active(m_modifiers & mod);
     }
 }
 
-gboolean MainWindow::monitor_bus_func(GstBus *bus, GstMessage *message, gpointer pself)
+gboolean UsbKvmAppWindow::monitor_bus_func(GstBus *bus, GstMessage *message, gpointer pself)
 {
-    auto self = reinterpret_cast<MainWindow *>(pself);
+    auto self = reinterpret_cast<UsbKvmAppWindow *>(pself);
     return self->monitor_bus_func(bus, message);
 }
 
-gboolean MainWindow::handle_cap(GstCapsFeatures *features, GstStructure *structure, gpointer user_data)
+gboolean UsbKvmAppWindow::handle_cap(GstCapsFeatures *features, GstStructure *structure, gpointer user_data)
 {
-    auto self = reinterpret_cast<MainWindow *>(user_data);
+    auto self = reinterpret_cast<UsbKvmAppWindow *>(user_data);
     return self->handle_cap(features, structure);
 }
 
@@ -251,7 +253,7 @@ static std::string format_resolution(int width, int height)
     return std::format("{}{}×{}", prefix, width_str, height);
 }
 
-gboolean MainWindow::handle_cap(GstCapsFeatures *features, GstStructure *structure)
+gboolean UsbKvmAppWindow::handle_cap(GstCapsFeatures *features, GstStructure *structure)
 {
     std::string name = gst_structure_get_name(structure);
     if (name == "image/jpeg") {
@@ -279,7 +281,7 @@ gboolean MainWindow::handle_cap(GstCapsFeatures *features, GstStructure *structu
     return true;
 }
 
-void MainWindow::set_capture_resolution(int w, int h)
+void UsbKvmAppWindow::set_capture_resolution(int w, int h)
 {
     if (m_capture_resolution == std::make_pair(w, h))
         return;
@@ -292,7 +294,7 @@ void MainWindow::set_capture_resolution(int w, int h)
 
 static const std::string s_device_name = "USBKVM";
 
-gboolean MainWindow::monitor_bus_func(GstBus *bus, GstMessage *message)
+gboolean UsbKvmAppWindow::monitor_bus_func(GstBus *bus, GstMessage *message)
 {
     GstDevice *device;
     gchar *name;
@@ -309,7 +311,7 @@ gboolean MainWindow::monitor_bus_func(GstBus *bus, GstMessage *message)
             set_overlay_label_text("");
             {
                 auto caps = gst_device_get_caps(device);
-                gst_caps_foreach(caps, &MainWindow::handle_cap, this);
+                gst_caps_foreach(caps, &UsbKvmAppWindow::handle_cap, this);
                 gst_caps_unref(caps);
             }
             if (m_pipeline) {
@@ -319,6 +321,9 @@ gboolean MainWindow::monitor_bus_func(GstBus *bus, GstMessage *message)
                 {
                     auto props = gst_device_get_properties(device);
                     auto path = gst_structure_get_string(props, "api.v4l2.path");
+
+                    // v4l2.device.bus_info
+                    // api.v4l2.cap.bus_info
 
                     if (!path)
                         path = gst_structure_get_string(props, "device.path");
@@ -362,7 +367,7 @@ gboolean MainWindow::monitor_bus_func(GstBus *bus, GstMessage *message)
     return G_SOURCE_CONTINUE;
 }
 
-void MainWindow::create_device(const std::string &name)
+void UsbKvmAppWindow::create_device(const std::string &name)
 {
     if (m_device)
         return;
@@ -451,7 +456,7 @@ void MainWindow::create_device(const std::string &name)
     }
 }
 
-void MainWindow::update_firmware()
+void UsbKvmAppWindow::update_firmware()
 {
     if (m_device) {
         gtk_info_bar_set_revealed(m_mcu_info_bar->gobj(), false);
@@ -466,12 +471,12 @@ void MainWindow::update_firmware()
         m_firmware_update_status_string.clear();
         m_firmware_update_label->set_label("Intializing");
 
-        auto thr = std::thread(&MainWindow::firmware_update_thread, this);
+        auto thr = std::thread(&UsbKvmAppWindow::firmware_update_thread, this);
         thr.detach();
     }
 }
 
-void MainWindow::firmware_update_thread()
+void UsbKvmAppWindow::firmware_update_thread()
 {
 
     auto update_status = [this](FirmwareUpdateStatus status, const std::string &msg) {
@@ -519,7 +524,7 @@ void MainWindow::firmware_update_thread()
     }
 }
 
-void MainWindow::update_firmware_update_status()
+void UsbKvmAppWindow::update_firmware_update_status()
 {
     std::string status;
     {
@@ -531,14 +536,14 @@ void MainWindow::update_firmware_update_status()
     m_firmware_update_revealer->set_reveal_child(m_firmware_update_status != FirmwareUpdateStatus::DONE);
 }
 
-MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &x) : Gtk::ApplicationWindow(cobject)
+UsbKvmAppWindow::UsbKvmAppWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &x) : Gtk::ApplicationWindow(cobject)
 {
     {
         GstDeviceMonitor *monitor = gst_device_monitor_new();
 
         auto bus = gst_device_monitor_get_bus(monitor);
         gst_device_monitor_add_filter(monitor, "Video/Source", NULL);
-        gst_bus_add_watch(bus, &MainWindow::monitor_bus_func, this);
+        gst_bus_add_watch(bus, &UsbKvmAppWindow::monitor_bus_func, this);
         gst_object_unref(bus);
         gst_device_monitor_start(monitor);
     }
@@ -596,19 +601,19 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
     x->get_widget("firmware_update_label", m_firmware_update_label);
     x->get_widget("firmware_update_progress_bar", m_firmware_update_progress_bar);
     m_update_firmware_button->hide();
-    m_update_firmware_button->signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::update_firmware));
-    m_firmware_update_dispatcher.connect(sigc::mem_fun(*this, &MainWindow::update_firmware_update_status));
+    m_update_firmware_button->signal_clicked().connect(sigc::mem_fun(*this, &UsbKvmAppWindow::update_firmware));
+    m_firmware_update_dispatcher.connect(sigc::mem_fun(*this, &UsbKvmAppWindow::update_firmware_update_status));
     m_firmware_update_status = FirmwareUpdateStatus::DONE;
 
     m_evbox->signal_realize().connect(
             [this] { m_blank_cursor = Gdk::Cursor::create(m_evbox->get_window()->get_display(), Gdk::BLANK_CURSOR); });
 
-    m_evbox->signal_motion_notify_event().connect_notify(sigc::mem_fun(*this, &MainWindow::handle_motion));
-    m_evbox->signal_button_press_event().connect_notify(sigc::mem_fun(*this, &MainWindow::handle_button));
-    m_evbox->signal_button_release_event().connect_notify(sigc::mem_fun(*this, &MainWindow::handle_button));
-    m_evbox->signal_key_press_event().connect(sigc::mem_fun(*this, &MainWindow::handle_key));
-    m_evbox->signal_key_release_event().connect(sigc::mem_fun(*this, &MainWindow::handle_key));
-    m_evbox->signal_scroll_event().connect_notify(sigc::mem_fun(*this, &MainWindow::handle_scroll));
+    m_evbox->signal_motion_notify_event().connect_notify(sigc::mem_fun(*this, &UsbKvmAppWindow::handle_motion));
+    m_evbox->signal_button_press_event().connect_notify(sigc::mem_fun(*this, &UsbKvmAppWindow::handle_button));
+    m_evbox->signal_button_release_event().connect_notify(sigc::mem_fun(*this, &UsbKvmAppWindow::handle_button));
+    m_evbox->signal_key_press_event().connect(sigc::mem_fun(*this, &UsbKvmAppWindow::handle_key));
+    m_evbox->signal_key_release_event().connect(sigc::mem_fun(*this, &UsbKvmAppWindow::handle_key));
+    m_evbox->signal_scroll_event().connect_notify(sigc::mem_fun(*this, &UsbKvmAppWindow::handle_scroll));
     m_evbox->signal_leave_notify_event().connect_notify([this](GdkEventCrossing *ev) {
         m_keys_pressed.clear();
         m_modifiers = 0;
@@ -722,7 +727,7 @@ MainWindow::MainWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
     set_overlay_label_text("No USBKVM connected");
 }
 
-bool MainWindow::update_input_status()
+bool UsbKvmAppWindow::update_input_status()
 {
     if (!m_device) {
         m_input_status_label->set_label("Not connected");
@@ -765,7 +770,7 @@ bool MainWindow::update_input_status()
     return true;
 }
 
-void MainWindow::update_auto_capture_resolution(int w, int h)
+void UsbKvmAppWindow::update_auto_capture_resolution(int w, int h)
 {
     if (!m_auto_capture_resolution)
         return;
@@ -774,7 +779,7 @@ void MainWindow::update_auto_capture_resolution(int w, int h)
     set_capture_resolution(w, h);
 }
 
-void MainWindow::update_resolution_button()
+void UsbKvmAppWindow::update_resolution_button()
 {
     auto [w, h] = m_capture_resolution;
     std::string label = format_resolution(w, h);
@@ -783,29 +788,29 @@ void MainWindow::update_resolution_button()
     m_resolution_button->set_label(label);
 }
 
-MainWindow *MainWindow::create()
+UsbKvmAppWindow *UsbKvmAppWindow::create()
 {
-    MainWindow *w;
+    UsbKvmAppWindow *w;
     Glib::RefPtr<Gtk::Builder> x = Gtk::Builder::create();
     x->add_from_resource("/net/carrotIndustries/usbkvm/window.ui");
     x->get_widget_derived("mainWindow", w);
     return w;
 }
 
-UsbKvmMcu *MainWindow::get_mcu()
+UsbKvmMcu *UsbKvmAppWindow::get_mcu()
 {
     if (m_device && m_device->mcu())
         return m_device->mcu();
     return nullptr;
 }
 
-void MainWindow::set_overlay_label_text(const std::string &label)
+void UsbKvmAppWindow::set_overlay_label_text(const std::string &label)
 {
     m_overlay_label->set_visible(label.size());
     m_overlay_label->set_label(label);
 }
 
-void MainWindow::handle_io_error(const std::string &err)
+void UsbKvmAppWindow::handle_io_error(const std::string &err)
 {
     m_device.reset();
     m_input_status_label->set_label("IO Error: " + err);
@@ -820,3 +825,5 @@ void MainWindow::handle_io_error(const std::string &err)
                 1);
     }
 }
+
+} // namespace usbkvm
