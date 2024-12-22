@@ -136,6 +136,10 @@ static std::string struct_get_string(const GstStructure *props, const char *name
         return "";
 }
 
+struct OpenError : public std::runtime_error {
+    using std::runtime_error::runtime_error;
+};
+
 #ifdef G_OS_WIN32
 
 static std::string get_path(GstDevice *device)
@@ -160,8 +164,10 @@ static std::string get_hid_bus_info(const std::string &path)
 static std::string get_hid_bus_info(const std::string &path)
 {
     auto fd = open(path.c_str(), O_RDWR | O_NONBLOCK);
-    if (fd == -1)
+    if (fd == -1) {
+        throw OpenError("can't open " + path + ", " + std::string(strerror(errno)));
         return "";
+    }
 
     char buf[256] = {0};
     auto res = ioctl(fd, HIDIOCGRAWPHYS(256), buf);
@@ -203,7 +209,6 @@ static gboolean handle_cap(GstCapsFeatures *features, GstStructure *structure, g
     }
     return true;
 }
-
 
 gboolean UsbKvmApplication::monitor_bus_func(GstBus *bus, GstMessage *message)
 {
@@ -254,7 +259,20 @@ gboolean UsbKvmApplication::monitor_bus_func(GstBus *bus, GstMessage *message)
                                 auto devinfos = hid_enumerate(0x534d, 0x2109);
                                 for (const hid_device_info *dev = devinfos; dev != nullptr; dev = dev->next) {
                                     if (wide_string_to_string(dev->product_string) == s_device_name) {
-                                        auto hid_bus_info = get_hid_bus_info(dev->path);
+                                        std::string hid_bus_info;
+                                        try {
+                                            hid_bus_info = get_hid_bus_info(dev->path);
+                                        }
+                                        catch (const OpenError &e) {
+                                            auto md = new Gtk::MessageDialog("Can't open HID interface", false,
+                                                                             Gtk::MESSAGE_ERROR);
+                                            md->set_secondary_text(std::string(e.what()) + "\nSee <a href='https://github.com/carrotIndustries/usbkvm/blob/main/app/README.md'>github.com/carrotIndustries/usbkvm</a> for troubleshooting.", true);
+
+                                            md->set_transient_for(*get_active_window());
+                                            md->set_modal(true);
+                                            md->present();
+                                            md->signal_response().connect([md](auto response) { delete md; });
+                                        }
                                         if (hid_bus_info == video_bus_info) {
                                             on_device_added({.video_path = video_path,
                                                              .hid_path = dev->path,
