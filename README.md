@@ -18,6 +18,10 @@ right side.](media/usbkvm.jpg)
 ![Diagram showing a server connected to a laptop using 
 USBKVM](media/usbkvm.png)
 
+# Quickstart
+
+So you just your got your hands on a USBKVM and want to use it? See the app's [README](app/README.md) for how to install the client app.
+
 # Hardware (USBKVM)
 
 ![3D rendering of a green PCA with an HDMI and a USB Type-C connector 
