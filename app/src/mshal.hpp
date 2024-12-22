@@ -10,7 +10,7 @@ namespace usbkvm {
 
 class MsHal : public II2C {
 public:
-    MsHal(const std::string &name);
+    MsHal(const std::string &path);
     void i2c_transfer(uint8_t device_addr, std::span<const uint8_t> data_wr, std::span<uint8_t> data_rd) override;
     uint16_t mem_read16be(unsigned int addr);
     uint8_t mem_read8(unsigned int addr);

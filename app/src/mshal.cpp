@@ -8,11 +8,11 @@
 
 namespace usbkvm {
 
-MsHal::MsHal(const std::string &name)
+MsHal::MsHal(const std::string &path)
 {
-    std::vector<char> name_mut(name.begin(), name.end());
-    name_mut.push_back(0); // null terminator
-    m_handle = MsHalOpen(name_mut.data());
+    std::vector<char> path_mut(path.begin(), path.end());
+    path_mut.push_back(0); // null terminator
+    m_handle = MsHalOpen(path_mut.data());
     if (m_handle == 0)
         throw IOError("MsHalOpen failed");
 }

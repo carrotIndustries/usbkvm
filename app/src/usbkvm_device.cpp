@@ -7,9 +7,9 @@ namespace usbkvm {
 
 static const uint8_t s_mcu_addr = 0x0a;
 
-UsbKvmDevice::UsbKvmDevice(const std::string &name)
+UsbKvmDevice::UsbKvmDevice(const std::string &path)
 {
-    m_hal = std::make_unique<MsHal>(name);
+    m_hal = std::make_unique<MsHal>(path);
     m_i2c1dev_mcu = std::make_unique<I2COneDevice>(*m_hal, s_mcu_addr);
     m_mcu = std::make_unique<UsbKvmMcu>(*m_i2c1dev_mcu);
 }

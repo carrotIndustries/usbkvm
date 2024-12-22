@@ -8,7 +8,6 @@
 #include "usbkvm_device.hpp"
 #include "mshal.hpp"
 #include "type_window.hpp"
-#include "about_dialog.hpp"
 
 namespace usbkvm {
 
@@ -229,19 +228,6 @@ void UsbKvmAppWindow::update_modifier_buttons()
         bu->set_active(m_modifiers & mod);
     }
 }
-
-gboolean UsbKvmAppWindow::monitor_bus_func(GstBus *bus, GstMessage *message, gpointer pself)
-{
-    auto self = reinterpret_cast<UsbKvmAppWindow *>(pself);
-    return self->monitor_bus_func(bus, message);
-}
-
-gboolean UsbKvmAppWindow::handle_cap(GstCapsFeatures *features, GstStructure *structure, gpointer user_data)
-{
-    auto self = reinterpret_cast<UsbKvmAppWindow *>(user_data);
-    return self->handle_cap(features, structure);
-}
-
 static std::string format_resolution(int width, int height)
 {
     std::string width_str = std::to_string(width);
@@ -253,32 +239,25 @@ static std::string format_resolution(int width, int height)
     return std::format("{}{}×{}", prefix, width_str, height);
 }
 
-gboolean UsbKvmAppWindow::handle_cap(GstCapsFeatures *features, GstStructure *structure)
+void UsbKvmAppWindow::add_capture_resolution(int width, int height)
 {
-    std::string name = gst_structure_get_name(structure);
-    if (name == "image/jpeg") {
-        gint width, height;
-        if (gst_structure_get_int(structure, "width", &width) && gst_structure_get_int(structure, "height", &height)) {
-            if (!m_capture_resolutions.emplace(width, height).second)
-                return true;
-            auto rb = Gtk::make_managed<Gtk::RadioButton>(format_resolution(width, height));
-            {
-                auto children = m_capture_resolution_box->get_children();
-                if (auto first = dynamic_cast<Gtk::RadioButton *>(children.front())) {
-                    rb->join_group(*first);
-                }
-            }
-            rb->show();
-            rb->signal_toggled().connect([this, rb, width, height] {
-                if (!rb->get_active())
-                    return;
-                m_auto_capture_resolution = false;
-                set_capture_resolution(width, height);
-            });
-            m_capture_resolution_box->pack_start(*rb, false, false, 0);
+    if (!m_capture_resolutions.emplace(width, height).second)
+        return;
+    auto rb = Gtk::make_managed<Gtk::RadioButton>(format_resolution(width, height));
+    {
+        auto children = m_capture_resolution_box->get_children();
+        if (auto first = dynamic_cast<Gtk::RadioButton *>(children.front())) {
+            rb->join_group(*first);
         }
     }
-    return true;
+    rb->show();
+    rb->signal_toggled().connect([this, rb, width, height] {
+        if (!rb->get_active())
+            return;
+        m_auto_capture_resolution = false;
+        set_capture_resolution(width, height);
+    });
+    m_capture_resolution_box->pack_start(*rb, false, false, 0);
 }
 
 void UsbKvmAppWindow::set_capture_resolution(int w, int h)
@@ -286,93 +265,20 @@ void UsbKvmAppWindow::set_capture_resolution(int w, int h)
     if (m_capture_resolution == std::make_pair(w, h))
         return;
     m_capture_resolution = {w, h};
+    gst_element_set_state(m_pipeline, GST_STATE_NULL);
     auto caps = gst_caps_new_simple("image/jpeg", "width", G_TYPE_INT, w, "height", G_TYPE_INT, h, NULL);
     g_object_set(m_capsfilter, "caps", caps, NULL);
     gst_caps_unref(caps);
     update_resolution_button();
+    gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
 }
 
-static const std::string s_device_name = "USBKVM";
-
-gboolean UsbKvmAppWindow::monitor_bus_func(GstBus *bus, GstMessage *message)
-{
-    GstDevice *device;
-    gchar *name;
-
-    switch (GST_MESSAGE_TYPE(message)) {
-    case GST_MESSAGE_DEVICE_ADDED: {
-        gst_message_parse_device_added(message, &device);
-        name = gst_device_get_display_name(device);
-        g_print("Device added: %s\n", name);
-        std::string name_str = name;
-        g_free(name);
-        if (name_str.starts_with(s_device_name)) {
-            std::cout << "found usbkvm" << std::endl;
-            set_overlay_label_text("");
-            {
-                auto caps = gst_device_get_caps(device);
-                gst_caps_foreach(caps, &UsbKvmAppWindow::handle_cap, this);
-                gst_caps_unref(caps);
-            }
-            if (m_pipeline) {
-#ifdef G_OS_WIN32
-                g_object_set(m_videosrc, "device-name", s_device_name.c_str(), NULL);
-#else
-                {
-                    auto props = gst_device_get_properties(device);
-                    auto path = gst_structure_get_string(props, "api.v4l2.path");
-
-                    // v4l2.device.bus_info
-                    // api.v4l2.cap.bus_info
-
-                    if (!path)
-                        path = gst_structure_get_string(props, "device.path");
-
-                    if (path)
-                        g_object_set(m_videosrc, "device", path, NULL);
-
-
-                    gst_structure_free(props);
-                }
-#endif
-                auto ret = gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
-                if (ret == GST_STATE_CHANGE_FAILURE) {
-                    g_print("Failed to start up pipeline!\n");
-                }
-                else {
-                    m_has_video = true;
-                }
-            }
-            create_device(s_device_name);
-        }
-        gst_object_unref(device);
-    } break;
-    case GST_MESSAGE_DEVICE_REMOVED: {
-        gst_message_parse_device_removed(message, &device);
-        name = gst_device_get_display_name(device);
-        std::string name_s = name;
-        g_print("Device removed: %s\n", name);
-        g_free(name);
-        gst_object_unref(device);
-        if (name_s == s_device_name) {
-            gst_element_set_state(m_pipeline, GST_STATE_NULL);
-            m_has_video = false;
-            set_overlay_label_text("No USBKVM connected");
-        }
-    } break;
-    default:
-        break;
-    }
-
-    return G_SOURCE_CONTINUE;
-}
-
-void UsbKvmAppWindow::create_device(const std::string &name)
+void UsbKvmAppWindow::create_device(const std::string &path)
 {
     if (m_device)
         return;
     try {
-        m_device = std::make_unique<UsbKvmDevice>(name);
+        m_device = std::make_unique<UsbKvmDevice>(path);
         auto info = m_device->mcu()->get_info();
         const int current_version = info.version;
         m_device->set_model(info.model);
@@ -536,17 +442,9 @@ void UsbKvmAppWindow::update_firmware_update_status()
     m_firmware_update_revealer->set_reveal_child(m_firmware_update_status != FirmwareUpdateStatus::DONE);
 }
 
-UsbKvmAppWindow::UsbKvmAppWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &x) : Gtk::ApplicationWindow(cobject)
+UsbKvmAppWindow::UsbKvmAppWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &x, UsbKvmApplication &app)
+    : Gtk::ApplicationWindow(cobject), m_app(app)
 {
-    {
-        GstDeviceMonitor *monitor = gst_device_monitor_new();
-
-        auto bus = gst_device_monitor_get_bus(monitor);
-        gst_device_monitor_add_filter(monitor, "Video/Source", NULL);
-        gst_bus_add_watch(bus, &UsbKvmAppWindow::monitor_bus_func, this);
-        gst_object_unref(bus);
-        gst_device_monitor_start(monitor);
-    }
 
     set_icon_name("usbkvm");
 
@@ -707,13 +605,7 @@ UsbKvmAppWindow::UsbKvmAppWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk
 
         headerbar->pack_end(*hamburger_button);
 
-        hamburger_menu->append("About", "win.about");
-
-        add_action("about", [this] {
-            AboutDialog dia;
-            dia.set_transient_for(*this);
-            dia.run();
-        });
+        hamburger_menu->append("About", "app.about");
     }
 
     m_type_window = TypeWindow::create(*this);
@@ -788,12 +680,12 @@ void UsbKvmAppWindow::update_resolution_button()
     m_resolution_button->set_label(label);
 }
 
-UsbKvmAppWindow *UsbKvmAppWindow::create()
+UsbKvmAppWindow *UsbKvmAppWindow::create(UsbKvmApplication &app)
 {
     UsbKvmAppWindow *w;
     Glib::RefPtr<Gtk::Builder> x = Gtk::Builder::create();
     x->add_from_resource("/net/carrotIndustries/usbkvm/window.ui");
-    x->get_widget_derived("mainWindow", w);
+    x->get_widget_derived("mainWindow", w, app);
     return w;
 }
 
@@ -819,11 +711,52 @@ void UsbKvmAppWindow::handle_io_error(const std::string &err)
         Glib::signal_timeout().connect_seconds_once(
                 [this] {
                     if (m_has_video) {
-                        create_device(s_device_name);
+                        create_device(m_device_info.value().hid_path);
                     }
                 },
                 1);
     }
 }
+
+UsbKvmAppWindow::~UsbKvmAppWindow()
+{
+    if (m_pipeline) {
+        gst_element_set_state(m_pipeline, GST_STATE_NULL);
+    }
+}
+
+void UsbKvmAppWindow::set_device(const DeviceInfo &devinfo)
+{
+    m_device_info = devinfo;
+    m_last_bus_info = devinfo.bus_info;
+#ifdef G_OS_WIN32
+    g_object_set(m_videosrc, "device-path", devinfo.video_path.c_str(), NULL);
+#else
+    g_object_set(m_videosrc, "device", devinfo.video_path.c_str(), NULL);
+#endif
+    auto ret = gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
+    if (ret == GST_STATE_CHANGE_FAILURE) {
+        g_print("Failed to start up pipeline!\n");
+    }
+    else {
+        m_has_video = true;
+    }
+    for (const auto &[w, h] : devinfo.capture_resolutions) {
+        add_capture_resolution(w, h);
+    }
+    create_device(devinfo.hid_path);
+}
+
+void UsbKvmAppWindow::unset_device()
+{
+    gst_element_set_state(m_pipeline, GST_STATE_NULL);
+    m_has_video = false;
+    set_overlay_label_text("No USBKVM connected");
+    m_input_status_label->set_label("Not connected");
+    m_device_info.reset();
+    m_device.reset();
+    gtk_info_bar_set_revealed(m_mcu_info_bar->gobj(), false);
+}
+
 
 } // namespace usbkvm

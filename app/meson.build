@@ -29,10 +29,12 @@ src_common = files(
 
 src = files(
   'src/usbkvm.cpp',
+  'src/usbkvm_application.cpp',
   'src/main_window.cpp',
   'src/type_window.cpp',
   'src/version.cpp',
-  'src/about_dialog.cpp'
+  'src/about_dialog.cpp',
+  'src/util.cpp'
 ) + src_common
 
 src_python = files(
