@@ -48,5 +48,6 @@ PYBIND11_MODULE(usbkvm_py, m)
             .def(py::init<const std::string &>())
             .def("close_hal", &UsbKvmDevice::close_hal)
             .def("mcu", &UsbKvmDevice::mcu, py::return_value_policy::reference)
+            .def("mcu_boot", &UsbKvmDevice::mcu_boot, py::return_value_policy::reference)
             .def("enter_bootloader", &UsbKvmDevice::enter_bootloader);
 }
