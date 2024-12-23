@@ -75,7 +75,8 @@ private:
     void update_modifier_buttons();
 
     Gtk::Label *m_input_status_label;
-    bool update_input_status();
+    enum class UpdateCaptureResolution { NO, YES };
+    bool update_input_status(UpdateCaptureResolution update);
 
     std::unique_ptr<UsbKvmDevice> m_device;
     std::set<guint> m_keys_pressed;

@@ -342,18 +342,19 @@ void UsbKvmAppWindow::create_device(const std::string &path)
     if (m_device) {
         mcu_init();
 
-        update_input_status();
+        update_input_status(UpdateCaptureResolution::NO);
         set_title(m_device->get_model_as_string());
 
-        Glib::signal_timeout().connect_seconds(
-                [this] {
-                    if (!m_device)
-                        return false;
-                    if (!m_type_window->is_busy())
-                        return update_input_status();
-                    return true;
-                },
-                1);
+        Glib::signal_timeout().connect_seconds(sigc::track_obj(
+                                                       [this] {
+                                                           if (!m_device)
+                                                               return false;
+                                                           if (!m_type_window->is_busy())
+                                                               return update_input_status(UpdateCaptureResolution::YES);
+                                                           return true;
+                                                       },
+                                                       *this),
+                                               1);
     }
 }
 
@@ -493,7 +494,7 @@ UsbKvmAppWindow::UsbKvmAppWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk
             if (!rb->get_active())
                 return;
             m_auto_capture_resolution = true;
-            update_input_status();
+            update_input_status(UpdateCaptureResolution::YES);
             update_resolution_button();
         });
         rb->show();
@@ -630,7 +631,7 @@ UsbKvmAppWindow::UsbKvmAppWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk
     set_overlay_label_text("No USBKVM connected");
 }
 
-bool UsbKvmAppWindow::update_input_status()
+bool UsbKvmAppWindow::update_input_status(UpdateCaptureResolution update)
 {
     if (!m_device) {
         m_input_status_label->set_label("Not connected");
@@ -647,7 +648,8 @@ bool UsbKvmAppWindow::update_input_status()
             auto h = hal.get_input_height();
             auto fps = hal.get_input_fps();
             label += format_resolution(w, h) + std::format("  {:.01f}Hz", fps);
-            update_auto_capture_resolution(w, h);
+            if (update == UpdateCaptureResolution::YES)
+                update_auto_capture_resolution(w, h);
 
             if (m_device->get_model() == Model::USBKVM_PRO) {
                 if (auto mcu = m_device->mcu()) {
@@ -719,13 +721,14 @@ void UsbKvmAppWindow::handle_io_error(const std::string &err)
     m_input_status_label->set_label("IO Error: " + err);
     if (m_has_video) {
         // video device there, try reconnecting
-        Glib::signal_timeout().connect_seconds_once(
-                [this] {
-                    if (m_has_video) {
-                        create_device(m_device_info.value().hid_path);
-                    }
-                },
-                1);
+        Glib::signal_timeout().connect_seconds_once(sigc::track_obj(
+                                                            [this] {
+                                                                if (m_has_video) {
+                                                                    create_device(m_device_info.value().hid_path);
+                                                                }
+                                                            },
+                                                            *this),
+                                                    1);
     }
 }
 
