@@ -84,33 +84,31 @@ static std::optional<std::wstring> get_device_parent(const std::wstring &path)
     return ret;
 }
 
-static bool ichar_equals(wchar_t a, wchar_t b)
-{
-    return std::towlower(static_cast<std::wint_t>(a)) == std::towlower(static_cast<std::wint_t>(b));
-}
-
 static std::optional<std::wstring> get_device_parent_from_instance(const std::wstring &instance)
 {
     HDEVINFO hDevInfoSet;
     SP_DEVINFO_DATA devInfoData;
-    devInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
-    hDevInfoSet = SetupDiGetClassDevsW(NULL, L"USB", NULL, DIGCF_ALLCLASSES | DIGCF_PRESENT);
+    hDevInfoSet = SetupDiCreateDeviceInfoList(NULL, NULL);
 
     if (hDevInfoSet == INVALID_HANDLE_VALUE)
         return {};
 
-    DWORD idx = 0;
-    while (SetupDiEnumDeviceInfo(hDevInfoSet, idx++, &devInfoData)) {
-        const auto inst = GetDeviceStringProperty(hDevInfoSet, &devInfoData, DEVPKEY_Device_InstanceId).value();
-        if (std::ranges::equal(inst, instance, ichar_equals)) {
-            auto ret = GetDeviceStringProperty(hDevInfoSet, &devInfoData, DEVPKEY_Device_Parent);
-            SetupDiDestroyDeviceInfoList(hDevInfoSet);
-            return ret;
-        }
+    if(!SetupDiOpenDeviceInfoW(hDevInfoSet, instance.c_str(), NULL, 0, NULL)) {
+        SetupDiDestroyDeviceInfoList(hDevInfoSet);
+        return {};
     }
+
+    devInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
+
+    if (!SetupDiEnumDeviceInfo(hDevInfoSet, 0, &devInfoData)) {
+        SetupDiDestroyDeviceInfoList(hDevInfoSet);
+        return {};
+    }
+
+    auto ret = GetDeviceStringProperty(hDevInfoSet, &devInfoData, DEVPKEY_Device_Parent);
     SetupDiDestroyDeviceInfoList(hDevInfoSet);
 
-    return {};
+    return ret;
 }
 
 std::optional<std::string> get_win32_hid_bus_info(const std::string &path)
