@@ -734,6 +734,9 @@ UsbKvmAppWindow::~UsbKvmAppWindow()
     if (m_pipeline) {
         gst_element_set_state(m_pipeline, GST_STATE_NULL);
     }
+    g_object_unref(m_pipeline);
+
+    delete m_type_window;
 }
 
 void UsbKvmAppWindow::set_device(const DeviceInfo &devinfo)
