@@ -1,7 +1,7 @@
 #pragma once
 #include "i2c_msg_common.h"
 
-#define I2C_APP_VERSION 6
+#define I2C_APP_VERSION 7
 
 REQ_ENUM_BEGIN(i2c_req)
     REQ_ENUM_ITEM(I2C_REQ, KEYBOARD_REPORT  ,  1)
@@ -13,6 +13,7 @@ REQ_ENUM_BEGIN(i2c_req)
     REQ_ENUM_ITEM(I2C_REQ, FLASH_LOCK       ,  8)
     REQ_ENUM_ITEM(I2C_REQ, FLASH_ERASE      ,  9)
     REQ_ENUM_ITEM(I2C_REQ, FLASH_WRITE      , 10)
+    REQ_ENUM_ITEM(I2C_REQ, GET_UNIQUE_ID    , 11)
 REQ_ENUM_END
 
 typedef struct {
@@ -79,18 +80,24 @@ typedef struct {
     uint8_t success;
 } i2c_resp_flash_status_t;
 
+typedef struct {
+    I2C_RESP_COMMON
+    uint16_t _pad;
+    uint32_t uid[3];
+} i2c_resp_unique_id_t;
+
 typedef union {
     i2c_resp_unknown_t unk;
     i2c_resp_info_t info;
     i2c_resp_status_t status;
     i2c_resp_flash_status_t flash_status;
     i2c_resp_report_t report;
+    i2c_resp_unique_id_t unique_id;
 } i2c_resp_app_all_t;
 
-DEFINE_XFER(i2c_req_t::KEYBOARD_REPORT  , i2c_req_keyboard_report_t , i2c_resp_report_t  )
-DEFINE_XFER(i2c_req_t::MOUSE_REPORT     , i2c_req_mouse_report_t    , i2c_resp_report_t  )
-DEFINE_XFER(i2c_req_t::ENTER_BOOTLOADER , i2c_req_unknown_t         , void               )
-DEFINE_XFER(i2c_req_t::GET_STATUS       , i2c_req_unknown_t         , i2c_resp_status_t  )
-DEFINE_XFER(i2c_req_t::SET_LED          , i2c_req_set_led_t         , void               )
- 
- 
+DEFINE_XFER(i2c_req_t::KEYBOARD_REPORT  , i2c_req_keyboard_report_t , i2c_resp_report_t    )
+DEFINE_XFER(i2c_req_t::MOUSE_REPORT     , i2c_req_mouse_report_t    , i2c_resp_report_t    )
+DEFINE_XFER(i2c_req_t::ENTER_BOOTLOADER , i2c_req_unknown_t         , void                 )
+DEFINE_XFER(i2c_req_t::GET_STATUS       , i2c_req_unknown_t         , i2c_resp_status_t    )
+DEFINE_XFER(i2c_req_t::SET_LED          , i2c_req_set_led_t         , void                 )
+DEFINE_XFER(i2c_req_t::GET_UNIQUE_ID    , i2c_req_unknown_t         , i2c_resp_unique_id_t )

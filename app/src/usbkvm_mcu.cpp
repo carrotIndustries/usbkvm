@@ -5,6 +5,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <thread>
+#include <glibmm/checksum.h>
 #include "i2c_msg_boot.h"
 #include "i2c_msg_app.h"
 
@@ -304,6 +305,31 @@ void UsbKvmMcu::boot_enter_dfu()
     std::lock_guard<std::mutex> guard(m_mutex);
 
     i2c_xfer<i2c_req_boot_t::ENTER_DFU>();
+}
+
+static constexpr size_t uid_size = sizeof(i2c_resp_unique_id_t::uid);
+
+std::array<uint32_t, 3> UsbKvmMcu::get_unique_id()
+{
+    std::lock_guard<std::mutex> guard(m_mutex);
+
+    auto resp = i2c_xfer<i2c_req_t::GET_UNIQUE_ID>();
+
+    std::array<uint32_t, 3> r;
+    static_assert(r.size() * sizeof(decltype(r)::value_type) == uid_size);
+    memcpy(r.data(), resp.uid, uid_size);
+
+    return r;
+}
+
+std::string UsbKvmMcu::get_serial_number()
+{
+    const auto uid = get_unique_id();
+
+    auto chk = Glib::Checksum::compute_checksum(Glib::Checksum::CHECKSUM_SHA1,
+                                                reinterpret_cast<const guchar *>(uid.data()), uid_size);
+
+    return chk.substr(0, 4) + "-" + chk.substr(4, 4);
 }
 
 static std::string format_m_of_n(unsigned int m, unsigned int n)

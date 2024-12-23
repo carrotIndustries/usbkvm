@@ -64,6 +64,7 @@ private:
     Gtk::ProgressBar *m_firmware_update_progress_bar;
     Gtk::Label *m_firmware_update_label;
     Gtk::Label *m_overlay_label;
+    Gtk::HeaderBar *m_headerbar;
 
     void set_overlay_label_text(const std::string &label);
 
@@ -120,6 +121,7 @@ private:
 
     std::optional<DeviceInfo> m_device_info;
     std::string m_last_bus_info;
+    void mcu_init();
 };
 
 } // namespace usbkvm

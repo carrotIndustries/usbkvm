@@ -182,6 +182,11 @@ void i2c_req_handle_set_led(const i2c_req_set_led_t *led) {
   led_override = *led;
 }
 
+void i2c_req_handle_get_unique_id(const i2c_req_unknown_t *unk) {
+  memcpy(i2c_resp_buf.unique_id.uid, (uint32_t*)UID_BASE, sizeof(i2c_resp_buf.unique_id.uid));
+  i2c_resp_buf.unique_id.seq = unk->seq;
+}
+
 static uint16_t led_usb_counter = 0;
 
 void update_leds()
@@ -211,6 +216,9 @@ static void i2c_req_dispatch(i2c_req_all_t *req)
       break;
     case I2C_REQ_SET_LED:
       i2c_req_handle_set_led(&req->set_led);
+      break;
+    case I2C_REQ_GET_UNIQUE_ID:
+      i2c_req_handle_get_unique_id(&req->unk);
       break;
     case I2C_REQ_ENTER_BOOTLOADER:
       NVIC_SystemReset();

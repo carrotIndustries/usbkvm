@@ -339,6 +339,8 @@ void UsbKvmAppWindow::create_device(const std::string &path)
     }
 
     if (m_device) {
+        mcu_init();
+
         update_input_status();
         switch (m_device->get_model()) {
         case Model::USBKVM:
@@ -360,6 +362,14 @@ void UsbKvmAppWindow::create_device(const std::string &path)
                 },
                 1);
     }
+}
+
+void UsbKvmAppWindow::mcu_init()
+{
+    auto mcu = m_device->mcu();
+    if (!mcu)
+        return;
+    m_headerbar->set_subtitle(mcu->get_serial_number());
 }
 
 void UsbKvmAppWindow::update_firmware()
@@ -440,6 +450,9 @@ void UsbKvmAppWindow::update_firmware_update_status()
     m_firmware_update_label->set_label("Firmware update: " + status);
     m_firmware_update_progress_bar->set_fraction(m_firmware_update_progress);
     m_firmware_update_revealer->set_reveal_child(m_firmware_update_status != FirmwareUpdateStatus::DONE);
+    if (m_firmware_update_status == FirmwareUpdateStatus::DONE) {
+        mcu_init();
+    }
 }
 
 UsbKvmAppWindow::UsbKvmAppWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &x, UsbKvmApplication &app)
@@ -498,6 +511,7 @@ UsbKvmAppWindow::UsbKvmAppWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk
     x->get_widget("firmware_update_revealer", m_firmware_update_revealer);
     x->get_widget("firmware_update_label", m_firmware_update_label);
     x->get_widget("firmware_update_progress_bar", m_firmware_update_progress_bar);
+    x->get_widget("headerbar", m_headerbar);
     m_update_firmware_button->hide();
     m_update_firmware_button->signal_clicked().connect(sigc::mem_fun(*this, &UsbKvmAppWindow::update_firmware));
     m_firmware_update_dispatcher.connect(sigc::mem_fun(*this, &UsbKvmAppWindow::update_firmware_update_status));
@@ -600,10 +614,8 @@ UsbKvmAppWindow::UsbKvmAppWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk
         auto hamburger_menu = Gio::Menu::create();
         hamburger_button->set_menu_model(hamburger_menu);
         hamburger_button->show();
-        Gtk::HeaderBar *headerbar;
-        x->get_widget("headerbar", headerbar);
 
-        headerbar->pack_end(*hamburger_button);
+        m_headerbar->pack_end(*hamburger_button);
 
         hamburger_menu->append("About", "app.about");
     }

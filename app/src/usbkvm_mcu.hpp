@@ -78,6 +78,9 @@ public:
         ALL = USB | HID | HDMI,
     };
     void set_led(Led mask, Led stat);
+    
+    std::array<uint32_t, 3> get_unique_id();
+    std::string get_serial_number();
 
     static constexpr size_t write_flash_chunk_size = 256;
 
