@@ -4,6 +4,7 @@
 #include <iostream>
 #include <hidapi.h>
 #include "util.hpp"
+#include "devices_window.hpp"
 
 #ifndef G_OS_WIN32
 #include <fcntl.h>
@@ -61,6 +62,7 @@ void UsbKvmApplication::on_startup()
 
     add_action("quit", sigc::mem_fun(*this, &UsbKvmApplication::on_action_quit));
     add_action("about", sigc::mem_fun(*this, &UsbKvmApplication::on_action_about));
+    add_action("devices", sigc::mem_fun(*this, &UsbKvmApplication::on_action_devices));
 
     auto cssp = Gtk::CssProvider::create();
     cssp->load_from_resource("/net/carrotIndustries/usbkvm/usbkvm.css");
@@ -78,6 +80,8 @@ void UsbKvmApplication::on_startup()
         gst_device_monitor_start(m_monitor);
     }
 
+
+    m_devices_window = DevicesWindow::create(*this);
 
     signal_shutdown().connect(sigc::mem_fun(*this, &UsbKvmApplication::on_shutdown));
 }
@@ -117,6 +121,14 @@ void UsbKvmApplication::on_action_about()
     if (win)
         dia.set_transient_for(*win);
     dia.run();
+}
+
+void UsbKvmApplication::on_action_devices()
+{
+    auto win = get_active_window();
+    if (win)
+        m_devices_window->set_transient_for(*win);
+    m_devices_window->present();
 }
 
 
@@ -313,6 +325,7 @@ gboolean UsbKvmApplication::monitor_bus_func(GstBus *bus, GstMessage *message)
 void UsbKvmApplication::on_device_added(const DeviceInfo &devinfo)
 {
     m_devices.emplace(devinfo.video_path, devinfo);
+    m_signal_devices_changed.emit();
     // try to use last window
     for (auto win2 : get_windows()) {
         auto &win = dynamic_cast<UsbKvmAppWindow &>(*win2);
@@ -348,7 +361,44 @@ void UsbKvmApplication::on_device_removed(const std::string &video_path)
         }
     }
     m_devices.erase(video_path);
+    m_signal_devices_changed.emit();
 }
 
+void UsbKvmApplication::update_device_info(const DeviceInfo &info)
+{
+    if (m_devices.contains(info.video_path)) {
+        auto &dev = m_devices.at(info.video_path);
+        dev.model = info.model;
+        dev.serial = info.serial;
+        m_signal_devices_changed.emit();
+    }
+}
+
+std::vector<const DeviceInfo *> UsbKvmApplication::get_devices() const
+{
+    std::vector<const DeviceInfo *> r;
+    for (auto &[path, dev] : m_devices) {
+        r.push_back(&dev);
+    }
+    return r;
+}
+
+void UsbKvmApplication::activate_device(const std::string &video_path)
+{
+    for (auto win2 : get_windows()) {
+        auto &win = dynamic_cast<UsbKvmAppWindow &>(*win2);
+        if (auto info = win.get_device_info()) {
+            if (info->video_path == video_path) {
+                win.present();
+                return;
+            }
+        }
+    }
+    if (!m_devices.contains(video_path))
+        return;
+    auto appwindow = create_appwindow();
+    appwindow->set_device(m_devices.at(video_path));
+    appwindow->present();
+}
 
 } // namespace usbkvm

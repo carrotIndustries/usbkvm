@@ -38,6 +38,7 @@ public:
         return m_model.value();
     }
     void set_model(Model model);
+    std::string get_model_as_string();
 
     void close_hal();
 

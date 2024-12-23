@@ -33,6 +33,7 @@ src = files(
   'src/usbkvm_application.cpp',
   'src/main_window.cpp',
   'src/type_window.cpp',
+  'src/devices_window.cpp',
   'src/version.cpp',
   'src/about_dialog.cpp',
   'src/util.cpp'

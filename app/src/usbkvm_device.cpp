@@ -53,6 +53,24 @@ void UsbKvmDevice::close_hal()
     m_hal->close();
 }
 
+std::string UsbKvmDevice::get_model_as_string()
+{
+    auto model = get_model();
+    switch (model) {
+    case Model::USBKVM_PRO:
+        return "USBKVM Pro";
+
+    case Model::USBKVM:
+        return "USBKVM";
+
+    case Model::UNKNOWN:
+        return "USBKVM (Unknown)";
+
+    default:
+        return "??";
+    }
+}
+
 UsbKvmDevice::~UsbKvmDevice() = default;
 
 } // namespace usbkvm

@@ -4,6 +4,7 @@
 #include "imcu_provider.hpp"
 #include <atomic>
 #include <optional>
+#include "device_info.hpp"
 
 namespace usbkvm {
 
@@ -11,14 +12,6 @@ class UsbKvmDevice;
 class UsbKvmApplication;
 enum class UsbKvmMcuFirmwareUpdateStatus;
 
-struct DeviceInfo {
-    std::string video_path;
-    std::string hid_path;
-    std::string bus_info;
-
-    using ResolutionList = std::vector<std::pair<int, int>>;
-    ResolutionList capture_resolutions;
-};
 
 class UsbKvmAppWindow : public Gtk::ApplicationWindow, private IMcuProvider {
 public:

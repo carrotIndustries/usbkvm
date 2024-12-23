@@ -8,6 +8,7 @@
 #include "usbkvm_device.hpp"
 #include "mshal.hpp"
 #include "type_window.hpp"
+#include "usbkvm_application.hpp"
 
 namespace usbkvm {
 
@@ -342,15 +343,7 @@ void UsbKvmAppWindow::create_device(const std::string &path)
         mcu_init();
 
         update_input_status();
-        switch (m_device->get_model()) {
-        case Model::USBKVM:
-            set_title("USBKVM");
-            break;
-        case Model::USBKVM_PRO:
-            set_title("USBKVM Pro");
-            break;
-        default:;
-        }
+        set_title(m_device->get_model_as_string());
 
         Glib::signal_timeout().connect_seconds(
                 [this] {
@@ -369,7 +362,12 @@ void UsbKvmAppWindow::mcu_init()
     auto mcu = m_device->mcu();
     if (!mcu)
         return;
-    m_headerbar->set_subtitle(mcu->get_serial_number());
+    auto serial = mcu->get_serial_number();
+    m_headerbar->set_subtitle(serial);
+    DeviceInfo info = m_device_info.value();
+    info.serial = serial;
+    info.model = m_device->get_model_as_string();
+    m_app.update_device_info(info);
 }
 
 void UsbKvmAppWindow::update_firmware()
@@ -617,6 +615,7 @@ UsbKvmAppWindow::UsbKvmAppWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk
 
         m_headerbar->pack_end(*hamburger_button);
 
+        hamburger_menu->append("Devices", "app.devices");
         hamburger_menu->append("About", "app.about");
     }
 
