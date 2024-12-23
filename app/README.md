@@ -10,7 +10,7 @@ Install the [usbkvm AUR package](https://aur.archlinux.org/packages/usbkvm).
 ## Other distros
 
 The USBKVM client app is available on [Flathub](https://flathub.org/apps/net.carrotindustries.usbkvm).
-Make sure to install the udev rules as described below.
+Make sure to install the udev rules as described [below](#devhidraw-permission-errors).
 
 You can also build from source.
 
@@ -26,7 +26,10 @@ Currently, USBKVM hasn't been tested on mac OS. You can try building it using ho
 
 ## /dev/hidraw permission errors
 
-Installing the USBKVM client app as a flatpak doesn't install the udev rules required to access USBKVM's HID interface as a regular user. You need to copy [`70-usbkvm.rules`](70-usbkvm.rules) to `/etc/udev/rules.d/`.
+Installing the USBKVM client app as a flatpak doesn't install the udev rules required to access USBKVM's HID interface as a regular user. You need to copy [`70-usbkvm.rules`](70-usbkvm.rules) to `/etc/udev/rules.d/`. Here's a handy one-liner for you to copy:
+```bash
+curl https://raw.githubusercontent.com/carrotIndustries/usbkvm/refs/heads/main/app/70-usbkvm.rules | sudo tee /etc/udev/rules.d/70-usbkvm.rules
+```
 
 # Building from source
 
