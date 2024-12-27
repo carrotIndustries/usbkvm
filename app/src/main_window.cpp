@@ -117,7 +117,7 @@ void UsbKvmAppWindow::send_keyboard_report()
     size_t i = 0;
 
     for (auto k : m_keys_pressed) {
-        if (i > report.keycode.size()) {
+        if (i >= report.keycode.size()) {
             break;
         }
         report.keycode.at(i) = gdk_key_to_hid(k);
