@@ -2,10 +2,10 @@
 #include <gtkmm.h>
 #include <gst/gst.h>
 #include "idevices_provider.hpp"
+#include "device_info.hpp"
 
 namespace usbkvm {
 
-struct DeviceInfo;
 class DevicesWindow;
 
 class UsbKvmApplication : public Gtk::Application, private IDevicesProvider {
@@ -46,7 +46,9 @@ private:
     GstDeviceMonitor *m_monitor = nullptr;
 
     std::map<std::string, DeviceInfo> m_devices;
-    std::set<std::string> m_video_devices;
+    std::map<std::string, unsigned int> m_video_devices;
+    bool probe_device(const std::string &video_path, const std::string &video_bus_info,
+                      const DeviceInfo::ResolutionList &capture_resolutions);
 
     DevicesWindow *m_devices_window = nullptr;
 

@@ -221,6 +221,56 @@ static gboolean handle_cap(GstCapsFeatures *features, GstStructure *structure, g
     return true;
 }
 
+bool UsbKvmApplication::probe_device(const std::string &video_path, const std::string &video_bus_info,
+                                     const DeviceInfo::ResolutionList &capture_resolutions)
+{
+    if (!m_video_devices.contains(video_path))
+        return false;
+    {
+        auto &x = m_video_devices.at(video_path);
+        if (x++ == 10) {
+            auto md = new Gtk::MessageDialog("Can't open HID interface", false, Gtk::MESSAGE_ERROR);
+            md->set_secondary_text("didn't find HID device after one second", true);
+
+            md->set_transient_for(*get_active_window());
+            md->set_modal(true);
+            md->present();
+            md->signal_response().connect([md](auto response) { delete md; });
+            return false;
+        }
+    }
+
+    auto devinfos = hid_enumerate(0x534d, 0x2109);
+    bool found = false;
+    for (const hid_device_info *dev = devinfos; dev != nullptr; dev = dev->next) {
+        if (wide_string_to_string(dev->product_string) == s_device_name) {
+            std::string hid_bus_info;
+            try {
+                hid_bus_info = get_hid_bus_info(dev->path);
+            }
+            catch (const OpenError &e) {
+                auto md = new Gtk::MessageDialog("Can't open HID interface", false, Gtk::MESSAGE_ERROR);
+                md->set_secondary_text(std::string(e.what()) + "\nSee <a href='https://github.com/carrotIndustries/usbkvm/blob/main/app/README.md'>github.com/carrotIndustries/usbkvm</a> for troubleshooting.", true);
+
+                md->set_transient_for(*get_active_window());
+                md->set_modal(true);
+                md->present();
+                md->signal_response().connect([md](auto response) { delete md; });
+            }
+            if (hid_bus_info == video_bus_info) {
+                on_device_added({.video_path = video_path,
+                                 .hid_path = dev->path,
+                                 .bus_info = hid_bus_info,
+                                 .capture_resolutions = capture_resolutions});
+                found = true;
+                break;
+            }
+        }
+    }
+    hid_free_enumeration(devinfos);
+    return !found;
+}
+
 gboolean UsbKvmApplication::monitor_bus_func(GstBus *bus, GstMessage *message)
 {
     GstDevice *device;
@@ -257,42 +307,17 @@ gboolean UsbKvmApplication::monitor_bus_func(GstBus *bus, GstMessage *message)
 
                 if (video_path.size() && video_bus_info.size()) {
                     std::cout << "found video " << video_path << " at " << video_bus_info << std::endl;
-                    m_video_devices.insert(video_path);
-
-                    // give the HID device one second to appear
-                    Glib::signal_timeout().connect_seconds_once(
-                            [this, video_path, video_bus_info, capture_resolutions] {
-                                if (!m_video_devices.contains(video_path))
-                                    return;
-                                auto devinfos = hid_enumerate(0x534d, 0x2109);
-                                for (const hid_device_info *dev = devinfos; dev != nullptr; dev = dev->next) {
-                                    if (wide_string_to_string(dev->product_string) == s_device_name) {
-                                        std::string hid_bus_info;
-                                        try {
-                                            hid_bus_info = get_hid_bus_info(dev->path);
-                                        }
-                                        catch (const OpenError &e) {
-                                            auto md = new Gtk::MessageDialog("Can't open HID interface", false,
-                                                                             Gtk::MESSAGE_ERROR);
-                                            md->set_secondary_text(std::string(e.what()) + "\nSee <a href='https://github.com/carrotIndustries/usbkvm/blob/main/app/README.md'>github.com/carrotIndustries/usbkvm</a> for troubleshooting.", true);
-
-                                            md->set_transient_for(*get_active_window());
-                                            md->set_modal(true);
-                                            md->present();
-                                            md->signal_response().connect([md](auto response) { delete md; });
-                                        }
-                                        if (hid_bus_info == video_bus_info) {
-                                            on_device_added({.video_path = video_path,
-                                                             .hid_path = dev->path,
-                                                             .bus_info = hid_bus_info,
-                                                             .capture_resolutions = capture_resolutions});
-                                            break;
-                                        }
-                                    }
-                                }
-                                hid_free_enumeration(devinfos);
-                            },
-                            1);
+                    if (m_video_devices.emplace(video_path, 0u).second) {
+                        // give the HID device one second to appear
+                        Glib::signal_timeout().connect(
+                                [this, video_path, video_bus_info, capture_resolutions] {
+                                    return probe_device(video_path, video_bus_info, capture_resolutions);
+                                },
+                                100);
+                    }
+                    else {
+                        std::cout << "ignoring duplicate device " << video_path << std::endl;
+                    }
                 }
             }
         }
