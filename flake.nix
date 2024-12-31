@@ -10,6 +10,29 @@
         inherit system;
       };
     in rec {
+      usbkvm-fw = pkgs.stdenv.mkDerivation rec {
+        pname = "usbkvm-fw";
+        version = "0.0.1";
+
+        src = nixpkgs.lib.cleanSource ./.;
+
+        sourceRoot = "${src.name}/fw/usbkvm";
+
+        nativeBuildInputs = with pkgs; [
+          gcc-arm-embedded
+          python3
+        ];
+
+        postPatch = ''
+          patchShebangs --build write_header.py
+        '';
+
+        installPhase = ''
+          mkdir -p $out
+          cp -r build/* $out
+        '';
+      };
+
       mslib = pkgs.buildGoModule {
         pname = "mslib";
         version = "0.0.1";
