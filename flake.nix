@@ -51,10 +51,58 @@
         vendorHash = "sha256-imHpsos7RDpATSZFWRxug67F7VgjRTT1SkLt7cWk6tU=";
       };
 
+      usbkvm-app-source = let
+        moveToSubPath = subpath: drv: pkgs.runCommand drv.name {} ''
+          mkdir -p $out/${subpath}
+          ${pkgs.xorg.lndir}/bin/lndir -silent ${drv} $out/${subpath}
+        '';
+      in pkgs.symlinkJoin {
+        name = "usbkvm-app-source";
+        paths = [
+          (pkgs.applyPatches {
+            src = ./.;
+            patches = [
+              ./flake-app-meson.patch
+            ];
+          })
+          (moveToSubPath "/app/mslib" mslib)
+          (moveToSubPath "/fw/usbkvm/build" usbkvm-fw)
+        ];
+      };
+
+      usbkvm-app = pkgs.stdenv.mkDerivation rec {
+        pname = "usbkvm-app";
+        version = "0.1.0";
+
+        src = usbkvm-app-source;
+
+        sourceRoot = "${src.name}/app";
+
+        nativeBuildInputs = with pkgs; [
+          meson
+          ninja
+          cmake
+          pkg-config
+        ];
+
+        buildInputs = with pkgs; [
+          gst_all_1.gstreamer
+          gtkmm3
+          hidapi
+        ];
+
+        meta = {
+          mainProgram = "usbkvm";
+        };
+      };
+
       usbkvm-udev = pkgs.runCommand "usbkvm-udev" {} ''
         mkdir -p $out/lib/udev/rules.d
         cp ${./app}/70-usbkvm.rules $out/lib/udev/rules.d
       '';
+
+      usbkvm = usbkvm-app;
+      default = usbkvm-app;
     });
 
     hydraJobs = {
