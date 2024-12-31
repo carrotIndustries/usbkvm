@@ -72,6 +72,7 @@ void UsbKvmApplication::on_startup()
 
     {
         m_monitor = gst_device_monitor_new();
+        gst_device_monitor_set_show_all_devices(m_monitor, true);
 
         auto bus = gst_device_monitor_get_bus(m_monitor);
         gst_device_monitor_add_filter(m_monitor, "Video/Source", NULL);
@@ -200,9 +201,7 @@ static std::string get_hid_bus_info(const std::string &path)
 static std::string get_path(GstDevice *device)
 {
     auto props = gst_device_get_properties(device);
-    std::string path = struct_get_string(props, "api.v4l2.path");
-    if (path.empty())
-        path = struct_get_string(props, "device.path");
+    auto path = struct_get_string(props, "device.path");
     gst_structure_free(props);
     return path;
 }
@@ -252,10 +251,7 @@ gboolean UsbKvmApplication::monitor_bus_func(GstBus *bus, GstMessage *message)
                 }
 #else
                 auto props = gst_device_get_properties(device);
-
-                video_bus_info = struct_get_string(props, "api.v4l2.cap.bus_info");
-                if (video_bus_info.empty())
-                    video_bus_info = struct_get_string(props, "v4l2.device.bus_info");
+                video_bus_info = struct_get_string(props, "v4l2.device.bus_info");
                 gst_structure_free(props);
 #endif
 
