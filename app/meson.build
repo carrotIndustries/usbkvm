@@ -146,9 +146,18 @@ install_data('net.carrotindustries.usbkvm.metainfo.xml', install_dir:datadir / '
 icondir = datadir / 'icons/hicolor'
 install_data('src/icons/scalable/apps/usbkvm.svg', install_dir: icondir /  'scalable/apps', rename: 'net.carrotindustries.usbkvm.svg')
 
-udev = dependency('udev', required: false)
-if udev.found()
-  udevrulesdir = udev.get_variable('udevdir') / 'rules.d'
+udevrulesdir_opt = get_option('udevrulesdir')
+if udevrulesdir_opt == ''
+  udev = dependency('udev', required: false)
+  if udev.found()
+    udevrulesdir = udev.get_variable('udevdir') / 'rules.d'
+  endif
+else
+  udevrulesdir = udevrulesdir_opt
+endif
+
+if is_variable('udevrulesdir')
+  message('installing udev rules to', udevrulesdir)
   install_data('70-usbkvm.rules', install_dir: udevrulesdir)
 endif
 

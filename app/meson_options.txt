@@ -1,0 +1,1 @@
+option('udevrulesdir', type : 'string', description : 'Directory to install udev rules in')
