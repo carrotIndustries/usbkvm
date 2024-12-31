@@ -565,6 +565,7 @@ UsbKvmAppWindow::UsbKvmAppWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk
         gst_errors.pop_back();
 
         auto error_label = Gtk::make_managed<Gtk::Label>("couldn't initialize gstreamer: " + gst_errors);
+        error_label->set_margin_top(150);
         error_label->set_line_wrap(true);
         error_label->show();
         m_evbox->add(*error_label);
