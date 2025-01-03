@@ -20,6 +20,7 @@ endif
 
 libpython = dependency('python3', required: false, disabler:true)
 pybind11 = dependency('pybind11', required: false, disabler:true)
+x11 = dependency('x11', required: false)
 
 src_common = files(
   'src/mshal.cpp',
@@ -36,6 +37,7 @@ src = files(
   'src/devices_window.cpp',
   'src/version.cpp',
   'src/about_dialog.cpp',
+  'src/get_keymap.cpp',
   'src/util.cpp'
 ) + src_common
 
@@ -99,27 +101,44 @@ if is_libstdcpp
     stdlibs += cxx.find_library('stdc++fs', required:false)
 endif
 
-build_dependencies = [gtk3, gtkmm, gst, hidapi]
+build_dependencies = [gtk3, gtkmm, gst, hidapi, x11]
 build_dependencies_py = [hidapi, libpython, pybind11, glibmm]
 
+keymap_output_format = 'usb'
+keymap_input_formats = [
+  'xorgevdev',
+  'xorgkbd',
+  'xorgxquartz',
+  'xorgxwin',
+  'osx',
+  'x11',
+  'atset1'
+]
 
-keymap_format = ['x11', 'usb']
 keymap_input = ['keycodemapdb/tools/keymap-gen', 'keycodemapdb/data/keymaps.csv']
-keymap_c = custom_target(
-    'keymap.c',
-    output : 'keymap.c',
-    input : keymap_input,
-    command : [prog_python, '@INPUT0@', 'code-map', '--lang=stdc', '@INPUT1@'] + keymap_format,
-    capture : true
-)
+keymap_sources = []
 
-keymap_h = custom_target(
-    'keymap.h',
-    output : 'keymap.h',
-    input : keymap_input,
-    command : [prog_python, '@INPUT0@', 'code-map', '--lang=stdc-header', '@INPUT1@'] + keymap_format,
-    capture : true
-)
+foreach input_format: keymap_input_formats
+  
+  target = 'keymap_@0@_@1@'.format(input_format, keymap_output_format)
+  
+  keymap_sources += custom_target(
+      target+'.c',
+      output : target+'.c',
+      input : keymap_input,
+      command : [prog_python, '@INPUT0@', 'code-map', '--lang=stdc', '@INPUT1@', input_format, keymap_output_format],
+      capture : true
+  )
+
+  keymap_sources += custom_target(
+      target + '.h',
+      output : target + '.h',
+      input : keymap_input,
+      command : [prog_python, '@INPUT0@', 'code-map', '--lang=stdc-header', '@INPUT1@', input_format, keymap_output_format],
+      capture : true
+  )
+
+endforeach
 
 mslib = custom_target(
     'mslib',
@@ -169,7 +188,7 @@ else
 endif
 
 usbkvm = executable('usbkvm',
-    [src,resources,keymap_c,keymap_h,mslib, rc_compiled],
+    [src,resources,keymap_sources,mslib, rc_compiled],
     dependencies: [build_dependencies],
     cpp_args: cpp_args,
     include_directories: include_directories,

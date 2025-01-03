@@ -4,6 +4,7 @@
 #include "imcu_provider.hpp"
 #include <atomic>
 #include <optional>
+#include <span>
 #include "device_info.hpp"
 
 namespace usbkvm {
@@ -95,6 +96,8 @@ private:
 
     void create_device(const std::string &path);
     void update_firmware();
+    void realize();
+    std::span<const uint16_t> m_keycode_map;
 
     std::pair<int, int> m_capture_resolution = {1280, 720};
     std::set<std::pair<int, int>> m_capture_resolutions;

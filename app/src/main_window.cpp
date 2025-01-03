@@ -1,7 +1,7 @@
 #include "main_window.hpp"
 #include <cassert>
 #include <iostream>
-#include "keymap.h"
+#include "keymap_x11_usb.h"
 #include <format>
 #include <thread>
 #include "usbkvm_mcu.hpp"
@@ -9,6 +9,12 @@
 #include "mshal.hpp"
 #include "type_window.hpp"
 #include "usbkvm_application.hpp"
+#include "get_keymap.hpp"
+
+#ifdef G_OS_WIN32
+#include <dinput.h>
+#undef ERROR
+#endif
 
 namespace usbkvm {
 
@@ -85,18 +91,6 @@ void UsbKvmAppWindow::send_mouse_report(int scroll_delta)
     }
 }
 
-
-static int gdk_key_to_hid(int keyval)
-{
-    if (keyval < code_map_x11_to_usb_len) {
-        auto h = code_map_x11_to_usb[keyval];
-        if (h == 135)  // the wrong underscore
-            return 45; // the right underscore
-        return h;
-    }
-    return 0;
-}
-
 void UsbKvmAppWindow::send_keyboard_report()
 {
     if (!(m_device && m_device->mcu()))
@@ -120,7 +114,7 @@ void UsbKvmAppWindow::send_keyboard_report()
         if (i >= report.keycode.size()) {
             break;
         }
-        report.keycode.at(i) = gdk_key_to_hid(k);
+        report.keycode.at(i) = k;
         i++;
     }
     try {
@@ -147,6 +141,15 @@ void UsbKvmAppWindow::handle_scroll(GdkEventScroll *ev)
     }
 }
 
+static int gdk_key_to_hid(int keyval)
+{
+    if (static_cast<size_t>(keyval) < code_map_x11_to_usb_len) {
+        auto h = code_map_x11_to_usb[keyval];
+        return h;
+    }
+    return 0;
+}
+
 
 bool UsbKvmAppWindow::handle_key(GdkEventKey *ev)
 {
@@ -168,10 +171,34 @@ bool UsbKvmAppWindow::handle_key(GdkEventKey *ev)
             m_modifiers &= ~mod;
     }
     else {
-        if (ev->type == GDK_KEY_PRESS)
-            m_keys_pressed.insert(ev->keyval);
-        else if (ev->type == GDK_KEY_RELEASE)
-            m_keys_pressed.erase(ev->keyval);
+        int scancode = 0;
+        int keycode = ev->hardware_keycode;
+
+#ifdef G_OS_WIN32
+        if (const auto native_scancode = gdk_event_get_scancode((GdkEvent *)ev)) {
+            keycode = native_scancode & 0x1ff;
+            /* Windows always set extended attribute for these keys */
+            if (keycode == (0x100 | DIK_NUMLOCK) || keycode == (0x100 | DIK_RSHIFT))
+                keycode &= 0xff;
+        }
+        else {
+            return true;
+        }
+#endif
+        if (m_keycode_map.size() && m_keycode_map.size() > static_cast<size_t>(keycode)) {
+            scancode = m_keycode_map[keycode];
+        }
+        else {
+            scancode = gdk_key_to_hid(ev->keyval);
+        }
+        if (scancode == 135) // the wrong underscore
+            scancode = 45;   // the right underscore
+        if (scancode) {
+            if (ev->type == GDK_KEY_PRESS)
+                m_keys_pressed.insert(scancode);
+            else if (ev->type == GDK_KEY_RELEASE)
+                m_keys_pressed.erase(scancode);
+        }
     }
     update_modifier_buttons();
 
@@ -633,6 +660,13 @@ UsbKvmAppWindow::UsbKvmAppWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk
     }
 
     set_overlay_label_text("No USBKVM connected");
+
+    signal_realize().connect(sigc::mem_fun(*this, &UsbKvmAppWindow::realize));
+}
+
+void UsbKvmAppWindow::realize()
+{
+    m_keycode_map = get_keymap(get_window()->gobj());
 }
 
 bool UsbKvmAppWindow::update_input_status(UpdateCaptureResolution update)
