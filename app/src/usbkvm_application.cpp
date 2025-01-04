@@ -217,14 +217,42 @@ static std::string get_path(GstDevice *device)
 
 #endif
 
+static std::vector<gint> try_parse_dim(GstStructure *structure, const char *field)
+{
+    {
+        int x;
+        if (gst_structure_get_int(structure, field, &x))
+            return {x};
+    }
+    {
+        std::vector<gint> xs;
+        GValueArray *array = nullptr;
+        if (gst_structure_get_list(structure, field, &array)) {
+            for (size_t i = 0; i < array->n_values; i++) {
+                auto it = g_value_array_get_nth(array, i);
+                if (it && G_VALUE_HOLDS(it, G_TYPE_INT)) {
+                    auto x = g_value_get_int(it);
+                    xs.push_back(x);
+                }
+            }
+            g_value_array_free(array);
+        }
+        return xs;
+    }
+}
+
 static gboolean handle_cap(GstCapsFeatures *features, GstStructure *structure, gpointer user_data)
 {
     std::string name = gst_structure_get_name(structure);
     auto &ress = *(reinterpret_cast<DeviceInfo::ResolutionList *>(user_data));
     if (name == "image/jpeg") {
-        gint width, height;
-        if (gst_structure_get_int(structure, "width", &width) && gst_structure_get_int(structure, "height", &height)) {
-            ress.emplace_back(width, height);
+        std::vector<gint> widths, heights;
+        widths = try_parse_dim(structure, "width");
+        heights = try_parse_dim(structure, "height");
+        for (const auto width : widths) {
+            for (const auto height : heights) {
+                ress.emplace_back(width, height);
+            }
         }
     }
     return true;
