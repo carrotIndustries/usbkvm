@@ -89,6 +89,7 @@ void UsbKvmApplication::on_startup()
         gst_device_monitor_start(m_monitor);
     }
 
+    Gtk::Settings::get_default()->property_gtk_menu_bar_accel() = "";
 
     m_devices_window = DevicesWindow::create(*this);
 
