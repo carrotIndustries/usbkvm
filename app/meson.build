@@ -182,7 +182,15 @@ endif
 
 if is_windows
 	windows = import('windows')
-	rc_compiled =  windows.compile_resources('src/usbkvm.rc', include_directories:include_directories('.'))
+
+	usbkvm_rc = custom_target(
+        'usbkvm.rc',
+        output : 'usbkvm.rc',
+        input : ['make_rc.py'],
+        command : [prog_python,  '@INPUT@', '@OUTPUT@', meson.project_version()],
+    )
+
+	rc_compiled =  windows.compile_resources(usbkvm_rc, include_directories:include_directories('.'))
 else
 	rc_compiled = []
 endif
