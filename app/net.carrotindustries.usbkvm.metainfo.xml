@@ -42,6 +42,16 @@
   <content_rating type="oars-1.0" />
 
   <releases>
+    <release version="0.2.0" date="2025-01-05">
+      <url>https://github.com/carrotIndustries/usbkvm/releases/tag/v0.2.0</url>
+       <description>
+        <p>What's new</p>
+        <ul>
+          <li>Support for non-US keyboard layouts</li>
+          <li>Faster device detection</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.0" date="2024-12-23">
       <url>https://github.com/carrotIndustries/usbkvm/releases/tag/v0.1.0</url>
     </release>
