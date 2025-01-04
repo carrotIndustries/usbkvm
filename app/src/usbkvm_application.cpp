@@ -17,6 +17,14 @@ namespace usbkvm {
 
 UsbKvmApplication::UsbKvmApplication() : Gtk::Application("net.carrotindustries.usbkvm", Gio::APPLICATION_FLAGS_NONE)
 {
+    add_main_option_entry(Gio::Application::OptionType::OPTION_TYPE_BOOL, "force-firmware-update", 0,
+                          "Force firmware update regardless of detected version");
+    signal_handle_local_options().connect([this](const Glib::RefPtr<Glib::VariantDict> &dict) {
+        bool force = false;
+        dict->lookup_value("force-firmware-update", force);
+        m_force_firmware_update = force;
+        return -1;
+    });
 }
 
 Glib::RefPtr<UsbKvmApplication> UsbKvmApplication::create()

@@ -284,13 +284,13 @@ void UsbKvmAppWindow::create_device(const std::string &path)
         const int current_version = info.version;
         m_device->set_model(info.model);
         const int expected_version = UsbKvmMcu::get_expected_version();
-        if (current_version != expected_version) {
+        if (current_version != expected_version || m_app.get_force_firmware_update()) {
             std::string l;
 
             switch (info.get_valid()) {
                 using enum UsbKvmMcu::Info::Valid;
             case VALID:
-                l = std::format("Need version {}, but {} is running.", expected_version, current_version);
+                l = std::format("Need version {}, but {} is running", expected_version, current_version);
                 break;
 
             case INVALID_MAGIC:
@@ -305,8 +305,11 @@ void UsbKvmAppWindow::create_device(const std::string &path)
                 l = "Firmware corrupted: Header CRC mismatch";
                 break;
             }
+            if (m_app.get_force_firmware_update())
+                l = "Forced";
+
             m_mcu_info_bar_label->set_label(
-                    std::format("MCU firmware update required. {} Video only, no mouse or keyboard.", l));
+                    std::format("MCU firmware update required. {}. Video only, no mouse or keyboard.", l));
             m_device->enter_bootloader();
             m_update_firmware_button->show();
             gtk_info_bar_set_revealed(m_mcu_info_bar->gobj(), true);

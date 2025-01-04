@@ -23,6 +23,11 @@ public:
     }
     void activate_device(const std::string &video_path) override;
 
+    bool get_force_firmware_update() const
+    {
+        return m_force_firmware_update;
+    }
+
 
 protected:
     // Override default signal handlers:
@@ -53,6 +58,7 @@ private:
     DevicesWindow *m_devices_window = nullptr;
 
     type_signal_devices_changed m_signal_devices_changed;
+    bool m_force_firmware_update = false;
 };
 
 } // namespace usbkvm
