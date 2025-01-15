@@ -114,6 +114,7 @@ void UsbKvmAppWindow::send_keyboard_report()
         if (i >= report.keycode.size()) {
             break;
         }
+		std::cout << "report key " << static_cast<int>(k) << std::endl;
         report.keycode.at(i) = k;
         i++;
     }
@@ -175,8 +176,12 @@ bool UsbKvmAppWindow::handle_key(GdkEventKey *ev)
         int keycode = ev->hardware_keycode;
 
 #ifdef G_OS_WIN32
+		std::cout << "hw keycode " << ev->hardware_keycode << std::endl;
         if (const auto native_scancode = gdk_event_get_scancode((GdkEvent *)ev)) {
             keycode = native_scancode & 0x1ff;
+			if(keycode & 0x100)
+				keycode = (keycode & 0xff) | 0xe000;
+			std::cout << "native_scancode " << keycode << std::endl;
             /* Windows always set extended attribute for these keys */
             if (keycode == (0x100 | DIK_NUMLOCK) || keycode == (0x100 | DIK_RSHIFT))
                 keycode &= 0xff;
