@@ -1,0 +1,26 @@
+{
+    "manufacturer": "",
+    "name": "N-channel MOSFET",
+    "pins": {
+        "074c3718-08fd-4f94-88fc-2bb43174b245": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "G",
+            "swap_group": 0
+        },
+        "4887ef47-94f0-4fd1-b552-c424bd37a3e7": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "D",
+            "swap_group": 0
+        },
+        "eb63ac9a-5d7e-42e2-92ea-a140a97f47d0": {
+            "direction": "passive",
+            "names": [],
+            "primary_name": "S",
+            "swap_group": 0
+        }
+    },
+    "type": "unit",
+    "uuid": "3c326eb9-e306-4254-8db0-71269f4e96cb"
+}

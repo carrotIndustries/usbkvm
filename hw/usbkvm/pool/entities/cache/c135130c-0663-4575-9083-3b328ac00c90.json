@@ -1,0 +1,21 @@
+{
+    "gates": {
+        "6dce85e8-6b70-44ac-8ae8-d17152c3707a": {
+            "name": "Main",
+            "suffix": "",
+            "swap_group": 0,
+            "unit": "3c326eb9-e306-4254-8db0-71269f4e96cb"
+        }
+    },
+    "manufacturer": "",
+    "name": "N-channel MOSFET",
+    "prefix": "Q",
+    "tags": [
+        "bipolar",
+        "discrete",
+        "npn",
+        "transistor"
+    ],
+    "type": "entity",
+    "uuid": "c135130c-0663-4575-9083-3b328ac00c90"
+}
