@@ -1,0 +1,30 @@
+{
+    "MPN": [
+        false,
+        "CL 0805 Capacitor Base Part"
+    ],
+    "base": "2f50150e-b407-4eda-899c-4a8339af9433",
+    "datasheet": [
+        false,
+        ""
+    ],
+    "description": [
+        true,
+        ""
+    ],
+    "inherit_model": true,
+    "inherit_tags": true,
+    "manufacturer": [
+        false,
+        "Samsung"
+    ],
+    "model": "96c366ee-a963-41a0-9cc8-54c646979695",
+    "parametric": {},
+    "tags": [],
+    "type": "part",
+    "uuid": "b00f7f9a-540d-4440-a73a-32732a8a8027",
+    "value": [
+        true,
+        "base 0402 capacitor"
+    ]
+}

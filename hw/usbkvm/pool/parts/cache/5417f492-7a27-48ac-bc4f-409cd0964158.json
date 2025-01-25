@@ -1,0 +1,39 @@
+{
+    "MPN": [
+        false,
+        "CIGT201610EH2R2MN"
+    ],
+    "base": "9ebf0f9d-cb5e-4e0a-bd03-ca0e0456cf11",
+    "datasheet": [
+        false,
+        "https://product.samsungsem.com/pi/CIGT201610EH2R2MN.do"
+    ],
+    "description": [
+        false,
+        "2.2µH, 2.5A inductor"
+    ],
+    "inherit_model": true,
+    "inherit_tags": true,
+    "manufacturer": [
+        false,
+        "Samsung"
+    ],
+    "model": "96c366ee-a963-41a0-9cc8-54c646979695",
+    "orderable_MPNs": {
+        "318789ec-905e-4e16-87b6-55e38c9ee394": "CIGT201610EH2R2MNE",
+        "fe246688-ac44-430e-b04e-fe2c11913fbd": "CIGT201610EH2R2MNC"
+    },
+    "parametric": {
+        "dcr": "0.087",
+        "idc": "2.5",
+        "table": "inductors",
+        "value": "2.2e-06"
+    },
+    "tags": [],
+    "type": "part",
+    "uuid": "5417f492-7a27-48ac-bc4f-409cd0964158",
+    "value": [
+        false,
+        "2.2 µH"
+    ]
+}
