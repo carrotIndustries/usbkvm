@@ -42,8 +42,8 @@
   <content_rating type="oars-1.0" />
 
   <releases>
-    <release version="0.2.0" date="2025-01-05">
-      <url>https://github.com/carrotIndustries/usbkvm/releases/tag/v0.2.0</url>
+    <release version="0.2.1" date="2025-05-17">
+      <url>https://github.com/carrotIndustries/usbkvm/releases/tag/v0.2.1</url>
        <description>
         <p>What's new</p>
         <ul>
