@@ -177,6 +177,8 @@ bool UsbKvmAppWindow::handle_key(GdkEventKey *ev)
 #ifdef G_OS_WIN32
         if (const auto native_scancode = gdk_event_get_scancode((GdkEvent *)ev)) {
             keycode = native_scancode & 0x1ff;
+            if (keycode & 0x100) // not quite atset1
+                keycode = (keycode & 0xff) | 0xe000;
             /* Windows always set extended attribute for these keys */
             if (keycode == (0x100 | DIK_NUMLOCK) || keycode == (0x100 | DIK_RSHIFT))
                 keycode &= 0xff;
