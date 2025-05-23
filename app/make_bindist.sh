@@ -69,6 +69,7 @@ LIBS=(
 	libgstvideo-1.0-0.dll\
 	libgstbase-1.0-0.dll\
 	liborc-0.4-0.dll\
+	libgstgl-1.0-0.dll\
 )
 for LIB in "${LIBS[@]}"
 do
