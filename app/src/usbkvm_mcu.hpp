@@ -7,15 +7,13 @@
 #include <span>
 #include <string>
 #include <functional>
-#include <stdexcept>
+#include "update_status.hpp"
 
 template <auto req_a> struct xfer_t;
 
 namespace usbkvm {
 
 class II2COneDevice;
-
-enum class UsbKvmMcuFirmwareUpdateStatus { BUSY, DONE, ERROR };
 
 class UsbKvmMcu {
 public:
@@ -92,13 +90,8 @@ public:
     uint8_t boot_get_boot_version();
     void boot_enter_dfu();
 
-    using FirmwareUpdateStatus = UsbKvmMcuFirmwareUpdateStatus;
-    struct FirmwareUpdateProgress {
-        FirmwareUpdateStatus status;
-        std::string message;
-        float progress = 0;
-    };
-
+    using FirmwareUpdateStatus = UpdateStatus;
+    using FirmwareUpdateProgress = UpdateProgress;
 
     bool boot_update_firmware(std::function<void(const FirmwareUpdateProgress &)> progress_cb,
                               std::span<const uint8_t> firmware);

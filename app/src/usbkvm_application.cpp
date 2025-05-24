@@ -258,29 +258,35 @@ static gboolean handle_cap(GstCapsFeatures *features, GstStructure *structure, g
     return true;
 }
 
+const std::string UsbKvmApplication::s_recovery = "RECOVERY";
+
+
 bool UsbKvmApplication::probe_device(const std::string &video_path, const std::string &video_bus_info,
                                      const DeviceInfo::ResolutionList &capture_resolutions)
 {
-    if (!m_video_devices.contains(video_path))
-        return false;
-    {
-        auto &x = m_video_devices.at(video_path);
-        if (x++ == 10) {
-            auto md = new Gtk::MessageDialog("Can't open HID interface", false, Gtk::MESSAGE_ERROR);
-            md->set_secondary_text("didn't find HID device after one second", true);
-
-            md->set_transient_for(*get_active_window());
-            md->set_modal(true);
-            md->present();
-            md->signal_response().connect([md](auto response) { delete md; });
+    const auto recovery_mode = video_path == s_recovery;
+    if (!recovery_mode) {
+        if (!m_video_devices.contains(video_path))
             return false;
+        {
+            auto &x = m_video_devices.at(video_path);
+            if (x++ == 10) {
+                auto md = new Gtk::MessageDialog("Can't open HID interface", false, Gtk::MESSAGE_ERROR);
+                md->set_secondary_text("didn't find HID device after one second", true);
+
+                md->set_transient_for(*get_active_window());
+                md->set_modal(true);
+                md->present();
+                md->signal_response().connect([md](auto response) { delete md; });
+                return false;
+            }
         }
     }
 
     auto devinfos = hid_enumerate(0x534d, 0x2109);
     bool found = false;
     for (const hid_device_info *dev = devinfos; dev != nullptr; dev = dev->next) {
-        if (wide_string_to_string(dev->product_string) == s_device_name) {
+        if (recovery_mode || (dev->product_string && wide_string_to_string(dev->product_string) == s_device_name)) {
             std::string hid_bus_info;
             try {
                 hid_bus_info = get_hid_bus_info(dev->path);
@@ -294,7 +300,7 @@ bool UsbKvmApplication::probe_device(const std::string &video_path, const std::s
                 md->present();
                 md->signal_response().connect([md](auto response) { delete md; });
             }
-            if (hid_bus_info == video_bus_info) {
+            if (recovery_mode || hid_bus_info == video_bus_info) {
                 on_device_added({.video_path = video_path,
                                  .hid_path = dev->path,
                                  .bus_info = hid_bus_info,
@@ -457,6 +463,11 @@ void UsbKvmApplication::activate_device(const std::string &video_path)
     auto appwindow = create_appwindow();
     appwindow->set_device(m_devices.at(video_path));
     appwindow->present();
+}
+
+void UsbKvmApplication::recover_eeprom()
+{
+    probe_device(s_recovery, s_recovery, {});
 }
 
 } // namespace usbkvm

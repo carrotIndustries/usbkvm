@@ -10,6 +10,7 @@
 #include "type_window.hpp"
 #include "usbkvm_application.hpp"
 #include "get_keymap.hpp"
+#include "update_status.hpp"
 
 #ifdef G_OS_WIN32
 #include <dinput.h>
@@ -313,6 +314,7 @@ void UsbKvmAppWindow::create_device(const std::string &path)
         const int current_version = info.version;
         m_device->set_model(info.model);
         const int expected_version = UsbKvmMcu::get_expected_version();
+
         if (current_version != expected_version || m_app.get_force_firmware_update()) {
             std::string l;
 
@@ -372,6 +374,26 @@ void UsbKvmAppWindow::create_device(const std::string &path)
     }
 
     if (m_device) {
+        {
+            const auto eeprom_datecode = m_device->hal().read_eeprom_datecode();
+            std::cout << "EEPROM datecode: " << eeprom_datecode.format() << std::endl;
+            auto bytes = Gio::Resource::lookup_data_global("/net/carrotIndustries/usbkvm/ms2109-eeprom.bin");
+            if (bytes) {
+                gsize data_size;
+                auto data_ptr = reinterpret_cast<const uint8_t *>(bytes->get_data(data_size));
+                const auto data_span = std::span<const uint8_t>(data_ptr, data_size);
+                auto datecode_from_file = EEPROMDatecode::parse(data_span.subspan(EEPROMDatecode::offset));
+                if (datecode_from_file > eeprom_datecode
+                    || m_device_info->video_path == UsbKvmApplication::s_recovery) {
+                    const auto eeprom_text = std::format(
+                            "Capture chip EEPROM update recommended ({} to {})\n\
+This update improves compatibility by making 1024×768 the preferred resolution.",
+                            eeprom_datecode.format(), datecode_from_file.format());
+                    m_eeprom_update_label->set_text(eeprom_text);
+                    gtk_info_bar_set_revealed(m_eeprom_info_bar->gobj(), true);
+                }
+            }
+        }
         mcu_init();
 
         update_input_status(UpdateCaptureResolution::NO);
@@ -403,6 +425,14 @@ void UsbKvmAppWindow::mcu_init()
     m_app.update_device_info(info);
 }
 
+using FirmwareUpdateStatus = UpdateStatus;
+
+void UsbKvmAppWindow::set_update_buttons_sensitive(bool s)
+{
+    m_update_firmware_button->set_sensitive(s);
+    m_update_eeprom_button->set_sensitive(s);
+}
+
 void UsbKvmAppWindow::update_firmware()
 {
     if (m_device) {
@@ -417,27 +447,52 @@ void UsbKvmAppWindow::update_firmware()
         m_firmware_update_progress = 0;
         m_firmware_update_status_string.clear();
         m_firmware_update_label->set_label("Intializing");
+        set_update_buttons_sensitive(false);
+        m_update_type = UpdateType::FIRMWARE;
+        m_update_blurb_label->set_text(
+                "Don't worry! If you accidentally unplug your USBKVM during the update, you can retry the update "
+                "without any risk of bricking.");
 
         auto thr = std::thread(&UsbKvmAppWindow::firmware_update_thread, this);
         thr.detach();
     }
 }
 
+void UsbKvmAppWindow::update_eeprom()
+{
+    if (m_device) {
+        gtk_info_bar_set_revealed(m_eeprom_info_bar->gobj(), false);
+        m_firmware_update_revealer->set_reveal_child(true);
+        m_firmware_update_status = FirmwareUpdateStatus::BUSY;
+        m_firmware_update_progress = 0;
+        m_firmware_update_status_string.clear();
+        m_firmware_update_label->set_label("Intializing");
+        m_update_blurb_label->set_text(
+                "Don't worry! If you accidentally unplug your USBKVM during the update, you can recover it from the "
+                "Devices dialog");
+        set_update_buttons_sensitive(false);
+        m_update_type = UpdateType::EEPROM;
+
+        auto thr = std::thread(&UsbKvmAppWindow::eeprom_update_thread, this);
+        thr.detach();
+    }
+}
+
+void UsbKvmAppWindow::set_firmware_update_status(FirmwareUpdateStatus status, const std::string &msg)
+{
+    {
+        std::lock_guard<std::mutex> guard(m_firmware_update_status_mutex);
+        if (status == FirmwareUpdateStatus::ERROR)
+            m_firmware_update_status_string = "Error: " + msg;
+        else
+            m_firmware_update_status_string = msg;
+    }
+    m_firmware_update_status = status;
+    m_firmware_update_dispatcher.emit();
+}
+
 void UsbKvmAppWindow::firmware_update_thread()
 {
-
-    auto update_status = [this](FirmwareUpdateStatus status, const std::string &msg) {
-        {
-            std::lock_guard<std::mutex> guard(m_firmware_update_status_mutex);
-            if (status == FirmwareUpdateStatus::ERROR)
-                m_firmware_update_status_string = "Error: " + msg;
-            else
-                m_firmware_update_status_string = msg;
-        }
-        m_firmware_update_status = status;
-        m_firmware_update_dispatcher.emit();
-    };
-
     try {
         auto mcu = m_device->mcu_boot();
         auto bytes = Gio::Resource::lookup_data_global("/net/carrotIndustries/usbkvm/usbkvm.bin");
@@ -448,10 +503,10 @@ void UsbKvmAppWindow::firmware_update_thread()
         auto data = reinterpret_cast<const uint8_t *>(bytes->get_data(data_size));
 
         const auto update_result = mcu->boot_update_firmware(
-                [this, &update_status](const UsbKvmMcu::FirmwareUpdateProgress &status) {
+                [this](const UsbKvmMcu::FirmwareUpdateProgress &status) {
                     if (status.status == FirmwareUpdateStatus::BUSY)
                         m_firmware_update_progress = status.progress;
-                    update_status(status.status, status.message);
+                    set_firmware_update_status(status.status, status.message);
                 },
                 {data, data_size});
 
@@ -460,14 +515,44 @@ void UsbKvmAppWindow::firmware_update_thread()
             using namespace std::chrono_literals;
 
             std::this_thread::sleep_for(700ms);
-            update_status(FirmwareUpdateStatus::DONE, "Done");
+            set_firmware_update_status(FirmwareUpdateStatus::DONE, "Done");
         }
     }
     catch (const std::exception &ex) {
-        update_status(FirmwareUpdateStatus::ERROR, std::string{"Error: "} + ex.what());
+        set_firmware_update_status(FirmwareUpdateStatus::ERROR, std::string{"Error: "} + ex.what());
     }
     catch (...) {
-        update_status(FirmwareUpdateStatus::ERROR, "Unknown error");
+        set_firmware_update_status(FirmwareUpdateStatus::ERROR, "Unknown error");
+    }
+}
+
+void UsbKvmAppWindow::eeprom_update_thread()
+{
+    try {
+        auto bytes = Gio::Resource::lookup_data_global("/net/carrotIndustries/usbkvm/ms2109-eeprom.bin");
+        if (!bytes)
+            throw std::runtime_error("can't open eeprom blob");
+
+        gsize data_size;
+        auto data = reinterpret_cast<const uint8_t *>(bytes->get_data(data_size));
+
+        const auto update_result = m_device->hal().update_eeprom(
+                [this](const UsbKvmMcu::FirmwareUpdateProgress &status) {
+                    if (status.status == FirmwareUpdateStatus::BUSY)
+                        m_firmware_update_progress = status.progress;
+                    set_firmware_update_status(status.status, status.message);
+                },
+                {data, data_size});
+
+        if (update_result) {
+            set_firmware_update_status(FirmwareUpdateStatus::DONE, "Done. Reconnect your USBKVM to apply the update.");
+        }
+    }
+    catch (const std::exception &ex) {
+        set_firmware_update_status(FirmwareUpdateStatus::ERROR, std::string{"Error: "} + ex.what());
+    }
+    catch (...) {
+        set_firmware_update_status(FirmwareUpdateStatus::ERROR, "Unknown error");
     }
 }
 
@@ -478,11 +563,20 @@ void UsbKvmAppWindow::update_firmware_update_status()
         std::lock_guard<std::mutex> guard(m_firmware_update_status_mutex);
         status = m_firmware_update_status_string;
     }
-    m_firmware_update_label->set_label("Firmware update: " + status);
+    std::string prefix;
+    if (m_update_type == UpdateType::EEPROM)
+        prefix = "EEPROM update: ";
+    else
+        prefix = "Firmware update: ";
+
+    m_firmware_update_label->set_label(prefix + status);
     m_firmware_update_progress_bar->set_fraction(m_firmware_update_progress);
-    m_firmware_update_revealer->set_reveal_child(m_firmware_update_status != FirmwareUpdateStatus::DONE);
+    m_firmware_update_revealer->set_reveal_child(m_firmware_update_status != FirmwareUpdateStatus::DONE
+                                                 || m_update_type == UpdateType::EEPROM);
     if (m_firmware_update_status == FirmwareUpdateStatus::DONE) {
-        mcu_init();
+        if (m_update_type == UpdateType::FIRMWARE)
+            mcu_init();
+        set_update_buttons_sensitive(true);
     }
 }
 
@@ -537,16 +631,26 @@ UsbKvmAppWindow::UsbKvmAppWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk
     x->get_widget("evbox", m_evbox);
     x->get_widget("overlay_label", m_overlay_label);
     x->get_widget("mcu_info_bar", m_mcu_info_bar);
+    x->get_widget("eeprom_info_bar", m_eeprom_info_bar);
     x->get_widget("mcu_info_bar_label", m_mcu_info_bar_label);
     x->get_widget("update_firmware_button", m_update_firmware_button);
     x->get_widget("firmware_update_revealer", m_firmware_update_revealer);
     x->get_widget("firmware_update_label", m_firmware_update_label);
     x->get_widget("firmware_update_progress_bar", m_firmware_update_progress_bar);
+    x->get_widget("update_eeprom_button", m_update_eeprom_button);
+    x->get_widget("eeprom_update_label", m_eeprom_update_label);
+    x->get_widget("update_blurb_label", m_update_blurb_label);
     x->get_widget("headerbar", m_headerbar);
     m_update_firmware_button->hide();
     m_update_firmware_button->signal_clicked().connect(sigc::mem_fun(*this, &UsbKvmAppWindow::update_firmware));
     m_firmware_update_dispatcher.connect(sigc::mem_fun(*this, &UsbKvmAppWindow::update_firmware_update_status));
     m_firmware_update_status = FirmwareUpdateStatus::DONE;
+    m_eeprom_info_bar->signal_response().connect([this](int response) {
+        if (response == Gtk::RESPONSE_CLOSE) {
+            gtk_info_bar_set_revealed(m_eeprom_info_bar->gobj(), false);
+        }
+    });
+    m_update_eeprom_button->signal_clicked().connect(sigc::mem_fun(*this, &UsbKvmAppWindow::update_eeprom));
 
     m_evbox->signal_realize().connect(
             [this] { m_blank_cursor = Gdk::Cursor::create(m_evbox->get_window()->get_display(), Gdk::BLANK_CURSOR); });
@@ -786,20 +890,22 @@ void UsbKvmAppWindow::set_device(const DeviceInfo &devinfo)
 {
     m_device_info = devinfo;
     m_last_bus_info = devinfo.bus_info;
+    if (devinfo.video_path != UsbKvmApplication::s_recovery) {
 #ifdef G_OS_WIN32
-    g_object_set(m_videosrc, "device-path", devinfo.video_path.c_str(), NULL);
+        g_object_set(m_videosrc, "device-path", devinfo.video_path.c_str(), NULL);
 #else
-    g_object_set(m_videosrc, "device", devinfo.video_path.c_str(), NULL);
+        g_object_set(m_videosrc, "device", devinfo.video_path.c_str(), NULL);
 #endif
-    auto ret = gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
-    if (ret == GST_STATE_CHANGE_FAILURE) {
-        g_print("Failed to start up pipeline!\n");
-    }
-    else {
-        m_has_video = true;
-    }
-    for (const auto &[w, h] : devinfo.capture_resolutions) {
-        add_capture_resolution(w, h);
+        auto ret = gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
+        if (ret == GST_STATE_CHANGE_FAILURE) {
+            g_print("Failed to start up pipeline!\n");
+        }
+        else {
+            m_has_video = true;
+        }
+        for (const auto &[w, h] : devinfo.capture_resolutions) {
+            add_capture_resolution(w, h);
+        }
     }
     create_device(devinfo.hid_path);
 }
@@ -813,6 +919,8 @@ void UsbKvmAppWindow::unset_device()
     m_device_info.reset();
     m_device.reset();
     gtk_info_bar_set_revealed(m_mcu_info_bar->gobj(), false);
+    gtk_info_bar_set_revealed(m_eeprom_info_bar->gobj(), false);
+    m_firmware_update_revealer->set_reveal_child(false);
 }
 
 

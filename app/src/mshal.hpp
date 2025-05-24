@@ -5,8 +5,21 @@
 #include <span>
 #include <mutex>
 #include "ii2c.hpp"
+#include "update_status.hpp"
+#include <functional>
 
 namespace usbkvm {
+
+struct EEPROMDatecode {
+    unsigned int year;
+    unsigned int month;
+    unsigned int day;
+
+    static const size_t offset;
+    static EEPROMDatecode parse(std::span<const uint8_t> data);
+    std::string format() const;
+    friend auto operator<=>(const EEPROMDatecode &, const EEPROMDatecode &) = default;
+};
 
 class MsHal : public II2C {
 public:
@@ -14,6 +27,11 @@ public:
     void i2c_transfer(uint8_t device_addr, std::span<const uint8_t> data_wr, std::span<uint8_t> data_rd) override;
     uint16_t mem_read16be(unsigned int addr);
     uint8_t mem_read8(unsigned int addr);
+    void eeprom_read(uint16_t addr, std::span<uint8_t> data);
+    void eeprom_write(uint16_t addr, std::span<const uint8_t> data);
+    bool update_eeprom(std::function<void(const UpdateProgress &)> progress_cb, std::span<const uint8_t> data);
+
+    EEPROMDatecode read_eeprom_datecode();
 
     uint16_t get_input_width();
     uint16_t get_input_height();
@@ -31,7 +49,8 @@ public:
 
 private:
     enum class AccessMode : bool { WRITE = true, READ = false };
-    void mem_access(AccessMode mode, unsigned int addr, std::span<uint8_t> data);
+    enum class MemoryRegion { RAM = 0, EEPROM = 1 };
+    void mem_access(AccessMode mode, MemoryRegion region, unsigned int addr, std::span<uint8_t> data);
     uintptr_t m_handle;
 
     std::mutex m_mutex;

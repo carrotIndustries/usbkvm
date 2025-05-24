@@ -11,4 +11,6 @@ std::optional<std::string> get_win32_hid_bus_info(const std::string &path);
 std::optional<std::string> get_win32_video_bus_info(const std::string &path);
 #endif
 
+std::string format_m_of_n(unsigned int m, unsigned int n);
+
 } // namespace usbkvm

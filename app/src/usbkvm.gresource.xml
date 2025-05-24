@@ -5,6 +5,7 @@
     <file>usbkvm.css</file>
     <file>type_window.ui</file>
     <file>devices_window.ui</file>
+    <file>ms2109-eeprom.bin</file>
     <file alias="usbkvm.bin">usbkvm-header.bin</file>
     <file preprocess="xml-stripblanks">icons/scalable/apps/usbkvm.svg</file>
   </gresource>

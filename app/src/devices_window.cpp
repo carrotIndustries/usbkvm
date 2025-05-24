@@ -59,6 +59,14 @@ DevicesWindow::DevicesWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Bu
         m_devices_provider.activate_device(child.m_info.video_path);
     });
     m_devices_provider.signal_devices_changed().connect(sigc::mem_fun(*this, &DevicesWindow::update_devices));
+    {
+        Gtk::Button *button;
+        x->get_widget("recover_eeprom_button", button);
+        button->signal_clicked().connect([this] {
+            m_devices_provider.recover_eeprom();
+            close();
+        });
+    }
 }
 
 

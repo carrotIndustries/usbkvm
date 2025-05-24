@@ -6,12 +6,12 @@
 #include <optional>
 #include <span>
 #include "device_info.hpp"
+#include "update_status.hpp"
 
 namespace usbkvm {
 
 class UsbKvmDevice;
 class UsbKvmApplication;
-enum class UsbKvmMcuFirmwareUpdateStatus;
 
 
 class UsbKvmAppWindow : public Gtk::ApplicationWindow, private IMcuProvider {
@@ -52,23 +52,32 @@ private:
     Gtk::EventBox *m_evbox;
     Glib::RefPtr<Gdk::Cursor> m_blank_cursor;
     Gtk::InfoBar *m_mcu_info_bar;
+    Gtk::InfoBar *m_eeprom_info_bar;
     Gtk::Label *m_mcu_info_bar_label;
     Gtk::Button *m_update_firmware_button;
     Gtk::Revealer *m_firmware_update_revealer;
     Gtk::ProgressBar *m_firmware_update_progress_bar;
     Gtk::Label *m_firmware_update_label;
+    Gtk::Label *m_eeprom_update_label;
+    Gtk::Button *m_update_eeprom_button;
+    Gtk::Label *m_update_blurb_label;
     Gtk::Label *m_overlay_label;
     Gtk::HeaderBar *m_headerbar;
+    void set_update_buttons_sensitive(bool s);
 
     void set_overlay_label_text(const std::string &label);
 
-    using FirmwareUpdateStatus = UsbKvmMcuFirmwareUpdateStatus;
+    using FirmwareUpdateStatus = UpdateStatus;
+    enum class UpdateType { FIRMWARE, EEPROM };
+    UpdateType m_update_type;
     std::atomic<FirmwareUpdateStatus> m_firmware_update_status;
     std::atomic<float> m_firmware_update_progress;
     std::string m_firmware_update_status_string;
     std::mutex m_firmware_update_status_mutex;
     Glib::Dispatcher m_firmware_update_dispatcher;
     void firmware_update_thread();
+    void eeprom_update_thread();
+    void set_firmware_update_status(FirmwareUpdateStatus status, const std::string &msg);
     void update_firmware_update_status();
 
     Gtk::Box *m_modifier_box;
@@ -96,6 +105,7 @@ private:
 
     void create_device(const std::string &path);
     void update_firmware();
+    void update_eeprom();
     void realize();
     std::span<const uint16_t> m_keycode_map;
 

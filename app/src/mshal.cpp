@@ -3,10 +3,29 @@
 #include <vector>
 #include <stdexcept>
 #include <string.h>
-#include <iostream>
 #include <format>
+#include "util.hpp"
 
 namespace usbkvm {
+
+static unsigned int bcd(uint8_t x)
+{
+    return (x & 0xf) + ((x >> 4) & 0xf) * 10;
+}
+
+decltype(EEPROMDatecode::offset) EEPROMDatecode::offset = 12;
+
+EEPROMDatecode EEPROMDatecode::parse(std::span<const uint8_t> data)
+{
+    if (data.size() < 4)
+        throw std::invalid_argument("need at least 4 bytes");
+    return {.year = bcd(data[0]) * 100 + bcd(data[1]), .month = bcd(data[2]), .day = bcd(data[3])};
+}
+
+std::string EEPROMDatecode::format() const
+{
+    return std::format("{:04}-{:02}-{:02}", year, month, day);
+}
 
 MsHal::MsHal(const std::string &path)
 {
@@ -41,11 +60,11 @@ void MsHal::i2c_transfer(uint8_t device_addr, std::span<const uint8_t> data_wr, 
         throw IOError("MsHalI2CTransfer failed");
 }
 
-void MsHal::mem_access(AccessMode mode, unsigned int addr, std::span<uint8_t> data)
+void MsHal::mem_access(AccessMode mode, MemoryRegion region, unsigned int addr, std::span<uint8_t> data)
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    int retval = MsHalMemAccess(m_handle, (int)mode, addr, data.data(), data.size_bytes());
+    int retval = MsHalMemAccess(m_handle, (int)mode, (int)region, addr, data.data(), data.size_bytes());
     if (retval)
         throw IOError("MsHalMemAccess failed");
 }
@@ -53,15 +72,57 @@ void MsHal::mem_access(AccessMode mode, unsigned int addr, std::span<uint8_t> da
 uint16_t MsHal::mem_read16be(unsigned int addr)
 {
     std::array<uint8_t, 2> buf;
-    mem_access(AccessMode::READ, addr, buf);
+    mem_access(AccessMode::READ, MemoryRegion::RAM, addr, buf);
     return (std::get<0>(buf) << 8) | (std::get<1>(buf));
 }
 
 uint8_t MsHal::mem_read8(unsigned int addr)
 {
     uint8_t buf;
-    mem_access(AccessMode::READ, addr, {&buf, 1});
+    mem_access(AccessMode::READ, MemoryRegion::RAM, addr, {&buf, 1});
     return buf;
+}
+
+void MsHal::eeprom_read(uint16_t addr, std::span<uint8_t> data)
+{
+    mem_access(AccessMode::READ, MemoryRegion::EEPROM, addr, data);
+}
+
+void MsHal::eeprom_write(uint16_t addr, std::span<const uint8_t> data)
+{
+    std::vector<decltype(data)::value_type> data_buf;
+    data_buf.assign(data.begin(), data.end());
+    mem_access(AccessMode::WRITE, MemoryRegion::EEPROM, addr, data_buf);
+}
+
+EEPROMDatecode MsHal::read_eeprom_datecode()
+{
+    std::array<uint8_t, 4> buf;
+    eeprom_read(static_cast<uint16_t>(EEPROMDatecode::offset), buf);
+    return EEPROMDatecode::parse(buf);
+}
+
+bool MsHal::update_eeprom(std::function<void(const UpdateProgress &)> progress_cb, std::span<const uint8_t> data)
+{
+    using S = UpdateStatus;
+
+    const auto chunk_size = 256;
+    if (data.size() % chunk_size) {
+        progress_cb({S::ERROR, "data size error"});
+        return false;
+    }
+
+    const unsigned int n_chunks = data.size() / chunk_size;
+
+    for (unsigned int chunk = 0; chunk < n_chunks; chunk++) {
+        const float progress = (chunk + 1) / ((float)n_chunks);
+        const unsigned int offset = chunk * chunk_size;
+        progress_cb({S::BUSY, "Programming: " + format_m_of_n(offset, data.size()) + " Bytes", progress});
+
+        eeprom_write(offset, data.subspan(offset, chunk_size));
+    }
+
+    return true;
 }
 
 // https://github.com/BertoldVdb/ms-tools/issues/7#issuecomment-1431494947

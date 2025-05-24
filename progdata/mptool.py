@@ -48,7 +48,7 @@ if count_programmed_ms2109() != 1 :
 			time.sleep(1)
 
 	print("programming MS2109 EEPROM")
-	subprocess.check_call(["../app/ms-tools/cli/cli", "write-file", "EEPROM", "0", "ms2109.bin"])
+	subprocess.check_call(["../app/ms-tools/cli/cli", "write-file", "EEPROM", "0", "../app/src/ms2109-eeprom.bin"])
 	cprint("EEPROM programming done", "green", attrs=["bold"])
 	print("reconnect USBKVM")
 

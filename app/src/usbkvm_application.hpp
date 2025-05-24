@@ -22,11 +22,14 @@ public:
         return m_signal_devices_changed;
     }
     void activate_device(const std::string &video_path) override;
+    void recover_eeprom() override;
 
     bool get_force_firmware_update() const
     {
         return m_force_firmware_update;
     }
+
+    static const std::string s_recovery;
 
 
 protected:
