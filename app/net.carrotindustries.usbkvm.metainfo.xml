@@ -42,6 +42,15 @@
   <content_rating type="oars-1.0" />
 
   <releases>
+    <release version="0.3.0" date="2025-05-25">
+      <url>https://github.com/carrotIndustries/usbkvm/releases/tag/v0.3.0</url>
+       <description>
+        <p>What's new</p>
+        <ul>
+          <li>Updated EEPROM with 1024x768 default resolution for improved compatibility</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.2.2" date="2025-05-23">
       <url>https://github.com/carrotIndustries/usbkvm/releases/tag/v0.2.2</url>
        <description>
