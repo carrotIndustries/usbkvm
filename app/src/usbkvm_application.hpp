@@ -29,6 +29,11 @@ public:
         return m_force_firmware_update;
     }
 
+    unsigned int get_i2c_delay_us() const
+    {
+        return m_i2c_delay_us;
+    }
+
     static const std::string s_recovery;
 
 
@@ -62,6 +67,13 @@ private:
 
     type_signal_devices_changed m_signal_devices_changed;
     bool m_force_firmware_update = false;
+    unsigned int m_i2c_delay_us =
+#ifdef G_OS_WIN32
+            1000
+#else
+            0
+#endif
+            ;
 };
 
 } // namespace usbkvm

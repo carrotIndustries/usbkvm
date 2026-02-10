@@ -310,6 +310,8 @@ void UsbKvmAppWindow::create_device(const std::string &path)
         return;
     try {
         m_device = std::make_unique<UsbKvmDevice>(path);
+        using namespace std::chrono_literals;
+        m_device->hal().set_i2c_delay(m_app.get_i2c_delay_us() * 1us);
         auto info = m_device->mcu()->get_info();
         const int current_version = info.version;
         m_device->set_model(info.model);

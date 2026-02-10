@@ -19,10 +19,20 @@ UsbKvmApplication::UsbKvmApplication() : Gtk::Application("net.carrotindustries.
 {
     add_main_option_entry(Gio::Application::OptionType::OPTION_TYPE_BOOL, "force-firmware-update", 0,
                           "Force firmware update regardless of detected version");
+    add_main_option_entry(Gio::Application::OptionType::OPTION_TYPE_INT, "i2c-delay", 0,
+                          "Min. I2C transaction interval in us");
     signal_handle_local_options().connect([this](const Glib::RefPtr<Glib::VariantDict> &dict) {
         bool force = false;
         dict->lookup_value("force-firmware-update", force);
         m_force_firmware_update = force;
+
+        gint32 i2c_delay = 0;
+        if (dict->lookup_value("i2c-delay", i2c_delay)) {
+            if (i2c_delay == 1)
+                i2c_delay = 0;
+            m_i2c_delay_us = i2c_delay;
+        }
+
         return -1;
     });
 }

@@ -125,6 +125,11 @@ bool MsHal::update_eeprom(std::function<void(const UpdateProgress &)> progress_c
     return true;
 }
 
+void MsHal::set_i2c_delay_ns(int64_t delay_ns)
+{
+    MsHalSetI2CDelay(m_handle, delay_ns);
+}
+
 // https://github.com/BertoldVdb/ms-tools/issues/7#issuecomment-1431494947
 uint16_t MsHal::get_input_width()
 {
