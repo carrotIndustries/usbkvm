@@ -211,6 +211,8 @@ static std::string get_path(GstDevice *device)
 {
     auto props = gst_device_get_properties(device);
     auto path = struct_get_string(props, "device.path");
+    if (!path.size())
+        path = struct_get_string(props, "api.v4l2.path");
     gst_structure_free(props);
     return path;
 }
@@ -345,6 +347,8 @@ gboolean UsbKvmApplication::monitor_bus_func(GstBus *bus, GstMessage *message)
 #else
                 auto props = gst_device_get_properties(device);
                 video_bus_info = struct_get_string(props, "v4l2.device.bus_info");
+                if (!video_bus_info.size())
+                    video_bus_info = struct_get_string(props, "api.v4l2.cap.bus_info");
                 gst_structure_free(props);
 #endif
 
