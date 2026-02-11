@@ -1,5 +1,5 @@
 project('usbkvm', ['cpp', 'c'],
-  version: '0.3.0',
+  version: '0.3.1',
   meson_version: '>=0.58',
   default_options: ['cpp_std=c++20', 'warning_level=1'],
 )
