@@ -75,19 +75,20 @@ jobs:
     - uses: msys2/setup-msys2@v2
       with:
         update: true
+        msystem: UCRT64
         install: >-
-          mingw-w64-x86_64-gcc
-          mingw-w64-x86_64-pkgconf
-          mingw-w64-x86_64-gtkmm3
-          mingw-w64-x86_64-meson
-          mingw-w64-x86_64-python
-          mingw-w64-x86_64-gstreamer
-          mingw-w64-x86_64-gst-plugin-gtk
-          mingw-w64-x86_64-gst-plugins-bad
-          mingw-w64-x86_64-gst-plugins-good
-          mingw-w64-x86_64-hidapi
-          mingw-w64-x86_64-go
-          mingw-w64-x86_64-arm-none-eabi-gcc
+          mingw-w64-ucrt-x86_64-gcc
+          mingw-w64-ucrt-x86_64-pkgconf
+          mingw-w64-ucrt-x86_64-gtkmm3
+          mingw-w64-ucrt-x86_64-meson
+          mingw-w64-ucrt-x86_64-python
+          mingw-w64-ucrt-x86_64-gstreamer
+          mingw-w64-ucrt-x86_64-gst-plugin-gtk
+          mingw-w64-ucrt-x86_64-gst-plugins-bad
+          mingw-w64-ucrt-x86_64-gst-plugins-good
+          mingw-w64-ucrt-x86_64-hidapi
+          mingw-w64-ucrt-x86_64-go
+          mingw-w64-ucrt-x86_64-arm-none-eabi-gcc
           make
           git
           zip
