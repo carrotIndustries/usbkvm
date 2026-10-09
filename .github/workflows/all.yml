@@ -41,24 +41,25 @@ jobs:
         ./make_tarball.sh
         sha256sum *.tar.gz
     - name: Upload tarball
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: usbkvm-src
         path: app/*.tar.gz
+        archive: false
 
   test-tarball:
     runs-on: ubuntu-latest
     container: debian:trixie
     needs: build-all
     steps:
-    - name: Install build dependencies
-      run: apt-get update -y && apt-get install -y meson build-essential libgtkmm-3.0-dev golang python3 gstreamer1.0-gtk3 gstreamer1.0-plugins-good libhidapi-dev libgstreamer1.0-dev
     - name: Download tarball
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
-        name: usbkvm-src
+        name: usbkvm.tar.gz
     - name: extract tarball
       run: tar xf usbkvm.tar.gz
+    - name: Install build dependencies
+      run: apt-get update -y && apt-get install -y meson build-essential libgtkmm-3.0-dev golang python3 gstreamer1.0-gtk3 gstreamer1.0-plugins-good libhidapi-dev libgstreamer1.0-dev
     - name: Build app
       working-directory: usbkvm
       run: |
@@ -116,10 +117,11 @@ jobs:
     - name: set artifact name
       shell: msys2 {0}
       run: echo "artifact_name=usbkvm-win64-$(date +%Y-%m-%d-%H%M)-$(echo ${{ github.ref_name }} | tr / -)" >> $GITHUB_ENV
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: ${{ env.artifact_name }}
         path: app/dist/*.zip
+        archive: false
 
   release:
     permissions:
@@ -134,7 +136,7 @@ jobs:
     - name: install
       run: apt-get update -y && apt-get install -y curl jq
     - name: Download artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
     - name: Create release
       run: |
         find
@@ -145,7 +147,7 @@ jobs:
         echo $UPLOAD_URL
         curl -f -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
         -H "Content-Type: application/octet-stream" \
-        $UPLOAD_URL?name=usbkvm-${{github.ref_name}}.tar.gz --data-binary "@usbkvm-src/usbkvm.tar.gz"
+        $UPLOAD_URL?name=usbkvm-${{github.ref_name}}.tar.gz --data-binary "@usbkvm.tar.gz"
         curl -f -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
         -H "Content-Type: application/octet-stream" \
-        $UPLOAD_URL?name=usbkvm-win64-${{github.ref_name}}.zip --data-binary "@$(echo usbkvm-win64-*/usbkvm-*.zip)"
+        $UPLOAD_URL?name=usbkvm-win64-${{github.ref_name}}.zip --data-binary "@$(echo usbkvm-*.zip)"
