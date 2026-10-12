@@ -1,0 +1,17 @@
+diff --git a/app/meson.build b/app/meson.build
+index 6e60b0b..1515f76 100644
+--- a/app/meson.build
++++ b/app/meson.build
+@@ -124,8 +124,8 @@ keymap_h = custom_target(
+ mslib = custom_target(
+     'mslib',
+     output: ['mslib.a', 'mslib.h'],
+-    input: 'ms-tools/lib/mslib.go',
+-    command: ['go', 'build', '-C',  join_paths(meson.current_source_dir(), 'ms-tools/lib'), '-o', join_paths(meson.current_build_dir(), '@OUTPUT0@'), '-buildmode=c-archive', 'mslib.go']
++    input: ['mslib/mslib.a', 'mslib/mslib.h'],
++    command: ['cp', '@INPUT@', '.']
+     
+ )
+ 
+
+
